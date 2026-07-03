@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { careerGraphEdges, careerGraphNodes } from "../data/careerGraphData";
 
 function getNodeStyle(type: string) {
@@ -17,6 +20,8 @@ function getDotStyle(type: string) {
 }
 
 export default function CareerGraph() {
+  const [selectedNode, setSelectedNode] = useState(careerGraphNodes[2]);
+
   return (
     <div className="relative h-full w-full overflow-hidden">
       <div className="absolute inset-8 rounded-[2rem] border border-slate-100 bg-white/40" />
@@ -35,32 +40,40 @@ export default function CareerGraph() {
         ))}
       </svg>
 
-      {careerGraphNodes.map((node) => (
-        <button
-          key={node.label}
-          className={`absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-3 rounded-2xl border px-4 py-3 text-xs font-medium shadow-sm transition hover:bg-blue-50 hover:text-blue-600 ${getNodeStyle(
-            node.type
-          )}`}
-          style={{ left: node.x, top: node.y }}
-        >
-          <span className={`h-2 w-2 rounded-full ${getDotStyle(node.type)}`} />
-          <span>{node.label}</span>
-          <span className="text-[10px] text-slate-400">{node.match}</span>
-        </button>
-      ))}
+      {careerGraphNodes.map((node) => {
+        const selected = selectedNode.label === node.label;
+
+        return (
+          <button
+            key={node.label}
+            onClick={() => setSelectedNode(node)}
+            className={`absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-3 rounded-2xl border px-4 py-3 text-xs font-medium shadow-sm transition hover:bg-blue-50 hover:text-blue-600 ${
+              selected ? "ring-2 ring-blue-200" : ""
+            } ${getNodeStyle(node.type)}`}
+            style={{ left: node.x, top: node.y }}
+          >
+            <span className={`h-2 w-2 rounded-full ${getDotStyle(node.type)}`} />
+            <span>{node.label}</span>
+            <span className="text-[10px] text-slate-400">{node.match}</span>
+          </button>
+        );
+      })}
 
       <div className="absolute left-4 top-4 rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-          Selected Path
+          Selected Node
         </div>
         <div className="mt-1 text-sm font-semibold text-slate-700">
-          Finance → Healthcare AI Leadership
+          {selectedNode.label}
+        </div>
+        <div className="mt-1 text-xs text-slate-500">
+          Match: {selectedNode.match}
         </div>
       </div>
 
       <div className="absolute right-4 top-4 rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-          Match Level
+          Path Match
         </div>
         <div className="mt-1 text-2xl font-bold text-blue-600">72%</div>
       </div>
