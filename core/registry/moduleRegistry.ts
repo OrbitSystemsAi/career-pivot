@@ -4,10 +4,9 @@ import {
   CareerSuggestions,
   CareerWords,
   CareerFilters,
+  CareerPath,
   CareerCompanies,
 } from "@/modules/career";
-
-import D4UtilityMiddlePanel from "@/core/shell/panels/D4UtilityMiddlePanel";
 
 import {
   ResumeModule,
@@ -29,7 +28,6 @@ import {
   NetworkActions,
 } from "@/modules/network";
 
-
 export const moduleRegistry = {
   resume: {
     id: "resume",
@@ -39,11 +37,9 @@ export const moduleRegistry = {
 
     panels: {
       visualization: ResumeModule,
-
       utilityTop: ResumeFilters,
       utilityMiddle: ResumeContext,
       utilityBottom: ResumeResults,
-
       bottomLeft: ResumeStrengths,
       bottomCenter: ResumeGaps,
       bottomRight: ResumeActions,
@@ -58,11 +54,9 @@ export const moduleRegistry = {
 
     panels: {
       visualization: CareerGraph,
-
       utilityTop: CareerFilters,
-      utilityMiddle: D4UtilityMiddlePanel,
+      utilityMiddle: CareerPath,
       utilityBottom: CareerCompanies,
-
       bottomLeft: CareerStrengths,
       bottomCenter: CareerSuggestions,
       bottomRight: CareerWords,
@@ -77,11 +71,9 @@ export const moduleRegistry = {
 
     panels: {
       visualization: NetworkModule,
-
       utilityTop: NetworkFilters,
       utilityMiddle: NetworkContext,
       utilityBottom: NetworkResults,
-
       bottomLeft: NetworkConnections,
       bottomCenter: NetworkGaps,
       bottomRight: NetworkActions,
