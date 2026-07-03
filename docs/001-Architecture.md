@@ -143,3 +143,37 @@ Build in this order:
 6. Data
 7. AI
 8. Automation
+
+## 9. Module Registry Rule
+
+The module registry is the source of truth for installed OSai modules.
+
+The shell should not hardcode module names, descriptions, icons, or panel assignments.
+
+### Registry Responsibilities
+
+- Define installed modules
+- Define module labels
+- Define module descriptions
+- Define module icons
+- Define which component renders in each shell panel
+
+### Shell Responsibilities
+
+- Render the permanent layout
+- Read the active module
+- Load active module panels from the registry
+- Preserve consistent frame structure across modules
+
+### Navigation Rule
+
+D2 Navigation is the module launcher.
+
+D3 Workspace Controls are view controls inside the active module.
+
+### Panel Rule
+
+D3, D4, and D5 panels should render content from the active module.
+
+The shell owns placement.
+The module owns content.
