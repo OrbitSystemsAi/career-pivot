@@ -8,10 +8,10 @@ export const moduleRegistry = {
     id: "career",
     label: "Career",
     panels: {
-      visualization: CareerGraph,
-      bottomLeft: CareerStrengths,
-      bottomCenter: CareerSuggestions,
-      bottomRight: CareerWords,
+      Visualization: CareerGraph,
+      BottomLeft: CareerStrengths,
+      BottomCenter: CareerSuggestions,
+      BottomRight: CareerWords,
     },
   },
 };

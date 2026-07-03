@@ -1,11 +1,9 @@
-import { moduleRegistry } from "@/core/registry/moduleRegistry";
+import CareerGraph from "@/modules/career/components/CareerGraph";
 
 export default function D3VisualizationPanel() {
-  const ActiveVisualization = moduleRegistry.career.panels.visualization;
-
   return (
     <div className="relative flex flex-1 overflow-hidden bg-gradient-to-br from-white to-slate-50">
-      <ActiveVisualization />
+      <CareerGraph />
 
       <div className="absolute bottom-4 left-4 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-blue-600">
