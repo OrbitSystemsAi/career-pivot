@@ -3,17 +3,38 @@ import {
   CareerStrengths,
   CareerSuggestions,
   CareerWords,
+  CareerFilters,
+  CareerPath,
+  CareerCompanies,
 } from "@/modules/career";
 
-import { ResumeModule } from "@/modules/resume";
-import { NetworkModule } from "@/modules/network";
+import {
+  ResumeModule,
+  ResumeFilters,
+  ResumeContext,
+  ResumeResults,
+} from "@/modules/resume";
+
+import {
+  NetworkModule,
+  NetworkFilters,
+  NetworkContext,
+  NetworkResults,
+} from "@/modules/network";
+
 
 export const moduleRegistry = {
   resume: {
     id: "resume",
     name: "Resume",
+
     panels: {
       visualization: ResumeModule,
+
+      utilityTop: ResumeFilters,
+      utilityMiddle: ResumeContext,
+      utilityBottom: ResumeResults,
+
       bottomLeft: ResumeModule,
       bottomCenter: ResumeModule,
       bottomRight: ResumeModule,
@@ -23,8 +44,14 @@ export const moduleRegistry = {
   career: {
     id: "career",
     name: "Career",
+
     panels: {
       visualization: CareerGraph,
+
+      utilityTop: CareerFilters,
+      utilityMiddle: CareerPath,
+      utilityBottom: CareerCompanies,
+
       bottomLeft: CareerStrengths,
       bottomCenter: CareerSuggestions,
       bottomRight: CareerWords,
@@ -34,8 +61,14 @@ export const moduleRegistry = {
   network: {
     id: "network",
     name: "Network",
+
     panels: {
       visualization: NetworkModule,
+
+      utilityTop: NetworkFilters,
+      utilityMiddle: NetworkContext,
+      utilityBottom: NetworkResults,
+
       bottomLeft: NetworkModule,
       bottomCenter: NetworkModule,
       bottomRight: NetworkModule,
