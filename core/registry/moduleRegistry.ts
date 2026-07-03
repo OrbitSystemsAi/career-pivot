@@ -14,6 +14,9 @@ import {
   ResumeFilters,
   ResumeContext,
   ResumeResults,
+  ResumeStrengths,
+  ResumeGaps,
+  ResumeActions,
 } from "@/modules/resume";
 
 import {
@@ -37,9 +40,9 @@ export const moduleRegistry = {
       utilityMiddle: ResumeContext,
       utilityBottom: ResumeResults,
 
-      bottomLeft: ResumeModule,
-      bottomCenter: ResumeModule,
-      bottomRight: ResumeModule,
+      bottomLeft: ResumeStrengths,
+      bottomCenter: ResumeGaps,
+      bottomRight: ResumeActions,
     },
   },
 
