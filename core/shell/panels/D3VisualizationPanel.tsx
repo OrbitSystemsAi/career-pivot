@@ -1,7 +1,11 @@
+"use client";
+
 import { getActiveModule } from "@/core/modules/getActiveModule";
+import { useActiveModule } from "@/core/state/ActiveModuleProvider";
 
 export default function D3VisualizationPanel() {
-  const module = getActiveModule();
+  const { activeModule } = useActiveModule();
+  const module = getActiveModule(activeModule);
 
   const Visualization = module.panels.visualization;
 
