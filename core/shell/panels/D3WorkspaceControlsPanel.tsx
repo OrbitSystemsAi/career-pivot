@@ -1,42 +1,29 @@
 "use client";
 
-import { useActiveModule } from "@/core/state/ActiveModuleProvider";
+import { useState } from "react";
 
-const views = [
-  {
-    label: "Resume",
-    module: "resume",
-  },
-  {
-    label: "Career",
-    module: "career",
-  },
-  {
-    label: "Network",
-    module: "network",
-  },
-];
+const viewTypes = ["Visualization", "Graph", "Timeline", "Metrics"];
 
 export default function D3WorkspaceControlsPanel() {
-  const { activeModule, setActiveModule } = useActiveModule();
+  const [activeView, setActiveView] = useState("Visualization");
 
   return (
     <div className="relative flex h-14 items-center justify-center border-b border-slate-200">
       <div className="flex gap-3">
-        {views.map((view) => {
-          const selected = activeModule === view.module;
+        {viewTypes.map((view) => {
+          const selected = activeView === view;
 
           return (
             <button
-              key={view.module}
-              onClick={() => setActiveModule(view.module)}
+              key={view}
+              onClick={() => setActiveView(view)}
               className={`rounded-xl px-2 py-3 text-xs font-medium transition ${
                 selected
                   ? "bg-blue-50 text-blue-600"
                   : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
               }`}
             >
-              {view.label}
+              {view}
             </button>
           );
         })}
