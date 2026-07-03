@@ -1,34 +1,46 @@
-const views = ["Resume", "Career", "Network"];
+"use client";
 
-const viewTypes = [
-  "Visualization",
-  "Graph",
+import { useActiveModule } from "@/core/state/ActiveModuleProvider";
+
+const views = [
+  {
+    label: "Resume",
+    module: "resume",
+  },
+  {
+    label: "Career",
+    module: "career",
+  },
+  {
+    label: "Network",
+    module: "network",
+  },
 ];
 
 export default function D3WorkspaceControlsPanel() {
+  const { activeModule, setActiveModule } = useActiveModule();
+
   return (
     <div className="relative flex h-14 items-center justify-center border-b border-slate-200">
+      <div className="flex gap-3">
+        {views.map((view) => {
+          const selected = activeModule === view.module;
 
-      <select className="absolute left-4 rounded-xl border border-transparent bg-white px-4 py-3 text-xs font-medium text-slate-500 hover:border-slate-200 hover:bg-blue-50 hover:text-blue-600 focus:border-transparent focus:bg-white focus:outline-none">
-        {viewTypes.map((type) => (
-          <option key={type}>
-            {type}
-          </option>
-        ))}
-      </select>
-
-
-      <div className="flex items-center justify-center gap-3">
-        {views.map((view) => (
-          <button
-            key={view}
-            className="rounded-xl px-4 py-3 text-xs font-medium text-slate-500 hover:bg-blue-50 hover:text-blue-600"
-          >
-            {view}
-          </button>
-        ))}
+          return (
+            <button
+              key={view.module}
+              onClick={() => setActiveModule(view.module)}
+              className={`rounded-xl px-2 py-3 text-xs font-medium transition ${
+                selected
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+              }`}
+            >
+              {view.label}
+            </button>
+          );
+        })}
       </div>
-
     </div>
   );
 }
