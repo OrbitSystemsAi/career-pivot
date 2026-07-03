@@ -24,7 +24,11 @@ import {
   NetworkFilters,
   NetworkContext,
   NetworkResults,
+  NetworkConnections,
+  NetworkGaps,
+  NetworkActions,
 } from "@/modules/network";
+
 
 export const moduleRegistry = {
   resume: {
@@ -78,9 +82,9 @@ export const moduleRegistry = {
       utilityMiddle: NetworkContext,
       utilityBottom: NetworkResults,
 
-      bottomLeft: NetworkModule,
-      bottomCenter: NetworkModule,
-      bottomRight: NetworkModule,
+      bottomLeft: NetworkConnections,
+      bottomCenter: NetworkGaps,
+      bottomRight: NetworkActions,
     },
   },
 };
