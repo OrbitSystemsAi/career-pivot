@@ -47,15 +47,6 @@ export default function D3VisualizationPanel() {
           Current resume mapped against target career path.
         </div>
       </div>
-
-      <div className="absolute bottom-4 right-4 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
-        <div className="text-xs font-semibold text-slate-700">Legend</div>
-        <div className="mt-2 grid gap-1 text-xs text-slate-500">
-          <div>Blue = target role</div>
-          <div>Green = current profile</div>
-          <div>Amber = missing area</div>
-        </div>
-      </div>
     </div>
   );
 }
