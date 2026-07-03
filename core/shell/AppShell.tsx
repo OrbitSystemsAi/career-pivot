@@ -6,18 +6,18 @@ import D5BottomWorkspaceFrame from "./frames/D5BottomWorkspaceFrame";
 
 export default function AppShell() {
   return (
-    <div className="h-screen w-screen overflow-hidden bg-slate-50 text-slate-950">
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-slate-100">
       <D1GlobalHeaderFrame />
 
-      <div className="flex h-[calc(100vh-64px)]">
+      <div className="flex min-h-0 flex-1">
         <D2NavigationFrame />
 
-        <main className="flex min-w-0 flex-1 flex-col gap-4 p-4">
+        <main className="grid min-h-0 flex-1 grid-cols-[1fr_24rem] grid-rows-[minmax(0,1fr)_14rem] gap-4 p-4">
           <D3WorkspaceFrame />
+          <D4UtilityFrame section="top" />
           <D5BottomWorkspaceFrame />
+          <D4UtilityFrame section="bottom" />
         </main>
-
-        <D4UtilityFrame />
       </div>
     </div>
   );
