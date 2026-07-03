@@ -1,21 +1,10 @@
 import { careerGraphEdges, careerGraphNodes } from "../data/careerGraphData";
 
 function getNodeStyle(type: string) {
-  if (type === "target") {
-    return "border-blue-200 bg-blue-50 text-blue-600 shadow-blue-100";
-  }
-
-  if (type === "current") {
-    return "border-emerald-200 bg-emerald-50 text-emerald-600 shadow-emerald-100";
-  }
-
-  if (type === "strength") {
-    return "border-slate-200 bg-white text-slate-600 shadow-slate-100";
-  }
-
-  if (type === "gap") {
-    return "border-amber-200 bg-amber-50 text-amber-600 shadow-amber-100";
-  }
+  if (type === "target") return "border-blue-200 bg-blue-50 text-blue-600 shadow-blue-100";
+  if (type === "current") return "border-emerald-200 bg-emerald-50 text-emerald-600 shadow-emerald-100";
+  if (type === "strength") return "border-slate-200 bg-white text-slate-600 shadow-slate-100";
+  if (type === "gap") return "border-amber-200 bg-amber-50 text-amber-600 shadow-amber-100";
 
   return "border-slate-200 bg-white text-slate-500 shadow-slate-100";
 }
@@ -49,13 +38,14 @@ export default function CareerGraph() {
       {careerGraphNodes.map((node) => (
         <button
           key={node.label}
-          className={`absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-2xl border px-4 py-3 text-xs font-medium shadow-sm transition hover:bg-blue-50 hover:text-blue-600 ${getNodeStyle(
+          className={`absolute flex -translate-x-1/2 -translate-y-1/2 items-center gap-3 rounded-2xl border px-4 py-3 text-xs font-medium shadow-sm transition hover:bg-blue-50 hover:text-blue-600 ${getNodeStyle(
             node.type
           )}`}
           style={{ left: node.x, top: node.y }}
         >
           <span className={`h-2 w-2 rounded-full ${getDotStyle(node.type)}`} />
           <span>{node.label}</span>
+          <span className="text-[10px] text-slate-400">{node.match}</span>
         </button>
       ))}
 
