@@ -5,6 +5,8 @@ export const careerGraphNodes = [
     y: "10%",
     type: "future",
     match: "41%",
+    insight: "Long-term executive goal. Requires broader enterprise ownership.",
+    action: "Build evidence of company-wide technology strategy.",
   },
   {
     label: "VP Digital Transformation",
@@ -12,6 +14,8 @@ export const careerGraphNodes = [
     y: "25%",
     type: "future",
     match: "58%",
+    insight: "Strong direction, but needs clearer transformation scale.",
+    action: "Add examples showing enterprise-wide transformation outcomes.",
   },
   {
     label: "Director AI Transformation",
@@ -19,6 +23,8 @@ export const careerGraphNodes = [
     y: "43%",
     type: "target",
     match: "72%",
+    insight: "Best near-term target based on finance, BI, and automation background.",
+    action: "Add AI governance, automation impact, and healthcare transformation language.",
   },
   {
     label: "Finance Leadership",
@@ -26,6 +32,8 @@ export const careerGraphNodes = [
     y: "63%",
     type: "strength",
     match: "Strong",
+    insight: "A clear resume strength that supports executive credibility.",
+    action: "Keep this prominent, but translate it into transformation language.",
   },
   {
     label: "Healthcare Strategy",
@@ -33,6 +41,8 @@ export const careerGraphNodes = [
     y: "63%",
     type: "gap",
     match: "Missing",
+    insight: "Important gap for healthcare-focused leadership roles.",
+    action: "Add healthcare operations, compliance, patient access, or provider workflow examples.",
   },
   {
     label: "Current Resume",
@@ -40,6 +50,8 @@ export const careerGraphNodes = [
     y: "80%",
     type: "current",
     match: "Active",
+    insight: "Current resume has strong ingredients, but needs repositioning.",
+    action: "Rewrite summary around AI-enabled enterprise transformation.",
   },
 ];
 

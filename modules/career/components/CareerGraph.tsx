@@ -59,16 +59,26 @@ export default function CareerGraph() {
         );
       })}
 
-      <div className="absolute left-4 top-4 rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-sm">
+      <div className="absolute left-4 top-4 max-w-xs rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
           Selected Node
         </div>
+
         <div className="mt-1 text-sm font-semibold text-slate-700">
           {selectedNode.label}
         </div>
+
         <div className="mt-1 text-xs text-slate-500">
           Match: {selectedNode.match}
         </div>
+
+        <div className="mt-3 text-xs text-slate-500">
+          {selectedNode.insight}
+        </div>
+
+        <button className="mt-3 rounded-xl px-3 py-2 text-xs font-medium text-blue-600 hover:bg-blue-50">
+          {selectedNode.action}
+        </button>
       </div>
 
       <div className="absolute right-4 top-4 rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 shadow-sm">
