@@ -1,5 +1,9 @@
-import CareerSuggestions from "@/modules/career/components/CareerSuggestions";
+import { getActiveModule } from "@/core/modules/getActiveModule";
 
 export default function D5BottomCenterPanel() {
-  return <CareerSuggestions />;
+  const module = getActiveModule();
+
+  const Panel = module.panels.bottomCenter;
+
+  return <Panel />;
 }

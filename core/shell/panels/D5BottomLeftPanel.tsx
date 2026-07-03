@@ -1,5 +1,9 @@
-import CareerStrengths from "@/modules/career/components/CareerStrengths";
+import { getActiveModule } from "@/core/modules/getActiveModule";
 
 export default function D5BottomLeftPanel() {
-  return <CareerStrengths />;
+  const module = getActiveModule();
+
+  const Panel = module.panels.bottomLeft;
+
+  return <Panel />;
 }
