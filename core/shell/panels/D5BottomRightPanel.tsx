@@ -1,5 +1,7 @@
-import CareerWords from "@/modules/career/components/CareerWords";
+import { moduleRegistry } from "@/core/registry/moduleRegistry";
 
 export default function D5BottomRightPanel() {
-  return <CareerWords />;
+  const ActivePanel = moduleRegistry.career.panels.bottomRight;
+
+  return <ActivePanel />;
 }

@@ -1,5 +1,7 @@
-import CareerStrengths from "@/modules/career/components/CareerStrengths";
+import { moduleRegistry } from "@/core/registry/moduleRegistry";
 
 export default function D5BottomLeftPanel() {
-  return <CareerStrengths />;
+  const ActivePanel = moduleRegistry.career.panels.bottomLeft;
+
+  return <ActivePanel />;
 }
