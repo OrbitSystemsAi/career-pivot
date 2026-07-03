@@ -1,21 +1,9 @@
 "use client";
 
+import { moduleRegistry } from "@/core/registry/moduleRegistry";
 import { useActiveModule } from "@/core/state/ActiveModuleProvider";
 
-const modules = [
-  {
-    label: "Resume",
-    id: "resume",
-  },
-  {
-    label: "Career",
-    id: "career",
-  },
-  {
-    label: "Network",
-    id: "network",
-  },
-];
+const modules = Object.values(moduleRegistry);
 
 export default function D2NavigationFrame() {
   const { activeModule, setActiveModule } = useActiveModule();
@@ -36,7 +24,8 @@ export default function D2NavigationFrame() {
                   : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
               }`}
             >
-              {module.label}
+              <div className="mb-1">{module.icon}</div>
+              <div>{module.name}</div>
             </button>
           );
         })}
