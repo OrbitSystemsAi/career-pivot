@@ -1,15 +1,11 @@
 "use client";
 
+import { getActiveModule } from "@/core/modules/getActiveModule";
 import { useActiveModule } from "@/core/state/ActiveModuleProvider";
-
-const moduleNames: Record<string, string> = {
-  resume: "Resume Intelligence",
-  career: "Career Intelligence",
-  network: "Network Intelligence",
-};
 
 export default function D1GlobalHeaderFrame() {
   const { activeModule } = useActiveModule();
+  const module = getActiveModule(activeModule);
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-6">
@@ -21,13 +17,14 @@ export default function D1GlobalHeaderFrame() {
 
         <div className="h-6 w-px bg-slate-200" />
 
-        <div className="text-sm font-semibold text-slate-700">
-          {moduleNames[activeModule]}
+        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+          <span>{module.icon}</span>
+          <span>{module.description}</span>
         </div>
       </div>
 
       <div className="w-[420px] rounded-full border border-transparent bg-slate-50 px-4 py-2 text-sm text-slate-400 hover:border-slate-200 hover:bg-blue-50 hover:text-blue-600">
-        Search anything...
+        Search {module.name.toLowerCase()}...
       </div>
 
       <button className="rounded-xl px-4 py-3 text-xs font-medium text-slate-500 hover:bg-blue-50 hover:text-blue-600">
