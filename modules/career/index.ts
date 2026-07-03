@@ -5,5 +5,5 @@ export { default as CareerSuggestions } from "./components/CareerSuggestions";
 export { default as CareerWords } from "./components/CareerWords";
 
 export { default as CareerFilters } from "./components/CareerFilters";
-export { default as CareerPath } from "./components/CareerPath";
 export { default as CareerCompanies } from "./components/CareerCompanies";
+export { default as CareerPath } from "./components/CareerPathPanel";
