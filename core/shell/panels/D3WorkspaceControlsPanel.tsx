@@ -2,20 +2,16 @@
 
 import { getActiveModule } from "@/core/modules/getActiveModule";
 import { useActiveModule } from "@/core/state/ActiveModuleProvider";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function D3WorkspaceControlsPanel() {
-  const { activeModule } = useActiveModule();
+  const { activeModule, activeView, setActiveView } = useActiveModule();
 
   const module = getActiveModule(activeModule);
 
-  const [activeView, setActiveView] = useState(
-    module.views[0]?.id
-  );
-
   useEffect(() => {
     setActiveView(module.views[0]?.id);
-  }, [activeModule, module.views]);
+  }, [activeModule, module.views, setActiveView]);
 
   return (
     <div className="relative flex h-14 items-center justify-center border-b border-slate-200">

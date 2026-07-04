@@ -5,6 +5,9 @@ import { createContext, useContext, useState } from "react";
 type ActiveModuleContextType = {
   activeModule: string;
   setActiveModule: (module: string) => void;
+
+  activeView: string;
+  setActiveView: (view: string) => void;
 };
 
 const ActiveModuleContext =
@@ -16,12 +19,15 @@ export function ActiveModuleProvider({
   children: React.ReactNode;
 }) {
   const [activeModule, setActiveModule] = useState("career");
+  const [activeView, setActiveView] = useState("graph");
 
   return (
     <ActiveModuleContext.Provider
       value={{
         activeModule,
         setActiveModule,
+        activeView,
+        setActiveView,
       }}
     >
       {children}
