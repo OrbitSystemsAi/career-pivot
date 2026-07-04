@@ -2,12 +2,17 @@ import type { ModuleDefinition } from "@/core/types/module";
 
 import {
   CareerGraph,
+  CareerTimeline,
+  CareerSkills,
   CareerStrengths,
   CareerSuggestions,
   CareerWords,
   CareerFilters,
   CareerPath,
   CareerCompanies,
+  CareerMarketDemand,
+  CareerMarketCompanies,
+  CareerMarketActions,
 } from "@/modules/career";
 
 import {
@@ -90,6 +95,22 @@ export const moduleRegistry = {
       bottomLeft: CareerStrengths,
       bottomCenter: CareerSuggestions,
       bottomRight: CareerWords,
+    },
+
+    viewPanels: {
+      timeline: {
+        visualization: CareerTimeline,
+      },
+
+      market: {
+        bottomLeft: CareerMarketDemand,
+        bottomCenter: CareerMarketCompanies,
+        bottomRight: CareerMarketActions,
+      },
+
+      skills: {
+        visualization: CareerSkills,
+      },
     },
   },
 

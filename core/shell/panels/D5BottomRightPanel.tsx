@@ -1,13 +1,13 @@
 "use client";
 
-import { getActiveModule } from "@/core/modules/getActiveModule";
+import { getActiveModulePanels } from "@/core/modules/getActiveModulePanels";
 import { useActiveModule } from "@/core/state/ActiveModuleProvider";
 
 export default function D5BottomRightPanel() {
-  const { activeModule } = useActiveModule();
-  const module = getActiveModule(activeModule);
+  const { activeModule, activeView } = useActiveModule();
+  const { panels } = getActiveModulePanels(activeModule, activeView);
 
-  const Panel = module.panels.bottomRight;
+  const Panel = panels.bottomRight;
 
   return <Panel />;
 }
