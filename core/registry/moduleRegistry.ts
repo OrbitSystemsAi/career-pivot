@@ -13,6 +13,9 @@ import {
   CareerMarketDemand,
   CareerMarketCompanies,
   CareerMarketActions,
+  CareerMarketFilters,
+  CareerMarketContext,
+  CareerMarketRanking,
 } from "@/modules/career";
 
 import {
@@ -103,6 +106,9 @@ export const moduleRegistry = {
       },
 
       market: {
+        utilityTop: CareerMarketFilters,
+        utilityMiddle: CareerMarketContext,
+        utilityBottom: CareerMarketRanking,
         bottomLeft: CareerMarketDemand,
         bottomCenter: CareerMarketCompanies,
         bottomRight: CareerMarketActions,
