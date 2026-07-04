@@ -17,9 +17,8 @@ export default function D1GlobalHeaderFrame() {
 
         <div className="h-6 w-px bg-slate-200" />
 
-        <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-          <span>{module.icon}</span>
-          <span>{module.description}</span>
+        <div className="text-sm font-semibold text-slate-700">
+          {module.description}
         </div>
       </div>
 
