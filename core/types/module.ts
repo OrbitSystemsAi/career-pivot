@@ -11,6 +11,18 @@ export type ModuleView = {
   id: string;
 };
 
+export type ModulePanels = {
+  visualization: ComponentType;
+
+  utilityTop: ComponentType;
+  utilityMiddle: ComponentType;
+  utilityBottom: ComponentType;
+
+  bottomLeft: ComponentType;
+  bottomCenter: ComponentType;
+  bottomRight: ComponentType;
+};
+
 export type ModuleDefinition = {
   id: string;
   name: string;
@@ -21,15 +33,7 @@ export type ModuleDefinition = {
 
   views: ModuleView[];
 
-  panels: {
-    visualization: ComponentType;
+  panels: ModulePanels;
 
-    utilityTop: ComponentType;
-    utilityMiddle: ComponentType;
-    utilityBottom: ComponentType;
-
-    bottomLeft: ComponentType;
-    bottomCenter: ComponentType;
-    bottomRight: ComponentType;
-  };
+  viewPanels?: Record<string, Partial<ModulePanels>>;
 };
