@@ -8,12 +8,12 @@ The shell should remain consistent across the product. Modules supply content to
 
 ## 2. Architecture Layers
 
-Application
-Shell
-Frames
-Panels
-Components
-Modules
+Application  
+Shell  
+Frames  
+Panels  
+Components  
+Modules  
 
 ## 3. Definitions
 
@@ -148,7 +148,7 @@ Build in this order:
 
 The module registry is the source of truth for installed OSai modules.
 
-The shell should not hardcode module names, descriptions, icons, or panel assignments.
+The shell should not hardcode module names, descriptions, icons, metrics, views, or panel assignments.
 
 ### Registry Responsibilities
 
@@ -156,12 +156,16 @@ The shell should not hardcode module names, descriptions, icons, or panel assign
 - Define module labels
 - Define module descriptions
 - Define module icons
-- Define which component renders in each shell panel
+- Define module metrics
+- Define module views
+- Define default panel assignments
+- Define view-specific panel overrides
 
 ### Shell Responsibilities
 
 - Render the permanent layout
 - Read the active module
+- Read the active view
 - Load active module panels from the registry
 - Preserve consistent frame structure across modules
 
@@ -173,7 +177,33 @@ D3 Workspace Controls are view controls inside the active module.
 
 ### Panel Rule
 
-D3, D4, and D5 panels should render content from the active module.
+D3, D4, and D5 panels should render content from the active module and active view.
 
-The shell owns placement.
+The shell owns placement.  
 The module owns content.
+
+## 10. View Override Rule
+
+Each module has default panels.
+
+A module may optionally define view-specific panel overrides.
+
+Example:
+
+Career module default:
+
+- visualization: CareerGraph
+- bottomLeft: CareerStrengths
+- bottomCenter: CareerSuggestions
+- bottomRight: CareerWords
+
+Career module Market view override:
+
+- utilityTop: CareerMarketFilters
+- utilityMiddle: CareerMarketContext
+- utilityBottom: CareerMarketRanking
+- bottomLeft: CareerMarketDemand
+- bottomCenter: CareerMarketCompanies
+- bottomRight: CareerMarketActions
+
+This lets one module support multiple experiences without changing the shell.
