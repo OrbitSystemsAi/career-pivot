@@ -6,6 +6,11 @@ export type ModuleMetric = {
   change?: string;
 };
 
+export type ModuleView = {
+  label: string;
+  id: string;
+};
+
 export type ModuleDefinition = {
   id: string;
   name: string;
@@ -13,6 +18,8 @@ export type ModuleDefinition = {
   icon: string;
 
   metrics: ModuleMetric[];
+
+  views: ModuleView[];
 
   panels: {
     visualization: ComponentType;

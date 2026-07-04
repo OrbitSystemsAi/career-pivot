@@ -44,6 +44,13 @@ export const moduleRegistry = {
       { label: "Gaps", value: "7", change: "↓ -3" },
     ],
 
+    views: [
+      { label: "Overview", id: "overview" },
+      { label: "ATS", id: "ats" },
+      { label: "Keywords", id: "keywords" },
+      { label: "Versions", id: "versions" },
+    ],
+
     panels: {
       visualization: ResumeModule,
       utilityTop: ResumeFilters,
@@ -68,6 +75,13 @@ export const moduleRegistry = {
       { label: "Open Roles", value: "91", change: "↑ +4%" },
     ],
 
+    views: [
+      { label: "Graph", id: "graph" },
+      { label: "Timeline", id: "timeline" },
+      { label: "Market", id: "market" },
+      { label: "Skills", id: "skills" },
+    ],
+
     panels: {
       visualization: CareerGraph,
       utilityTop: CareerFilters,
@@ -90,6 +104,13 @@ export const moduleRegistry = {
       { label: "Warm Paths", value: "14", change: "↑ +6" },
       { label: "Recruiters", value: "37", change: "↑ +8" },
       { label: "Target Companies", value: "22", change: "↑ +5" },
+    ],
+
+    views: [
+      { label: "Map", id: "map" },
+      { label: "Companies", id: "companies" },
+      { label: "Recruiters", id: "recruiters" },
+      { label: "Outreach", id: "outreach" },
     ],
 
     panels: {
