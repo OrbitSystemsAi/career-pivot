@@ -1,0 +1,44 @@
+import type { ModuleDefinition } from "@/core/types/module";
+
+import {
+  ResumeModule,
+  ResumeFilters,
+  ResumeContext,
+  ResumeResults,
+  ResumeStrengths,
+  ResumeGaps,
+  ResumeActions,
+} from "@/modules/resume";
+
+export const resumeModule: ModuleDefinition = {
+  id: "resume",
+  name: "Resume",
+  description: "Resume Intelligence",
+  icon: "📄",
+
+  metrics: [
+    { label: "Resume Score", value: "84%", change: "↑ +12%" },
+    { label: "ATS Match", value: "76%", change: "↑ +9%" },
+    { label: "Keywords", value: "48", change: "↑ +5" },
+    { label: "Gaps", value: "7", change: "↓ -3" },
+  ],
+
+  views: [
+    { label: "Overview", id: "overview" },
+    { label: "ATS", id: "ats" },
+    { label: "Keywords", id: "keywords" },
+    { label: "Versions", id: "versions" },
+  ],
+
+  panels: {
+    visualization: ResumeModule,
+
+    utilityTop: ResumeFilters,
+    utilityMiddle: ResumeContext,
+    utilityBottom: ResumeResults,
+
+    bottomLeft: ResumeStrengths,
+    bottomCenter: ResumeGaps,
+    bottomRight: ResumeActions,
+  },
+};

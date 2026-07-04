@@ -2,208 +2,149 @@
 
 ## 1. Core Principle
 
-OSai is built as a stable application shell with modular content.
+OSai is built as a stable operating shell with installable modules.
 
-The shell should remain consistent across the product. Modules supply content to the shell without changing the shell structure.
+The shell controls structure.
+
+Modules control intelligence, views, data, and experiences.
+
+---
 
 ## 2. Architecture Layers
 
-Application  
-Shell  
-Frames  
-Panels  
-Components  
-Modules  
+Application
 
-## 3. Definitions
+↓  
 
-### Application
+Shell
 
-The complete OSai web application.
+↓  
 
-### Shell
+Frames
 
-The permanent application structure.
+↓  
 
-Includes:
+Panels
 
-- Global header
-- Navigation
-- Workspace
-- Utility panel
-- Bottom workspace
+↓  
 
-### Frames
+Modules
 
-Major layout regions inside the shell.
+↓  
 
-Desktop frames:
+Components
 
-- D1 Global Header Frame
-- D2 Navigation Frame
-- D3 Workspace Frame
-- D4 Utility Frame
-- D5 Bottom Workspace Frame
+↓  
 
-### Panels
+Data
 
-Subregions inside frames.
+↓  
 
-Example:
+AI
 
-- D3a Workspace Header Panel
-- D3b Workspace Controls Panel
-- D3c Visualization Panel
+---
 
-### Components
+## 3. Shell Responsibility
 
-Reusable UI elements.
+The shell owns:
 
-Examples:
+- Layout
+- Placement
+- Navigation regions
+- Responsive structure
 
-- Button
-- Card
-- Badge
-- Input
-- Tabs
-- Table
-- Graph container
+The shell does not know:
 
-### Modules
+- Module business logic
+- Module data
+- Module views
+- Module metrics
 
-Feature areas that provide content to panels.
-
-Examples:
-
-- Career Graph
-- Resume Intelligence
-- Opportunities
-- Network
-- Applications
-- Analytics
-- AI Coach
+---
 
 ## 4. Desktop Shell Structure
 
-D1 Global Header Frame
+### D1 Global Header
 
-D2 Navigation Frame
+Responsibilities:
 
-D3 Workspace Frame
+- Brand
+- Active module identity
+- Global actions
 
-- D3a Workspace Header Panel
-- D3b Workspace Controls Panel
-- D3c Visualization Panel
+---
 
-D4 Utility Frame
+### D2 Navigation
 
-- D4a Utility Top Panel
-- D4b Utility Middle Panel
-- D4c Utility Bottom Panel
+Responsibilities:
 
-D5 Bottom Workspace Frame
+- Module launcher
 
-- D5a Bottom Left Panel
-- D5b Bottom Center Panel
-- D5c Bottom Right Panel
+Examples:
 
-## 5. Mobile Shell Structure
+- Resume
+- Career
+- Network
 
-M1 Mobile Header Frame
+---
 
-M2 Mobile Page Header Frame
+### D3 Workspace
 
-M3 Mobile Workspace Frame
+Primary interaction area.
 
-M4 Mobile Bottom Sheet Frame
+Contains:
 
-M5 Mobile Navigation Frame
+- Workspace metrics
+- View controls
+- Visualization
 
-## 6. Module Rule
+Panels:
 
-Modules do not own the shell.
+- D3 Header Panel
+- D3 Controls Panel
+- D3 Visualization Panel
 
-Modules only provide content to shell panels.
+---
 
-## 7. Design Rule
+### D4 Utility Frame
 
-The layout should be consistent across modules.
+Context intelligence area.
 
-Users should learn the OSai interface once and reuse that mental model everywhere.
+Panels:
 
-## 8. Development Rule
+- Utility Top
+- Utility Middle
+- Utility Bottom
 
-Build in this order:
+Examples:
 
-1. Shell
-2. Frames
-3. Panels
-4. Components
-5. Modules
-6. Data
-7. AI
-8. Automation
+- Filters
+- Context
+- Results
 
-## 9. Module Registry Rule
+---
 
-The module registry is the source of truth for installed OSai modules.
+### D5 Bottom Workspace
 
-The shell should not hardcode module names, descriptions, icons, metrics, views, or panel assignments.
+Insight layer.
 
-### Registry Responsibilities
+Panels:
 
-- Define installed modules
-- Define module labels
-- Define module descriptions
-- Define module icons
-- Define module metrics
-- Define module views
-- Define default panel assignments
-- Define view-specific panel overrides
+- Bottom Left
+- Bottom Center
+- Bottom Right
 
-### Shell Responsibilities
+Examples:
 
-- Render the permanent layout
-- Read the active module
-- Read the active view
-- Load active module panels from the registry
-- Preserve consistent frame structure across modules
+- Strengths
+- Opportunities
+- Actions
 
-### Navigation Rule
+---
 
-D2 Navigation is the module launcher.
+# 5. Module Architecture
 
-D3 Workspace Controls are view controls inside the active module.
+Modules live in:
 
-### Panel Rule
-
-D3, D4, and D5 panels should render content from the active module and active view.
-
-The shell owns placement.  
-The module owns content.
-
-## 10. View Override Rule
-
-Each module has default panels.
-
-A module may optionally define view-specific panel overrides.
-
-Example:
-
-Career module default:
-
-- visualization: CareerGraph
-- bottomLeft: CareerStrengths
-- bottomCenter: CareerSuggestions
-- bottomRight: CareerWords
-
-Career module Market view override:
-
-- utilityTop: CareerMarketFilters
-- utilityMiddle: CareerMarketContext
-- utilityBottom: CareerMarketRanking
-- bottomLeft: CareerMarketDemand
-- bottomCenter: CareerMarketCompanies
-- bottomRight: CareerMarketActions
-
-This lets one module support multiple experiences without changing the shell.
+```text
+modules/
