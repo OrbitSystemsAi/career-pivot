@@ -1,6 +1,6 @@
 "use client";
 
-import { getActiveModule } from "@/core/modules/getActiveModule";
+import { getActiveModulePanels } from "@/core/modules/getActiveModulePanels";
 import { useActiveModule } from "@/core/state/ActiveModuleProvider";
 
 type Props = {
@@ -8,12 +8,12 @@ type Props = {
 };
 
 export default function D4UtilityFrame({ section }: Props) {
-  const { activeModule } = useActiveModule();
-  const module = getActiveModule(activeModule);
+  const { activeModule, activeView } = useActiveModule();
+  const { panels } = getActiveModulePanels(activeModule, activeView);
 
-  const UtilityTop = module.panels.utilityTop;
-  const UtilityMiddle = module.panels.utilityMiddle;
-  const UtilityBottom = module.panels.utilityBottom;
+  const UtilityTop = panels.utilityTop;
+  const UtilityMiddle = panels.utilityMiddle;
+  const UtilityBottom = panels.utilityBottom;
 
   if (section === "bottom") {
     return (
