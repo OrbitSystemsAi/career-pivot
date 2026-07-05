@@ -4,7 +4,7 @@ import { getActiveModule } from "@/core/moduleEngine/getActiveModule";
 import { useOSState } from "@/core/state/OSStateProvider";
 
 export default function D1GlobalHeaderFrame() {
-  const { activeModule } = useOSState();
+  const { activeModule, resetWorkspace } = useOSState();
   const module = getActiveModule(activeModule);
 
   return (
@@ -26,9 +26,18 @@ export default function D1GlobalHeaderFrame() {
         Search {module.name.toLowerCase()}...
       </div>
 
-      <button className="rounded-xl px-4 py-3 text-xs font-medium text-slate-500 hover:bg-blue-50 hover:text-blue-600">
-        AI Assistant
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={resetWorkspace}
+          className="rounded-xl px-4 py-3 text-xs font-medium text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+        >
+          Reset
+        </button>
+
+        <button className="rounded-xl px-4 py-3 text-xs font-medium text-slate-500 hover:bg-blue-50 hover:text-blue-600">
+          AI Assistant
+        </button>
+      </div>
     </header>
   );
 }

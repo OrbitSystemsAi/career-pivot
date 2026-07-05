@@ -8,6 +8,8 @@ type OSStateContextType = {
 
   activeView: string;
   setActiveView: (view: string) => void;
+
+  resetWorkspace: () => void;
 };
 
 const OSStateContext = createContext<OSStateContextType | null>(null);
@@ -52,6 +54,14 @@ export function OSStateProvider({
     window.localStorage.setItem(VIEW_STORAGE_KEY, view);
   }
 
+  function resetWorkspace() {
+    setActiveModuleState(DEFAULT_MODULE);
+    setActiveViewState(DEFAULT_VIEW);
+
+    window.localStorage.setItem(MODULE_STORAGE_KEY, DEFAULT_MODULE);
+    window.localStorage.setItem(VIEW_STORAGE_KEY, DEFAULT_VIEW);
+  }
+
   if (!hasLoadedStorage) {
     return null;
   }
@@ -63,6 +73,7 @@ export function OSStateProvider({
         setActiveModule,
         activeView,
         setActiveView,
+        resetWorkspace,
       }}
     >
       {children}
