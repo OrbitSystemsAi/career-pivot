@@ -2,6 +2,7 @@ import type { ModuleDefinition } from "@/core/types/module";
 
 import {
   ResumeModule,
+  ResumeDocument,
   ResumeFilters,
   ResumeContext,
   ResumeResults,
@@ -25,6 +26,7 @@ export const resumeModule: ModuleDefinition = {
 
   views: [
     { label: "Overview", id: "overview" },
+    { label: "Document", id: "document" },
     { label: "ATS", id: "ats" },
     { label: "Keywords", id: "keywords" },
     { label: "Versions", id: "versions" },
@@ -40,5 +42,11 @@ export const resumeModule: ModuleDefinition = {
     bottomLeft: ResumeStrengths,
     bottomCenter: ResumeGaps,
     bottomRight: ResumeActions,
+  },
+
+  viewPanels: {
+    document: {
+      visualization: ResumeDocument,
+    },
   },
 };
