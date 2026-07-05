@@ -2,6 +2,7 @@
 
 import { getActiveModulePanels } from "@/core/moduleEngine/getActiveModulePanels";
 import { useOSState } from "@/core/state/OSStateProvider";
+import D5BottomWorkspaceFrame from "../frames/D5BottomWorkspaceFrame";
 
 export default function D3VisualizationPanel() {
   const { activeModule, activeView } = useOSState();
@@ -13,10 +14,10 @@ export default function D3VisualizationPanel() {
     module.views.find((view) => view.id === activeView)?.label ?? "Overview";
 
   return (
-    <div className="relative flex flex-1 overflow-hidden bg-gradient-to-br from-white to-slate-50">
+    <div className="relative min-h-0 flex-1 overflow-hidden bg-gradient-to-br from-white to-slate-50">
       <Visualization />
 
-      <div className="absolute bottom-4 left-4 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
+      <div className="absolute bottom-20 left-4 z-30 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
         <div className="text-xs font-semibold uppercase tracking-wide text-blue-600">
           {module.description}
         </div>
@@ -25,6 +26,8 @@ export default function D3VisualizationPanel() {
           Active view: {activeViewLabel}
         </div>
       </div>
+
+      <D5BottomWorkspaceFrame />
     </div>
   );
 }

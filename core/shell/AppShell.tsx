@@ -2,7 +2,6 @@ import D1GlobalHeaderFrame from "./frames/D1GlobalHeaderFrame";
 import D2NavigationFrame from "./frames/D2NavigationFrame";
 import D3WorkspaceFrame from "./frames/D3WorkspaceFrame";
 import D4UtilityFrame from "./frames/D4UtilityFrame";
-import D5BottomWorkspaceFrame from "./frames/D5BottomWorkspaceFrame";
 
 export default function AppShell() {
   return (
@@ -12,11 +11,9 @@ export default function AppShell() {
       <div className="flex min-h-0 flex-1">
         <D2NavigationFrame />
 
-        <main className="grid min-h-0 flex-1 grid-cols-[1fr_24rem] grid-rows-[minmax(0,1fr)_14rem] gap-4 p-4">
+        <main className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_24rem] gap-4 p-4">
           <D3WorkspaceFrame />
-          <D4UtilityFrame section="top" />
-          <D5BottomWorkspaceFrame />
-          <D4UtilityFrame section="bottom" />
+          <D4UtilityFrame />
         </main>
       </div>
     </div>

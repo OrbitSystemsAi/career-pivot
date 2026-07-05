@@ -3,11 +3,7 @@
 import { getActiveModulePanels } from "@/core/moduleEngine/getActiveModulePanels";
 import { useOSState } from "@/core/state/OSStateProvider";
 
-type Props = {
-  section: "top" | "bottom";
-};
-
-export default function D4UtilityFrame({ section }: Props) {
+export default function D4UtilityFrame() {
   const { activeModule, activeView } = useOSState();
   const { panels } = getActiveModulePanels(activeModule, activeView);
 
@@ -15,20 +11,16 @@ export default function D4UtilityFrame({ section }: Props) {
   const UtilityMiddle = panels.utilityMiddle;
   const UtilityBottom = panels.utilityBottom;
 
-  if (section === "bottom") {
-    return (
-      <aside className="h-full min-h-0">
-        <UtilityBottom />
-      </aside>
-    );
-  }
-
   return (
-    <aside className="flex h-full min-h-0 flex-col gap-4">
+    <aside className="flex min-h-0 flex-col gap-4">
       <UtilityTop />
 
       <div className="min-h-0 flex-1">
         <UtilityMiddle />
+      </div>
+
+      <div className="h-56 shrink-0">
+        <UtilityBottom />
       </div>
     </aside>
   );
