@@ -1,7 +1,31 @@
+import ActionRow from "@/core/ui/ActionRow";
+import PanelCard from "@/core/ui/PanelCard";
+
+const results = [
+  {
+    label: "ATS Score",
+    value: "84%",
+  },
+  {
+    label: "Keyword Match",
+    value: "76%",
+  },
+  {
+    label: "Executive Alignment",
+    value: "High",
+  },
+];
+
 export default function ResumeResults() {
   return (
-    <div className="h-full rounded-2xl border border-slate-200 bg-white p-4">
-      <div className="text-xs font-medium text-slate-500">Resume Results</div>
-    </div>
+    <PanelCard title="Resume Results">
+      {results.map((item) => (
+        <ActionRow
+          key={item.label}
+          label={item.label}
+          value={item.value}
+        />
+      ))}
+    </PanelCard>
   );
 }

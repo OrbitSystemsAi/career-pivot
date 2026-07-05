@@ -1,7 +1,31 @@
+import ActionRow from "@/core/ui/ActionRow";
+import PanelCard from "@/core/ui/PanelCard";
+
+const context = [
+  {
+    label: "Target Role",
+    value: "Director+",
+  },
+  {
+    label: "Industry",
+    value: "Healthcare",
+  },
+  {
+    label: "Focus",
+    value: "AI",
+  },
+];
+
 export default function ResumeContext() {
   return (
-    <div className="h-full rounded-2xl border border-slate-200 bg-white p-4">
-      <div className="text-xs font-medium text-slate-500">Resume Context</div>
-    </div>
+    <PanelCard title="Resume Context">
+      {context.map((item) => (
+        <ActionRow
+          key={item.label}
+          label={item.label}
+          value={item.value}
+        />
+      ))}
+    </PanelCard>
   );
 }

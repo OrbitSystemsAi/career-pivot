@@ -1,7 +1,19 @@
+import ActionRow from "@/core/ui/ActionRow";
+import PanelCard from "@/core/ui/PanelCard";
+
+const filters = [
+  "Executive",
+  "AI Transformation",
+  "Remote",
+  "Healthcare",
+];
+
 export default function ResumeFilters() {
   return (
-    <div className="h-full rounded-2xl border border-slate-200 bg-white p-4">
-      <div className="text-xs font-medium text-slate-500">Resume Filters</div>
-    </div>
+    <PanelCard title="Resume Filters">
+      {filters.map((item) => (
+        <ActionRow key={item} label={item} />
+      ))}
+    </PanelCard>
   );
 }
