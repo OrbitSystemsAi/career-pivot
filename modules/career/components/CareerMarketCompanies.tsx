@@ -1,19 +1,31 @@
+import ActionRow from "@/core/ui/ActionRow";
+import PanelCard from "@/core/ui/PanelCard";
+
+const companies = [
+  {
+    label: "Microsoft",
+    value: "94%",
+  },
+  {
+    label: "Salesforce",
+    value: "91%",
+  },
+  {
+    label: "ServiceNow",
+    value: "88%",
+  },
+];
+
 export default function CareerMarketCompanies() {
   return (
-    <div className="h-full rounded-2xl border border-slate-200 bg-white p-4">
-      <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
-        Target Companies
-      </div>
-
-      {["UnitedHealth", "Humana", "Optum", "Salesforce Health"].map((item) => (
-        <button
-          key={item}
-          className="flex w-full justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-500 hover:bg-blue-50 hover:text-blue-600"
-        >
-          <span>{item}</span>
-          <span className="text-blue-600">View</span>
-        </button>
+    <PanelCard title="Target Companies">
+      {companies.map((company) => (
+        <ActionRow
+          key={company.label}
+          label={company.label}
+          value={company.value}
+        />
       ))}
-    </div>
+    </PanelCard>
   );
 }

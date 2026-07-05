@@ -1,21 +1,18 @@
-import { careerStrengths } from "../data/careerInsightData";
+import ActionRow from "@/core/ui/ActionRow";
+import PanelCard from "@/core/ui/PanelCard";
+
+const strengths = [
+  "Finance leadership",
+  "Business intelligence",
+  "Enterprise systems",
+];
 
 export default function CareerStrengths() {
   return (
-    <div className="h-full rounded-2xl border border-slate-200 bg-white p-4">
-      <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
-        Strengths
-      </div>
-
-      {careerStrengths.map((item) => (
-        <button
-          key={item.name}
-          className="flex w-full justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-500 hover:bg-blue-50 hover:text-blue-600"
-        >
-          <span>{item.name}</span>
-          <span className="text-emerald-600">{item.score}</span>
-        </button>
+    <PanelCard title="Strengths">
+      {strengths.map((item) => (
+        <ActionRow key={item} label={item} />
       ))}
-    </div>
+    </PanelCard>
   );
 }
