@@ -1,7 +1,31 @@
+import ActionRow from "@/core/ui/ActionRow";
+import PanelCard from "@/core/ui/PanelCard";
+
+const context = [
+  {
+    label: "LinkedIn Paths",
+    value: "14",
+  },
+  {
+    label: "Recruiters",
+    value: "37",
+  },
+  {
+    label: "Companies",
+    value: "22",
+  },
+];
+
 export default function NetworkContext() {
   return (
-    <div className="h-full rounded-2xl border border-slate-200 bg-white p-4">
-      <div className="text-xs font-medium text-slate-500">Network Context</div>
-    </div>
+    <PanelCard title="Network Context">
+      {context.map((item) => (
+        <ActionRow
+          key={item.label}
+          label={item.label}
+          value={item.value}
+        />
+      ))}
+    </PanelCard>
   );
 }

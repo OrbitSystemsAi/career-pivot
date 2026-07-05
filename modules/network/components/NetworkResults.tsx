@@ -1,7 +1,31 @@
+import ActionRow from "@/core/ui/ActionRow";
+import PanelCard from "@/core/ui/PanelCard";
+
+const results = [
+  {
+    label: "Warm Connections",
+    value: "14",
+  },
+  {
+    label: "Referral Paths",
+    value: "8",
+  },
+  {
+    label: "Outreach Ready",
+    value: "5",
+  },
+];
+
 export default function NetworkResults() {
   return (
-    <div className="h-full rounded-2xl border border-slate-200 bg-white p-4">
-      <div className="text-xs font-medium text-slate-500">Network Results</div>
-    </div>
+    <PanelCard title="Network Results">
+      {results.map((result) => (
+        <ActionRow
+          key={result.label}
+          label={result.label}
+          value={result.value}
+        />
+      ))}
+    </PanelCard>
   );
 }

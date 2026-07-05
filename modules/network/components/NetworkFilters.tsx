@@ -1,7 +1,31 @@
+import ActionRow from "@/core/ui/ActionRow";
+import PanelCard from "@/core/ui/PanelCard";
+
+const filters = [
+  {
+    label: "Relationship",
+    value: "Warm",
+  },
+  {
+    label: "Companies",
+    value: "Target",
+  },
+  {
+    label: "Recruiters",
+    value: "Active",
+  },
+];
+
 export default function NetworkFilters() {
   return (
-    <div className="h-full rounded-2xl border border-slate-200 bg-white p-4">
-      <div className="text-xs font-medium text-slate-500">Network Filters</div>
-    </div>
+    <PanelCard title="Network Filters">
+      {filters.map((filter) => (
+        <ActionRow
+          key={filter.label}
+          label={filter.label}
+          value={filter.value}
+        />
+      ))}
+    </PanelCard>
   );
 }
