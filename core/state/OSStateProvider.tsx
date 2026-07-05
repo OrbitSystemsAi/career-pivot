@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState } from "react";
 
-type ActiveModuleContextType = {
+type OSStateContextType = {
   activeModule: string;
   setActiveModule: (module: string) => void;
 
@@ -10,10 +10,9 @@ type ActiveModuleContextType = {
   setActiveView: (view: string) => void;
 };
 
-const ActiveModuleContext =
-  createContext<ActiveModuleContextType | null>(null);
+const OSStateContext = createContext<OSStateContextType | null>(null);
 
-export function ActiveModuleProvider({
+export function OSStateProvider({
   children,
 }: {
   children: React.ReactNode;
@@ -22,7 +21,7 @@ export function ActiveModuleProvider({
   const [activeView, setActiveView] = useState("graph");
 
   return (
-    <ActiveModuleContext.Provider
+    <OSStateContext.Provider
       value={{
         activeModule,
         setActiveModule,
@@ -31,17 +30,15 @@ export function ActiveModuleProvider({
       }}
     >
       {children}
-    </ActiveModuleContext.Provider>
+    </OSStateContext.Provider>
   );
 }
 
-export function useActiveModule() {
-  const context = useContext(ActiveModuleContext);
+export function useOSState() {
+  const context = useContext(OSStateContext);
 
   if (!context) {
-    throw new Error(
-      "useActiveModule must be used inside ActiveModuleProvider"
-    );
+    throw new Error("useOSState must be used inside OSStateProvider");
   }
 
   return context;

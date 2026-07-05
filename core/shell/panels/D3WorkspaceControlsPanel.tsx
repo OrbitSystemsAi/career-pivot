@@ -1,11 +1,11 @@
 "use client";
 
 import { getActiveModule } from "@/core/moduleEngine/getActiveModule";
-import { useActiveModule } from "@/core/state/ActiveModuleProvider";
+import { useOSState } from "@/core/state/OSStateProvider";
 import { useEffect } from "react";
 
 export default function D3WorkspaceControlsPanel() {
-  const { activeModule, activeView, setActiveView } = useActiveModule();
+  const { activeModule, activeView, setActiveView } = useOSState();
 
   const module = getActiveModule(activeModule);
 

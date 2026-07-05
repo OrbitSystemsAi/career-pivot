@@ -1,10 +1,10 @@
 "use client";
 
 import { moduleRegistry } from "@/core/registry/moduleRegistry";
-import { useActiveModule } from "@/core/state/ActiveModuleProvider";
+import { useOSState } from "@/core/state/OSStateProvider";
 
 export default function D2NavigationFrame() {
-  const { activeModule, setActiveModule } = useActiveModule();
+  const { activeModule, setActiveModule } = useOSState();
 
   return (
     <nav className="flex h-full w-24 flex-col items-center gap-3 border-r border-slate-200 bg-slate-50 py-5">

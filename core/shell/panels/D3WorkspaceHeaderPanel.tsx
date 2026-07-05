@@ -1,10 +1,10 @@
 "use client";
 
 import { getActiveModule } from "@/core/moduleEngine/getActiveModule";
-import { useActiveModule } from "@/core/state/ActiveModuleProvider";
+import { useOSState } from "@/core/state/OSStateProvider";
 
 export default function D3WorkspaceHeaderPanel() {
-  const { activeModule } = useActiveModule();
+  const { activeModule } = useOSState();
   const module = getActiveModule(activeModule);
   const metrics = module.metrics;
 

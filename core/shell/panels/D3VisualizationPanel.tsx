@@ -1,10 +1,10 @@
 "use client";
 
 import { getActiveModulePanels } from "@/core/moduleEngine/getActiveModulePanels";
-import { useActiveModule } from "@/core/state/ActiveModuleProvider";
+import { useOSState } from "@/core/state/OSStateProvider";
 
 export default function D3VisualizationPanel() {
-  const { activeModule, activeView } = useActiveModule();
+  const { activeModule, activeView } = useOSState();
   const { module, panels } = getActiveModulePanels(activeModule, activeView);
 
   const Visualization = panels.visualization;

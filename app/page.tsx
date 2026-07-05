@@ -1,10 +1,10 @@
 import AppShell from "@/core/shell/AppShell";
-import { ActiveModuleProvider } from "@/core/state/ActiveModuleProvider";
+import { OSStateProvider } from "@/core/state/OSStateProvider";
 
 export default function Home() {
   return (
-    <ActiveModuleProvider>
+    <OSStateProvider>
       <AppShell />
-    </ActiveModuleProvider>
+    </OSStateProvider>
   );
 }
