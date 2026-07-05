@@ -1,6 +1,6 @@
 "use client";
 
-import { getActiveModulePanels } from "@/core/modules/getActiveModulePanels";
+import { getActiveModulePanels } from "@/core/moduleEngine/getActiveModulePanels";
 import { useActiveModule } from "@/core/state/ActiveModuleProvider";
 
 export default function D5BottomRightPanel() {

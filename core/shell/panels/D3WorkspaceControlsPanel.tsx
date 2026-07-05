@@ -1,6 +1,6 @@
 "use client";
 
-import { getActiveModule } from "@/core/modules/getActiveModule";
+import { getActiveModule } from "@/core/moduleEngine/getActiveModule";
 import { useActiveModule } from "@/core/state/ActiveModuleProvider";
 import { useEffect } from "react";
 
