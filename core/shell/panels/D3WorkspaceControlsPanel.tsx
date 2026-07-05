@@ -10,8 +10,12 @@ export default function D3WorkspaceControlsPanel() {
   const module = getActiveModule(activeModule);
 
   useEffect(() => {
-    setActiveView(module.views[0]?.id);
-  }, [activeModule, module.views, setActiveView]);
+    const activeViewExists = module.views.some((view) => view.id === activeView);
+
+    if (!activeViewExists) {
+      setActiveView(module.views[0]?.id);
+    }
+  }, [activeModule, activeView, module.views, setActiveView]);
 
   return (
     <div className="relative flex h-14 items-center justify-center border-b border-slate-200">
