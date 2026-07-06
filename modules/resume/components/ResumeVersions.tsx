@@ -66,8 +66,12 @@ export default function ResumeVersions() {
           <ActionRow label="Compare Versions" action="Open" />
           <ActionRow label="Restore Selected" action="Restore" />
 
-          <button onClick={handleCreateAiVersion} className="w-full">
-            <ActionRow label="Create AI Version" action="Run" />
+          <button
+            onClick={handleCreateAiVersion}
+            className="flex w-full justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+          >
+            <span>Create AI Version</span>
+            <span className="text-blue-600">Run</span>
           </button>
 
           <ActionRow label="Export Current" action="Export" />
