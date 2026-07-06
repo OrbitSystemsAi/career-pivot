@@ -12,6 +12,12 @@ export type UserResume = {
   targetGoalId: string;
   targetJobTitle?: string;
   status: "draft" | "active" | "archived";
+  fileName?: string;
+  fileType?: string;
+  fileSize?: number;
+  source: "mock" | "upload" | "generated";
+  version: number;
+  createdDate: string;
 };
 
 export type ReviewerProfile = {

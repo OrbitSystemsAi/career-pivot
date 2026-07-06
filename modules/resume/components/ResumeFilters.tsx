@@ -1,8 +1,8 @@
 "use client";
 
-import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
 import { useUser } from "@/core/user/UserProvider";
+import ResumeUpload from "./ResumeUpload";
 
 export default function ResumeFilters() {
   const { user, activeResumeId, setActiveResumeId } = useUser();
@@ -23,16 +23,14 @@ export default function ResumeFilters() {
                   : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
               }`}
             >
-              <span>{resume.name}</span>
+              <span className="truncate pr-2">{resume.name}</span>
               <span>{resume.status}</span>
             </button>
           );
         })}
       </div>
 
-      <div className="mt-3 border-t border-slate-100 pt-3">
-        <ActionRow label="Upload new resume" action="Add" />
-      </div>
+      <ResumeUpload />
     </PanelCard>
   );
 }
