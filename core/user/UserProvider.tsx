@@ -53,12 +53,25 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
+    const normalizedUser: UserProfile = {
+      ...resolvedUser,
+      resumes: resolvedUser.resumes.map((resume) => ({
+        ...resume,
+        parseStatus:
+          resume.parseStatus ??
+          (resume.source === "mock" ? "mock" : "uploaded"),
+      })),
+    };
+
+    setUser(normalizedUser);
+    window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(normalizedUser));
+
     const fallbackResumeId =
-      resolvedUser.resumes.find((resume) => resume.status === "active")?.id ??
-      resolvedUser.resumes[0]?.id ??
+      normalizedUser.resumes.find((resume) => resume.status === "active")?.id ??
+      normalizedUser.resumes[0]?.id ??
       "";
 
-    const storedResumeExists = resolvedUser.resumes.some(
+    const storedResumeExists = normalizedUser.resumes.some(
       (resume) => resume.id === storedResumeId
     );
 
@@ -97,6 +110,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       source: "upload",
       version: 1,
       createdDate: new Date().toISOString(),
+      parseStatus: "uploaded",
     };
 
     const nextUser: UserProfile = {

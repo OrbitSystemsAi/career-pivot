@@ -6,6 +6,13 @@ export type UserGoal = {
   workPreference: "remote" | "hybrid" | "onsite" | "flexible";
 };
 
+export type ResumeParseStatus =
+  | "mock"
+  | "uploaded"
+  | "queued"
+  | "parsed"
+  | "needs_review";
+
 export type UserResume = {
   id: string;
   name: string;
@@ -18,6 +25,7 @@ export type UserResume = {
   source: "mock" | "upload" | "generated";
   version: number;
   createdDate: string;
+  parseStatus: ResumeParseStatus;
 };
 
 export type ReviewerProfile = {

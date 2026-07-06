@@ -1,29 +1,35 @@
+"use client";
+
 import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
 
-const results = [
+const actions = [
   {
-    label: "ATS Score",
-    value: "84%",
+    label: "Optimize Resume",
+    action: "Run",
   },
   {
-    label: "Keyword Match",
-    value: "76%",
+    label: "Request Peer Review",
+    action: "Request",
   },
   {
-    label: "Executive Alignment",
-    value: "High",
+    label: "Compare Versions",
+    action: "Open",
+  },
+  {
+    label: "Export Word",
+    action: "Export",
   },
 ];
 
 export default function ResumeResults() {
   return (
-    <PanelCard title="Resume Results">
-      {results.map((item) => (
+    <PanelCard title="Resume Actions">
+      {actions.map((item) => (
         <ActionRow
           key={item.label}
           label={item.label}
-          value={item.value}
+          action={item.action}
         />
       ))}
     </PanelCard>
