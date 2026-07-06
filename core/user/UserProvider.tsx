@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { mockUser } from "./mockUser";
 import type { UserProfile, UserResume } from "./userTypes";
 
@@ -21,12 +21,39 @@ type UserContextType = {
 
 const UserContext = createContext<UserContextType | null>(null);
 
+const ACTIVE_RESUME_STORAGE_KEY = "osai.activeResumeId";
+
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile>(mockUser);
-  const [activeResumeId, setActiveResumeId] = useState(
+
+  const defaultResumeId =
     mockUser.resumes.find((resume) => resume.status === "active")?.id ??
-      mockUser.resumes[0]?.id
-  );
+    mockUser.resumes[0]?.id ??
+    "";
+
+  const [activeResumeId, setActiveResumeIdState] = useState(defaultResumeId);
+  const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
+
+  useEffect(() => {
+    const storedResumeId = window.localStorage.getItem(
+      ACTIVE_RESUME_STORAGE_KEY
+    );
+
+    const storedResumeExists = mockUser.resumes.some(
+      (resume) => resume.id === storedResumeId
+    );
+
+    if (storedResumeId && storedResumeExists) {
+      setActiveResumeIdState(storedResumeId);
+    }
+
+    setHasLoadedStorage(true);
+  }, []);
+
+  function setActiveResumeId(resumeId: string) {
+    setActiveResumeIdState(resumeId);
+    window.localStorage.setItem(ACTIVE_RESUME_STORAGE_KEY, resumeId);
+  }
 
   function addResume(resume: AddResumeInput) {
     const defaultGoal = user.goals[0];
@@ -68,6 +95,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           : resume
       ),
     }));
+  }
+
+  if (!hasLoadedStorage) {
+    return null;
   }
 
   return (
