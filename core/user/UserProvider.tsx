@@ -13,8 +13,13 @@ type AddResumeInput = {
 
 type UserContextType = {
   user: UserProfile;
+
   activeResumeId: string;
   setActiveResumeId: (resumeId: string) => void;
+
+  compareVersionId: string;
+  setCompareVersionId: (versionId: string) => void;
+
   addResume: (resume: AddResumeInput) => void;
   removeResume: (resumeId: string) => void;
   updateResumeTargetGoal: (resumeId: string, goalId: string) => void;
@@ -26,6 +31,7 @@ const UserContext = createContext<UserContextType | null>(null);
 
 const USER_STORAGE_KEY = "osai.userProfile";
 const ACTIVE_RESUME_STORAGE_KEY = "osai.activeResumeId";
+const COMPARE_VERSION_STORAGE_KEY = "osai.compareVersionId";
 
 function normalizeResume(resume: UserResume): UserResume {
   const fallbackVersionId = `${resume.id}-v${resume.version ?? 1}`;
@@ -77,13 +83,28 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     mockUser.resumes[0]?.id ??
     "";
 
+  const defaultResume =
+    mockUser.resumes.find((resume) => resume.id === defaultResumeId) ??
+    mockUser.resumes[0];
+
+  const defaultCompareVersionId =
+    defaultResume?.versions.find((version) => !version.isCurrent)?.id ??
+    defaultResume?.versions[0]?.id ??
+    "";
+
   const [activeResumeId, setActiveResumeIdState] = useState(defaultResumeId);
+  const [compareVersionId, setCompareVersionIdState] = useState(
+    defaultCompareVersionId
+  );
   const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
 
   useEffect(() => {
     const storedUser = window.localStorage.getItem(USER_STORAGE_KEY);
     const storedResumeId = window.localStorage.getItem(
       ACTIVE_RESUME_STORAGE_KEY
+    );
+    const storedCompareVersionId = window.localStorage.getItem(
+      COMPARE_VERSION_STORAGE_KEY
     );
 
     let resolvedUser = mockUser;
@@ -110,11 +131,35 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       (resume) => resume.id === storedResumeId
     );
 
-    if (storedResumeId && storedResumeExists) {
-      setActiveResumeIdState(storedResumeId);
+    const resolvedResumeId =
+      storedResumeId && storedResumeExists ? storedResumeId : fallbackResumeId;
+
+    const resolvedResume =
+      normalizedUser.resumes.find((resume) => resume.id === resolvedResumeId) ??
+      normalizedUser.resumes[0];
+
+    const fallbackCompareVersionId =
+      resolvedResume?.versions.find(
+        (version) => version.id !== resolvedResume.currentVersionId
+      )?.id ??
+      resolvedResume?.versions[0]?.id ??
+      "";
+
+    const storedCompareVersionExists = resolvedResume?.versions.some(
+      (version) => version.id === storedCompareVersionId
+    );
+
+    setActiveResumeIdState(resolvedResumeId);
+    window.localStorage.setItem(ACTIVE_RESUME_STORAGE_KEY, resolvedResumeId);
+
+    if (storedCompareVersionId && storedCompareVersionExists) {
+      setCompareVersionIdState(storedCompareVersionId);
     } else {
-      setActiveResumeIdState(fallbackResumeId);
-      window.localStorage.setItem(ACTIVE_RESUME_STORAGE_KEY, fallbackResumeId);
+      setCompareVersionIdState(fallbackCompareVersionId);
+      window.localStorage.setItem(
+        COMPARE_VERSION_STORAGE_KEY,
+        fallbackCompareVersionId
+      );
     }
 
     setHasLoadedStorage(true);
@@ -128,8 +173,28 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }
 
   function setActiveResumeId(resumeId: string) {
+    const nextResume = user.resumes.find((resume) => resume.id === resumeId);
+
+    const nextCompareVersionId =
+      nextResume?.versions.find(
+        (version) => version.id !== nextResume.currentVersionId
+      )?.id ??
+      nextResume?.versions[0]?.id ??
+      "";
+
     setActiveResumeIdState(resumeId);
+    setCompareVersionIdState(nextCompareVersionId);
+
     window.localStorage.setItem(ACTIVE_RESUME_STORAGE_KEY, resumeId);
+    window.localStorage.setItem(
+      COMPARE_VERSION_STORAGE_KEY,
+      nextCompareVersionId
+    );
+  }
+
+  function setCompareVersionId(versionId: string) {
+    setCompareVersionIdState(versionId);
+    window.localStorage.setItem(COMPARE_VERSION_STORAGE_KEY, versionId);
   }
 
   function addResume(resume: AddResumeInput) {
@@ -212,6 +277,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   function createResumeVersion(resumeId: string, label: string) {
     const createdDate = new Date().toISOString();
+    let createdVersionId = "";
 
     const nextUser: UserProfile = {
       ...user,
@@ -222,6 +288,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
         const nextVersionNumber = resume.versions.length + 1;
         const newVersionId = `${resume.id}-v${nextVersionNumber}-${Date.now()}`;
+        createdVersionId = newVersionId;
 
         const newVersion: ResumeVersion = {
           id: newVersionId,
@@ -247,6 +314,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     };
 
     persistUser(nextUser);
+
+    if (createdVersionId) {
+      setCompareVersionId(createdVersionId);
+    }
   }
 
   function restoreResumeVersion(resumeId: string, versionId: string) {
@@ -281,6 +352,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         user,
         activeResumeId,
         setActiveResumeId,
+        compareVersionId,
+        setCompareVersionId,
         addResume,
         removeResume,
         updateResumeTargetGoal,

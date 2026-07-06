@@ -13,7 +13,7 @@ function formatDate(value: string) {
 }
 
 export default function ResumeVersionCompare() {
-  const { user, activeResumeId } = useUser();
+  const { user, activeResumeId, compareVersionId } = useUser();
 
   const activeResume =
     user.resumes.find((resume) => resume.id === activeResumeId) ??
@@ -33,9 +33,9 @@ export default function ResumeVersionCompare() {
     ) ?? activeResume.versions[0];
 
   const comparisonVersion =
-    activeResume.versions
-      .filter((version) => version.id !== currentVersion?.id)
-      .at(-1) ?? activeResume.versions[0];
+    activeResume.versions.find((version) => version.id === compareVersionId) ??
+    activeResume.versions.find((version) => version.id !== currentVersion?.id) ??
+    activeResume.versions[0];
 
   return (
     <div className="h-full w-full overflow-auto">
@@ -64,7 +64,7 @@ export default function ResumeVersionCompare() {
           </div>
         </PanelCard>
 
-        <PanelCard title="Compare Against">
+        <PanelCard title="Selected Comparison">
           <div className="rounded-xl border border-slate-200 bg-white p-4 text-xs text-slate-500">
             <div className="font-semibold text-slate-700">
               {comparisonVersion?.label}
