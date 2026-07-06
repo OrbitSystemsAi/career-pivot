@@ -31,7 +31,7 @@ const missingKeywords = [
 ];
 
 export default function ResumeATS() {
-  const { user, activeResumeId } = useUser();
+  const { user, activeResumeId, optimizeResume } = useUser();
 
   const activeResume =
     user.resumes.find((resume) => resume.id === activeResumeId) ??
@@ -40,6 +40,14 @@ export default function ResumeATS() {
   const targetGoal = user.goals.find(
     (goal) => goal.id === activeResume?.targetGoalId
   );
+
+  function handleOptimizeATS() {
+    if (!activeResume) {
+      return;
+    }
+
+    optimizeResume(activeResume.id, "ats");
+  }
 
   return (
     <div className="h-full w-full overflow-auto">
@@ -84,6 +92,14 @@ export default function ResumeATS() {
           <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
             ATS optimization should improve alignment without keyword stuffing
             or changing the truth of the resume.
+          </div>
+
+          <div className="mt-4">
+            <ActionRow
+              label="Create ATS Optimized Version"
+              action="Run"
+              onClick={handleOptimizeATS}
+            />
           </div>
         </PanelCard>
       </div>

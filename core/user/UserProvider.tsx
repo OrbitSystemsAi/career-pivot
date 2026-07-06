@@ -11,6 +11,12 @@ type AddResumeInput = {
   fileSize: number;
 };
 
+type ResumeOptimizationType =
+  | "ats"
+  | "keywords"
+  | "target_role"
+  | "full_rewrite";
+
 type UserContextType = {
   user: UserProfile;
 
@@ -25,6 +31,10 @@ type UserContextType = {
   updateResumeTargetGoal: (resumeId: string, goalId: string) => void;
   createResumeVersion: (resumeId: string, label: string) => void;
   restoreResumeVersion: (resumeId: string, versionId: string) => void;
+  optimizeResume: (
+    resumeId: string,
+    optimizationType: ResumeOptimizationType
+  ) => void;
 };
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -73,6 +83,25 @@ function normalizeUser(user: UserProfile): UserProfile {
     ...user,
     resumes: user.resumes.map((resume) => normalizeResume(resume)),
   };
+}
+
+function getOptimizationLabel(
+  optimizationType: ResumeOptimizationType,
+  targetRole?: string
+) {
+  if (optimizationType === "ats") {
+    return "ATS Optimized Version";
+  }
+
+  if (optimizationType === "keywords") {
+    return "Keyword Optimized Version";
+  }
+
+  if (optimizationType === "target_role") {
+    return `${targetRole ?? "Target Role"} Optimized Version`;
+  }
+
+  return "Full AI Rewrite Version";
 }
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
@@ -342,6 +371,21 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     persistUser(nextUser);
   }
 
+  function optimizeResume(
+    resumeId: string,
+    optimizationType: ResumeOptimizationType
+  ) {
+    const resume = user.resumes.find((item) => item.id === resumeId);
+    const targetGoal = user.goals.find(
+      (goal) => goal.id === resume?.targetGoalId
+    );
+
+    createResumeVersion(
+      resumeId,
+      getOptimizationLabel(optimizationType, targetGoal?.title)
+    );
+  }
+
   if (!hasLoadedStorage) {
     return null;
   }
@@ -359,6 +403,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         updateResumeTargetGoal,
         createResumeVersion,
         restoreResumeVersion,
+        optimizeResume,
       }}
     >
       {children}

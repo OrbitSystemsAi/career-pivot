@@ -43,7 +43,7 @@ const missingKeywords = [
 ];
 
 export default function ResumeKeywords() {
-  const { user, activeResumeId } = useUser();
+  const { user, activeResumeId, optimizeResume } = useUser();
 
   const activeResume =
     user.resumes.find((resume) => resume.id === activeResumeId) ??
@@ -53,12 +53,21 @@ export default function ResumeKeywords() {
     (goal) => goal.id === activeResume?.targetGoalId
   );
 
+  function handleOptimizeKeywords() {
+    if (!activeResume) {
+      return;
+    }
+
+    optimizeResume(activeResume.id, "keywords");
+  }
+
   return (
     <div className="h-full w-full overflow-auto">
       <div className="grid h-full min-h-[520px] grid-cols-2 gap-4">
         <PanelCard title="Detected Keywords">
           <div className="mb-3 text-xs leading-5 text-slate-500">
-            Keywords currently supported by {activeResume?.name ?? "the selected resume"}.
+            Keywords currently supported by{" "}
+            {activeResume?.name ?? "the selected resume"}.
           </div>
 
           <div className="space-y-1">
@@ -90,6 +99,14 @@ export default function ResumeKeywords() {
           <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
             Add keywords only when they are supported by real experience,
             projects, achievements, or measurable outcomes.
+          </div>
+
+          <div className="mt-4">
+            <ActionRow
+              label="Create Keyword Optimized Version"
+              action="Run"
+              onClick={handleOptimizeKeywords}
+            />
           </div>
         </PanelCard>
       </div>
