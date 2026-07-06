@@ -6,6 +6,7 @@ import {
   ResumeVersions,
   ResumeVersionCompare,
   ResumeATS,
+  ResumeKeywords,
   ResumeFilters,
   ResumeContext,
   ResumeResults,
@@ -55,6 +56,10 @@ export const resumeModule: ModuleDefinition = {
 
     ats: {
       visualization: ResumeATS,
+    },
+
+    keywords: {
+      visualization: ResumeKeywords,
     },
 
     versions: {
