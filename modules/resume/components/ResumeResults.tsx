@@ -1,49 +1,64 @@
 "use client";
 
-import { useState } from "react";
 import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
-import ResumePeerReview from "./ResumePeerReview";
-
-const actions = [
-  {
-    label: "Optimize Resume",
-    action: "Run",
-  },
-  {
-    label: "Compare Versions",
-    action: "Open",
-  },
-  {
-    label: "Export Word",
-    action: "Export",
-  },
-];
+import { useOSState } from "@/core/state/OSStateProvider";
+import { useUser } from "@/core/user/UserProvider";
 
 export default function ResumeResults() {
-  const [showPeerReview, setShowPeerReview] = useState(false);
+  const { setActiveView } = useOSState();
 
-  if (showPeerReview) {
-    return <ResumePeerReview />;
+  const {
+    user,
+    activeResumeId,
+    optimizeResume,
+  } = useUser();
+
+  const activeResume =
+    user.resumes.find((resume) => resume.id === activeResumeId) ??
+    user.resumes[0];
+
+  function handleFullRewrite() {
+    if (!activeResume) {
+      return;
+    }
+
+    optimizeResume(activeResume.id, "full_rewrite");
+    setActiveView("versions");
+  }
+
+  function handleViewVersions() {
+    setActiveView("versions");
+  }
+
+  function handleViewDocument() {
+    setActiveView("document");
   }
 
   return (
     <PanelCard title="Resume Actions">
-      {actions.map((item) => (
-        <ActionRow
-          key={item.label}
-          label={item.label}
-          action={item.action}
-        />
-      ))}
+      <ActionRow
+        label="AI Full Rewrite"
+        action="Run"
+        onClick={handleFullRewrite}
+      />
 
-      <button
-        onClick={() => setShowPeerReview(true)}
-        className="flex w-full justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-500 hover:bg-blue-50 hover:text-blue-600"
-      >
-        <span>Request Peer Review</span>
-        <span className="text-blue-600">Request</span>
-      </button>
+      <ActionRow
+        label="View Versions"
+        action="Open"
+        onClick={handleViewVersions}
+      />
+
+      <ActionRow
+        label="View Document"
+        action="Open"
+        onClick={handleViewDocument}
+      />
+
+      <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
+        AI rewrites create a new resume version. Your existing resume history is
+        preserved.
+      </div>
     </PanelCard>
   );
 }
