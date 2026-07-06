@@ -10,6 +10,11 @@ export default function ResumeDocument() {
     user.resumes.find((resume) => resume.id === activeResumeId) ??
     user.resumes[0];
 
+  const activeVersion =
+    activeResume?.versions.find(
+      (version) => version.id === activeResume.currentVersionId
+    ) ?? activeResume?.versions[0];
+
   const targetGoal = user.goals.find(
     (goal) => goal.id === activeResume?.targetGoalId
   );
@@ -20,24 +25,26 @@ export default function ResumeDocument() {
 
   const documentContent =
     savedDocumentContent ?? {
-      summary: `Uploaded resume file "${
-        activeResume?.fileName ?? activeResume?.name
-      }" has been added to the resume library. Full parsing will be connected later. For now, OSai is using the user's profile, skills, and selected target goal to create a working document preview.`,
+      summary: `This document represents ${
+        activeVersion?.label ?? "the selected version"
+      }. OSai will connect parsed resume content and AI generated versions here.`,
+
       highlights: [
         {
-          title: "Uploaded Resume Intake",
+          title: "Version Controlled Resume",
           description:
-            "The resume has been captured as a new resume profile and can now be selected from the Resume Library.",
+            "Each optimization creates a new resume version while preserving previous versions.",
         },
         {
-          title: "Profile-Based Preview",
-          description:
-            "The document preview is currently generated from the user profile, active resume metadata, skills, and target career goal.",
+          title: "Current Version",
+          description: `You are viewing ${
+            activeVersion?.label ?? "the active version"
+          }.`,
         },
         {
-          title: "Future Parser Connection",
+          title: "Target Alignment",
           description:
-            "A backend parser will later extract work history, education, skills, certifications, and achievements directly from the uploaded file.",
+            "Resume content adapts based on the selected target role and career goal.",
         },
       ],
     };
@@ -46,12 +53,21 @@ export default function ResumeDocument() {
     <div className="h-full w-full overflow-auto">
       <div className="min-h-full w-full rounded-2xl border border-slate-200 bg-white px-12 py-10 shadow-sm">
         <div className="border-b border-slate-200 pb-5">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            {user.name}
-          </h1>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+                {user.name}
+              </h1>
 
-          <div className="mt-2 text-sm text-slate-500">
-            {user.location} · {user.currentTitle} · {user.currentIndustry}
+              <div className="mt-2 text-sm text-slate-500">
+                {user.location} · {user.currentTitle} ·{" "}
+                {user.currentIndustry}
+              </div>
+            </div>
+
+            <div className="rounded-full bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-600">
+              {activeVersion?.label}
+            </div>
           </div>
 
           <div className="mt-4 text-sm font-semibold text-blue-600">
@@ -105,36 +121,20 @@ export default function ResumeDocument() {
 
         <section className="mt-6">
           <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">
-            Resume Version
+            Version Details
           </h2>
 
           <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
             <div>
-              <strong>Name:</strong> {activeResume?.name}
+              <strong>Resume:</strong> {activeResume?.name}
             </div>
 
             <div className="mt-1">
-              <strong>Status:</strong> {activeResume?.status}
+              <strong>Current Version:</strong> {activeVersion?.label}
             </div>
 
             <div className="mt-1">
-              <strong>Source:</strong> {activeResume?.source}
-            </div>
-
-            {activeResume?.fileName && (
-              <div className="mt-1">
-                <strong>File:</strong> {activeResume.fileName}
-              </div>
-            )}
-
-            <div className="mt-1">
-              <strong>Target Role:</strong>{" "}
-              {targetGoal?.title ?? activeResume?.targetJobTitle}
-            </div>
-
-            <div className="mt-1">
-              <strong>Target Industry:</strong>{" "}
-              {targetGoal?.industry ?? "Not selected"}
+              <strong>Version Source:</strong> {activeVersion?.source}
             </div>
           </div>
         </section>
