@@ -20,7 +20,9 @@ export default function ResumeDocument() {
 
   const documentContent =
     savedDocumentContent ?? {
-      summary: `Uploaded resume file "${activeResume?.fileName ?? activeResume?.name}" has been added to the resume library. Full parsing will be connected later. For now, OSai is using the user's profile, skills, and selected target goal to create a working document preview.`,
+      summary: `Uploaded resume file "${
+        activeResume?.fileName ?? activeResume?.name
+      }" has been added to the resume library. Full parsing will be connected later. For now, OSai is using the user's profile, skills, and selected target goal to create a working document preview.`,
       highlights: [
         {
           title: "Uploaded Resume Intake",
@@ -41,8 +43,8 @@ export default function ResumeDocument() {
     };
 
   return (
-    <div className="flex h-full w-full justify-center overflow-auto bg-slate-100 px-8 py-8">
-      <div className="min-h-[980px] w-full max-w-[760px] rounded-sm border border-slate-200 bg-white px-12 py-10 shadow-lg">
+    <div className="h-full w-full overflow-auto">
+      <div className="min-h-full w-full rounded-2xl border border-slate-200 bg-white px-12 py-10 shadow-sm">
         <div className="border-b border-slate-200 pb-5">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             {user.name}

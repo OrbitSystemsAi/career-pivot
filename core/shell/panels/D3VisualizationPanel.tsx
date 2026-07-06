@@ -14,20 +14,22 @@ export default function D3VisualizationPanel() {
     module.views.find((view) => view.id === activeView)?.label ?? "Overview";
 
   return (
-    <div className="relative min-h-0 flex-1 overflow-hidden bg-gradient-to-br from-white to-slate-50">
-      <Visualization />
+    <div className="relative min-h-0 flex-1 overflow-hidden bg-slate-100 py-4">
+      <div className="relative h-full min-h-0 overflow-hidden">
+        <Visualization />
 
-      <div className="absolute bottom-20 left-4 z-30 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
-        <div className="text-xs font-semibold uppercase tracking-wide text-blue-600">
-          {module.description}
+        <div className="absolute bottom-20 left-4 z-30 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
+          <div className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+            {module.description}
+          </div>
+
+          <div className="mt-2 text-xs text-slate-500">
+            Active view: {activeViewLabel}
+          </div>
         </div>
 
-        <div className="mt-2 text-xs text-slate-500">
-          Active view: {activeViewLabel}
-        </div>
+        <D5BottomWorkspaceFrame />
       </div>
-
-      <D5BottomWorkspaceFrame />
     </div>
   );
 }

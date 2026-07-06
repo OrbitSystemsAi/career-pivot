@@ -16,6 +16,7 @@ type UserContextType = {
   activeResumeId: string;
   setActiveResumeId: (resumeId: string) => void;
   addResume: (resume: AddResumeInput) => void;
+  removeResume: (resumeId: string) => void;
   updateResumeTargetGoal: (resumeId: string, goalId: string) => void;
 };
 
@@ -122,6 +123,25 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setActiveResumeId(newResume.id);
   }
 
+  function removeResume(resumeId: string) {
+    const nextResumes = user.resumes.filter((resume) => resume.id !== resumeId);
+
+    const nextUser: UserProfile = {
+      ...user,
+      resumes: nextResumes,
+    };
+
+    const nextActiveResumeId =
+      activeResumeId === resumeId
+        ? nextResumes.find((resume) => resume.status === "active")?.id ??
+          nextResumes[0]?.id ??
+          ""
+        : activeResumeId;
+
+    persistUser(nextUser);
+    setActiveResumeId(nextActiveResumeId);
+  }
+
   function updateResumeTargetGoal(resumeId: string, goalId: string) {
     const targetGoal = user.goals.find((goal) => goal.id === goalId);
 
@@ -152,6 +172,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         activeResumeId,
         setActiveResumeId,
         addResume,
+        removeResume,
         updateResumeTargetGoal,
       }}
     >
