@@ -267,6 +267,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }
 
   function removeResume(resumeId: string) {
+    const resumeToRemove = user.resumes.find((resume) => resume.id === resumeId);
+
+    if (!resumeToRemove || resumeToRemove.source !== "upload") {
+      return;
+    }
+
     const nextResumes = user.resumes.filter((resume) => resume.id !== resumeId);
 
     const nextUser: UserProfile = {

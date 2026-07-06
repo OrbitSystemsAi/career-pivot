@@ -12,6 +12,7 @@ export default function ResumeFilters() {
       <div className="flex flex-col gap-1">
         {user.resumes.map((resume) => {
           const selected = resume.id === activeResumeId;
+          const canRemove = resume.source === "upload";
 
           return (
             <div
@@ -29,14 +30,20 @@ export default function ResumeFilters() {
                 {resume.name}
               </button>
 
-              <span className="text-slate-400">{resume.status}</span>
+              <span className="text-slate-400">
+                {resume.source === "upload" ? "upload" : resume.status}
+              </span>
 
-              <button
-                onClick={() => removeResume(resume.id)}
-                className="text-slate-400 hover:text-red-500"
-              >
-                Remove
-              </button>
+              {canRemove ? (
+                <button
+                  onClick={() => removeResume(resume.id)}
+                  className="text-slate-400 hover:text-red-500"
+                >
+                  Remove
+                </button>
+              ) : (
+                <span className="text-slate-300">Base</span>
+              )}
             </div>
           );
         })}
