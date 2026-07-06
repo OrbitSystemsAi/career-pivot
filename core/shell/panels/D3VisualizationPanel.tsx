@@ -2,13 +2,11 @@
 
 import { getActiveModulePanels } from "@/core/moduleEngine/getActiveModulePanels";
 import { useOSState } from "@/core/state/OSStateProvider";
-import { useState } from "react";
 import D5BottomWorkspaceFrame from "../frames/D5BottomWorkspaceFrame";
 
 export default function D3VisualizationPanel() {
-  const { activeModule, activeView } = useOSState();
+  const { activeModule, activeView, isD5Open, setIsD5Open } = useOSState();
   const { panels } = getActiveModulePanels(activeModule, activeView);
-  const [isD5Open, setIsD5Open] = useState(false);
 
   const Visualization = panels.visualization;
 
@@ -24,7 +22,7 @@ export default function D3VisualizationPanel() {
 
       <D5BottomWorkspaceFrame
         isOpen={isD5Open}
-        onToggle={() => setIsD5Open((current) => !current)}
+        onToggle={() => setIsD5Open(!isD5Open)}
       />
     </div>
   );
