@@ -21,6 +21,7 @@ type UserContextType = {
 
 const UserContext = createContext<UserContextType | null>(null);
 
+const USER_STORAGE_KEY = "osai.userProfile";
 const ACTIVE_RESUME_STORAGE_KEY = "osai.activeResumeId";
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
@@ -35,20 +36,46 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
 
   useEffect(() => {
+    const storedUser = window.localStorage.getItem(USER_STORAGE_KEY);
     const storedResumeId = window.localStorage.getItem(
       ACTIVE_RESUME_STORAGE_KEY
     );
 
-    const storedResumeExists = mockUser.resumes.some(
+    let resolvedUser = mockUser;
+
+    if (storedUser) {
+      try {
+        resolvedUser = JSON.parse(storedUser) as UserProfile;
+        setUser(resolvedUser);
+      } catch {
+        resolvedUser = mockUser;
+        setUser(mockUser);
+      }
+    }
+
+    const fallbackResumeId =
+      resolvedUser.resumes.find((resume) => resume.status === "active")?.id ??
+      resolvedUser.resumes[0]?.id ??
+      "";
+
+    const storedResumeExists = resolvedUser.resumes.some(
       (resume) => resume.id === storedResumeId
     );
 
     if (storedResumeId && storedResumeExists) {
       setActiveResumeIdState(storedResumeId);
+    } else {
+      setActiveResumeIdState(fallbackResumeId);
+      window.localStorage.setItem(ACTIVE_RESUME_STORAGE_KEY, fallbackResumeId);
     }
 
     setHasLoadedStorage(true);
   }, []);
+
+  function persistUser(nextUser: UserProfile) {
+    setUser(nextUser);
+    window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(nextUser));
+  }
 
   function setActiveResumeId(resumeId: string) {
     setActiveResumeIdState(resumeId);
@@ -72,20 +99,21 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       createdDate: new Date().toISOString(),
     };
 
-    setUser((currentUser) => ({
-      ...currentUser,
-      resumes: [...currentUser.resumes, newResume],
-    }));
+    const nextUser: UserProfile = {
+      ...user,
+      resumes: [...user.resumes, newResume],
+    };
 
+    persistUser(nextUser);
     setActiveResumeId(newResume.id);
   }
 
   function updateResumeTargetGoal(resumeId: string, goalId: string) {
     const targetGoal = user.goals.find((goal) => goal.id === goalId);
 
-    setUser((currentUser) => ({
-      ...currentUser,
-      resumes: currentUser.resumes.map((resume) =>
+    const nextUser: UserProfile = {
+      ...user,
+      resumes: user.resumes.map((resume) =>
         resume.id === resumeId
           ? {
               ...resume,
@@ -94,7 +122,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             }
           : resume
       ),
-    }));
+    };
+
+    persistUser(nextUser);
   }
 
   if (!hasLoadedStorage) {
