@@ -1,6 +1,7 @@
 "use client";
 
 import { useUser } from "@/core/user/UserProvider";
+import { resumeDocumentData } from "../data/resumeDocumentData";
 
 export default function ResumeDocument() {
   const { user, activeResumeId } = useUser();
@@ -12,6 +13,10 @@ export default function ResumeDocument() {
   const targetGoal = user.goals.find(
     (goal) => goal.id === activeResume?.targetGoalId
   );
+
+  const documentContent =
+    resumeDocumentData.find((item) => item.resumeId === activeResume?.id) ??
+    resumeDocumentData[0];
 
   return (
     <div className="flex h-full w-full justify-center overflow-auto bg-slate-100 px-8 py-8">
@@ -36,11 +41,7 @@ export default function ResumeDocument() {
           </h2>
 
           <p className="mt-3 text-sm leading-7 text-slate-700">
-            Senior transformation and finance leader with experience across
-            business intelligence, executive reporting, automation, financial
-            systems, and operational strategy. Positioned for{" "}
-            {targetGoal?.industry ?? "target industry"} leadership roles focused
-            on AI-enabled enterprise transformation.
+            {documentContent.summary}
           </p>
         </section>
 
@@ -67,30 +68,14 @@ export default function ResumeDocument() {
           </h2>
 
           <div className="mt-3 space-y-3 text-sm leading-6 text-slate-700">
-            <p>
-              <strong className="text-slate-900">
-                Enterprise Transformation Leadership —
-              </strong>{" "}
-              Led cross-functional initiatives connecting finance, operations,
-              data, and technology teams to improve decision-making and
-              reporting quality.
-            </p>
-
-            <p>
-              <strong className="text-slate-900">
-                Business Intelligence & Analytics —
-              </strong>{" "}
-              Built reporting and analytical models that improved visibility
-              into performance, revenue, operations, and executive KPIs.
-            </p>
-
-            <p>
-              <strong className="text-slate-900">
-                AI & Automation Positioning —
-              </strong>{" "}
-              Developed automation-oriented workflows and data processes that
-              support scalable digital transformation.
-            </p>
+            {documentContent.highlights.map((highlight) => (
+              <p key={highlight.title}>
+                <strong className="text-slate-900">
+                  {highlight.title} —
+                </strong>{" "}
+                {highlight.description}
+              </p>
+            ))}
           </div>
         </section>
 
