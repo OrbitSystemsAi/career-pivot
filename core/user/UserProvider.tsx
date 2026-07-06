@@ -16,6 +16,7 @@ type UserContextType = {
   activeResumeId: string;
   setActiveResumeId: (resumeId: string) => void;
   addResume: (resume: AddResumeInput) => void;
+  updateResumeTargetGoal: (resumeId: string, goalId: string) => void;
 };
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -28,11 +29,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   );
 
   function addResume(resume: AddResumeInput) {
+    const defaultGoal = user.goals[0];
+
     const newResume: UserResume = {
       id: `resume-${Date.now()}`,
       name: resume.name,
-      targetGoalId: user.goals[0]?.id ?? "",
-      targetJobTitle: user.goals[0]?.title,
+      targetGoalId: defaultGoal?.id ?? "",
+      targetJobTitle: defaultGoal?.title,
       status: "draft",
       fileName: resume.fileName,
       fileType: resume.fileType,
@@ -50,6 +53,23 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setActiveResumeId(newResume.id);
   }
 
+  function updateResumeTargetGoal(resumeId: string, goalId: string) {
+    const targetGoal = user.goals.find((goal) => goal.id === goalId);
+
+    setUser((currentUser) => ({
+      ...currentUser,
+      resumes: currentUser.resumes.map((resume) =>
+        resume.id === resumeId
+          ? {
+              ...resume,
+              targetGoalId: goalId,
+              targetJobTitle: targetGoal?.title ?? resume.targetJobTitle,
+            }
+          : resume
+      ),
+    }));
+  }
+
   return (
     <UserContext.Provider
       value={{
@@ -57,6 +77,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         activeResumeId,
         setActiveResumeId,
         addResume,
+        updateResumeTargetGoal,
       }}
     >
       {children}
