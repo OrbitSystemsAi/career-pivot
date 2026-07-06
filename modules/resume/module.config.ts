@@ -3,6 +3,7 @@ import type { ModuleDefinition } from "@/core/types/module";
 import {
   ResumeModule,
   ResumeDocument,
+  ResumeVersions,
   ResumeFilters,
   ResumeContext,
   ResumeResults,
@@ -47,6 +48,10 @@ export const resumeModule: ModuleDefinition = {
   viewPanels: {
     document: {
       visualization: ResumeDocument,
+    },
+
+    versions: {
+      visualization: ResumeVersions,
     },
   },
 };

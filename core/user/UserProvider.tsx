@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { mockUser } from "./mockUser";
-import type { UserProfile, UserResume } from "./userTypes";
+import type { ResumeVersion, UserProfile, UserResume } from "./userTypes";
 
 type AddResumeInput = {
   name: string;
@@ -24,6 +24,48 @@ const UserContext = createContext<UserContextType | null>(null);
 
 const USER_STORAGE_KEY = "osai.userProfile";
 const ACTIVE_RESUME_STORAGE_KEY = "osai.activeResumeId";
+
+function normalizeResume(resume: UserResume): UserResume {
+  const fallbackVersionId = `${resume.id}-v${resume.version ?? 1}`;
+
+  const fallbackVersion: ResumeVersion = {
+    id: fallbackVersionId,
+    label: resume.source === "upload" ? "Original Upload" : "Current Version",
+    source: resume.source === "upload" ? "upload" : "original",
+    createdDate: resume.createdDate ?? new Date().toISOString(),
+    isCurrent: true,
+  };
+
+  const versions =
+    resume.versions && resume.versions.length > 0
+      ? resume.versions
+      : [fallbackVersion];
+
+  const currentVersionId =
+    resume.currentVersionId ??
+    versions.find((version) => version.isCurrent)?.id ??
+    versions[0]?.id ??
+    fallbackVersionId;
+
+  return {
+    ...resume,
+    parseStatus:
+      resume.parseStatus ?? (resume.source === "mock" ? "mock" : "uploaded"),
+    version: resume.version ?? versions.length,
+    currentVersionId,
+    versions: versions.map((version) => ({
+      ...version,
+      isCurrent: version.id === currentVersionId,
+    })),
+  };
+}
+
+function normalizeUser(user: UserProfile): UserProfile {
+  return {
+    ...user,
+    resumes: user.resumes.map((resume) => normalizeResume(resume)),
+  };
+}
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserProfile>(mockUser);
@@ -47,22 +89,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     if (storedUser) {
       try {
         resolvedUser = JSON.parse(storedUser) as UserProfile;
-        setUser(resolvedUser);
       } catch {
         resolvedUser = mockUser;
-        setUser(mockUser);
       }
     }
 
-    const normalizedUser: UserProfile = {
-      ...resolvedUser,
-      resumes: resolvedUser.resumes.map((resume) => ({
-        ...resume,
-        parseStatus:
-          resume.parseStatus ??
-          (resume.source === "mock" ? "mock" : "uploaded"),
-      })),
-    };
+    const normalizedUser = normalizeUser(resolvedUser);
 
     setUser(normalizedUser);
     window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(normalizedUser));
@@ -87,8 +119,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   function persistUser(nextUser: UserProfile) {
-    setUser(nextUser);
-    window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(nextUser));
+    const normalizedUser = normalizeUser(nextUser);
+
+    setUser(normalizedUser);
+    window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(normalizedUser));
   }
 
   function setActiveResumeId(resumeId: string) {
@@ -98,9 +132,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   function addResume(resume: AddResumeInput) {
     const defaultGoal = user.goals[0];
+    const resumeId = `resume-${Date.now()}`;
+    const createdDate = new Date().toISOString();
+    const versionId = `${resumeId}-v1`;
 
     const newResume: UserResume = {
-      id: `resume-${Date.now()}`,
+      id: resumeId,
       name: resume.name,
       targetGoalId: defaultGoal?.id ?? "",
       targetJobTitle: defaultGoal?.title,
@@ -110,8 +147,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       fileSize: resume.fileSize,
       source: "upload",
       version: 1,
-      createdDate: new Date().toISOString(),
+      createdDate,
       parseStatus: "uploaded",
+      currentVersionId: versionId,
+      versions: [
+        {
+          id: versionId,
+          label: "Original Upload",
+          source: "upload",
+          createdDate,
+          isCurrent: true,
+        },
+      ],
     };
 
     const nextUser: UserProfile = {

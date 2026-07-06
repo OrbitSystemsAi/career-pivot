@@ -2,34 +2,30 @@
 
 import { getActiveModulePanels } from "@/core/moduleEngine/getActiveModulePanels";
 import { useOSState } from "@/core/state/OSStateProvider";
+import { useState } from "react";
 import D5BottomWorkspaceFrame from "../frames/D5BottomWorkspaceFrame";
 
 export default function D3VisualizationPanel() {
   const { activeModule, activeView } = useOSState();
-  const { module, panels } = getActiveModulePanels(activeModule, activeView);
+  const { panels } = getActiveModulePanels(activeModule, activeView);
+  const [isD5Open, setIsD5Open] = useState(false);
 
   const Visualization = panels.visualization;
 
-  const activeViewLabel =
-    module.views.find((view) => view.id === activeView)?.label ?? "Overview";
-
   return (
     <div className="relative min-h-0 flex-1 overflow-hidden bg-slate-100 py-4">
-      <div className="relative h-full min-h-0 overflow-hidden">
+      <div
+        className={`absolute left-0 right-0 top-4 overflow-hidden transition-all ${
+          isD5Open ? "bottom-[19rem]" : "bottom-16"
+        }`}
+      >
         <Visualization />
-
-        <div className="absolute bottom-20 left-4 z-30 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
-          <div className="text-xs font-semibold uppercase tracking-wide text-blue-600">
-            {module.description}
-          </div>
-
-          <div className="mt-2 text-xs text-slate-500">
-            Active view: {activeViewLabel}
-          </div>
-        </div>
-
-        <D5BottomWorkspaceFrame />
       </div>
+
+      <D5BottomWorkspaceFrame
+        isOpen={isD5Open}
+        onToggle={() => setIsD5Open((current) => !current)}
+      />
     </div>
   );
 }

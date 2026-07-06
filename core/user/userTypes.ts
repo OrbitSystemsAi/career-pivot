@@ -13,6 +13,14 @@ export type ResumeParseStatus =
   | "parsed"
   | "needs_review";
 
+export type ResumeVersion = {
+  id: string;
+  label: string;
+  source: "original" | "upload" | "ai_optimized" | "manual_edit";
+  createdDate: string;
+  isCurrent: boolean;
+};
+
 export type UserResume = {
   id: string;
   name: string;
@@ -26,6 +34,8 @@ export type UserResume = {
   version: number;
   createdDate: string;
   parseStatus: ResumeParseStatus;
+  currentVersionId: string;
+  versions: ResumeVersion[];
 };
 
 export type ReviewerProfile = {
