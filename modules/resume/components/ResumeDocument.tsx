@@ -14,9 +14,31 @@ export default function ResumeDocument() {
     (goal) => goal.id === activeResume?.targetGoalId
   );
 
+  const savedDocumentContent = resumeDocumentData.find(
+    (item) => item.resumeId === activeResume?.id
+  );
+
   const documentContent =
-    resumeDocumentData.find((item) => item.resumeId === activeResume?.id) ??
-    resumeDocumentData[0];
+    savedDocumentContent ?? {
+      summary: `Uploaded resume file "${activeResume?.fileName ?? activeResume?.name}" has been added to the resume library. Full parsing will be connected later. For now, OSai is using the user's profile, skills, and selected target goal to create a working document preview.`,
+      highlights: [
+        {
+          title: "Uploaded Resume Intake",
+          description:
+            "The resume has been captured as a new resume profile and can now be selected from the Resume Library.",
+        },
+        {
+          title: "Profile-Based Preview",
+          description:
+            "The document preview is currently generated from the user profile, active resume metadata, skills, and target career goal.",
+        },
+        {
+          title: "Future Parser Connection",
+          description:
+            "A backend parser will later extract work history, education, skills, certifications, and achievements directly from the uploaded file.",
+        },
+      ],
+    };
 
   return (
     <div className="flex h-full w-full justify-center overflow-auto bg-slate-100 px-8 py-8">
@@ -92,6 +114,16 @@ export default function ResumeDocument() {
             <div className="mt-1">
               <strong>Status:</strong> {activeResume?.status}
             </div>
+
+            <div className="mt-1">
+              <strong>Source:</strong> {activeResume?.source}
+            </div>
+
+            {activeResume?.fileName && (
+              <div className="mt-1">
+                <strong>File:</strong> {activeResume.fileName}
+              </div>
+            )}
 
             <div className="mt-1">
               <strong>Target Role:</strong>{" "}
