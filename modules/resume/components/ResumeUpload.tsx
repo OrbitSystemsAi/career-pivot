@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import ActionRow from "@/core/ui/ActionRow";
-import PanelCard from "@/core/ui/PanelCard";
 import { useUser } from "@/core/user/UserProvider";
 
 export default function ResumeUpload() {
@@ -40,9 +39,11 @@ export default function ResumeUpload() {
         onChange={handleFileChange}
       />
 
-      <button onClick={handleUploadClick} className="w-full">
-        <ActionRow label="Upload resume" action="Add" />
-      </button>
+      <ActionRow
+        label="Upload resume"
+        action="Add"
+        onClick={handleUploadClick}
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import {
   ResumeModule,
   ResumeDocument,
   ResumeVersions,
+  ResumeVersionCompare,
   ResumeFilters,
   ResumeContext,
   ResumeResults,
@@ -31,6 +32,7 @@ export const resumeModule: ModuleDefinition = {
     { label: "ATS", id: "ats" },
     { label: "Keywords", id: "keywords" },
     { label: "Versions", id: "versions" },
+    { label: "Compare", id: "compare" },
   ],
 
   panels: {
@@ -52,6 +54,10 @@ export const resumeModule: ModuleDefinition = {
 
     versions: {
       visualization: ResumeVersions,
+    },
+
+    compare: {
+      visualization: ResumeVersionCompare,
     },
   },
 };
