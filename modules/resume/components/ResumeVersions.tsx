@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
+import { useOSState } from "@/core/state/OSStateProvider";
 import { useUser } from "@/core/user/UserProvider";
 
 function formatDate(value: string) {
@@ -14,6 +15,8 @@ function formatDate(value: string) {
 }
 
 export default function ResumeVersions() {
+  const { setActiveView } = useOSState();
+
   const {
     user,
     activeResumeId,
@@ -57,6 +60,10 @@ export default function ResumeVersions() {
     restoreResumeVersion(activeResume.id, selectedVersion.id);
   }
 
+  function handleCompareVersions() {
+    setActiveView("compare");
+  }
+
   return (
     <div className="h-full w-full overflow-auto">
       <div className="grid h-full min-h-[520px] grid-cols-[1fr_22rem] gap-4">
@@ -92,17 +99,25 @@ export default function ResumeVersions() {
 
         <PanelCard title="Version Actions">
           <ActionRow label="Selected" value={selectedVersion?.label ?? "N/A"} />
-          <ActionRow label="Compare Versions" action="Open" />
+
+          <ActionRow
+            label="Compare Versions"
+            action="Open"
+            onClick={handleCompareVersions}
+          />
+
           <ActionRow
             label="Restore Selected"
             action="Restore"
             onClick={handleRestoreSelected}
           />
+
           <ActionRow
             label="Create AI Version"
             action="Run"
             onClick={handleCreateAiVersion}
           />
+
           <ActionRow label="Export Current" action="Export" />
 
           <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
