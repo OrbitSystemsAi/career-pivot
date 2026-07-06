@@ -19,6 +19,7 @@ type UserContextType = {
   removeResume: (resumeId: string) => void;
   updateResumeTargetGoal: (resumeId: string, goalId: string) => void;
   createResumeVersion: (resumeId: string, label: string) => void;
+  restoreResumeVersion: (resumeId: string, versionId: string) => void;
 };
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -248,6 +249,28 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     persistUser(nextUser);
   }
 
+  function restoreResumeVersion(resumeId: string, versionId: string) {
+    const nextUser: UserProfile = {
+      ...user,
+      resumes: user.resumes.map((resume) => {
+        if (resume.id !== resumeId) {
+          return resume;
+        }
+
+        return {
+          ...resume,
+          currentVersionId: versionId,
+          versions: resume.versions.map((version) => ({
+            ...version,
+            isCurrent: version.id === versionId,
+          })),
+        };
+      }),
+    };
+
+    persistUser(nextUser);
+  }
+
   if (!hasLoadedStorage) {
     return null;
   }
@@ -262,6 +285,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         removeResume,
         updateResumeTargetGoal,
         createResumeVersion,
+        restoreResumeVersion,
       }}
     >
       {children}
