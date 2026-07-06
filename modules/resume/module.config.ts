@@ -5,6 +5,7 @@ import {
   ResumeDocument,
   ResumeVersions,
   ResumeVersionCompare,
+  ResumeATS,
   ResumeFilters,
   ResumeContext,
   ResumeResults,
@@ -50,6 +51,10 @@ export const resumeModule: ModuleDefinition = {
   viewPanels: {
     document: {
       visualization: ResumeDocument,
+    },
+
+    ats: {
+      visualization: ResumeATS,
     },
 
     versions: {

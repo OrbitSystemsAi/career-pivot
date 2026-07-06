@@ -4,6 +4,7 @@ export { default as ResumeUpload } from "./components/ResumeUpload";
 export { default as ResumePeerReview } from "./components/ResumePeerReview";
 export { default as ResumeVersions } from "./components/ResumeVersions";
 export { default as ResumeVersionCompare } from "./components/ResumeVersionCompare";
+export { default as ResumeATS } from "./components/ResumeATS";
 
 export { default as ResumeFilters } from "./components/ResumeFilters";
 export { default as ResumeContext } from "./components/ResumeContext";
