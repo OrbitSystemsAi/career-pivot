@@ -24,11 +24,13 @@ type ReviewContextType = {
     requesterId: string,
     reviewerId: string
   ) => void;
+  completeReview: (requestId: string) => void;
 };
 
 const ReviewContext = createContext<ReviewContextType | null>(null);
 
 const REVIEW_REQUESTS_STORAGE_KEY = "osai.reviewRequests";
+const CREDIT_TRANSACTIONS_STORAGE_KEY = "osai.creditTransactions";
 
 export function ReviewProvider({ children }: { children: React.ReactNode }) {
   const [reviewers] = useState<PeerReviewer[]>(mockReviewers);
@@ -39,9 +41,8 @@ export function ReviewProvider({ children }: { children: React.ReactNode }) {
   const [reviewFeedback] =
     useState<PeerReviewFeedback[]>(mockReviewFeedback);
 
-  const [creditTransactions] = useState<CreditTransaction[]>(
-    mockCreditTransactions
-  );
+  const [creditTransactions, setCreditTransactions] =
+    useState<CreditTransaction[]>(mockCreditTransactions);
 
   const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
 
@@ -50,11 +51,23 @@ export function ReviewProvider({ children }: { children: React.ReactNode }) {
       REVIEW_REQUESTS_STORAGE_KEY
     );
 
+    const storedCredits = window.localStorage.getItem(
+      CREDIT_TRANSACTIONS_STORAGE_KEY
+    );
+
     if (storedRequests) {
       try {
         setReviewRequests(JSON.parse(storedRequests));
       } catch {
         setReviewRequests(mockReviewRequests);
+      }
+    }
+
+    if (storedCredits) {
+      try {
+        setCreditTransactions(JSON.parse(storedCredits));
+      } catch {
+        setCreditTransactions(mockCreditTransactions);
       }
     }
 
@@ -67,6 +80,15 @@ export function ReviewProvider({ children }: { children: React.ReactNode }) {
     window.localStorage.setItem(
       REVIEW_REQUESTS_STORAGE_KEY,
       JSON.stringify(nextRequests)
+    );
+  }
+
+  function persistCreditTransactions(nextCredits: CreditTransaction[]) {
+    setCreditTransactions(nextCredits);
+
+    window.localStorage.setItem(
+      CREDIT_TRANSACTIONS_STORAGE_KEY,
+      JSON.stringify(nextCredits)
     );
   }
 
@@ -99,6 +121,34 @@ export function ReviewProvider({ children }: { children: React.ReactNode }) {
     persistReviewRequests([...reviewRequests, newRequest]);
   }
 
+  function completeReview(requestId: string) {
+    const request = reviewRequests.find((item) => item.id === requestId);
+
+    if (!request || request.status === "completed") {
+      return;
+    }
+
+    const nextRequests: PeerReviewRequest[] = reviewRequests.map((item) =>
+      item.id === requestId
+        ? {
+            ...item,
+            status: "completed",
+          }
+        : item
+    );
+
+    const newCredit: CreditTransaction = {
+      id: `credit-${Date.now()}`,
+      userId: request.reviewerId,
+      amount: 1,
+      reason: "Completed resume peer review",
+      createdDate: new Date().toISOString(),
+    };
+
+    persistReviewRequests(nextRequests);
+    persistCreditTransactions([...creditTransactions, newCredit]);
+  }
+
   if (!hasLoadedStorage) {
     return null;
   }
@@ -111,6 +161,7 @@ export function ReviewProvider({ children }: { children: React.ReactNode }) {
         reviewFeedback,
         creditTransactions,
         requestReview,
+        completeReview,
       }}
     >
       {children}

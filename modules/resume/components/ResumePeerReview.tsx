@@ -7,7 +7,13 @@ import { useUser } from "@/core/user/UserProvider";
 
 export default function ResumePeerReview() {
   const { user, activeResumeId } = useUser();
-  const { reviewers, reviewRequests, requestReview } = useReviews();
+  const {
+    reviewers,
+    reviewRequests,
+    creditTransactions,
+    requestReview,
+    completeReview,
+  } = useReviews();
 
   const activeResume =
     user.resumes.find((resume) => resume.id === activeResumeId) ??
@@ -23,6 +29,12 @@ export default function ResumePeerReview() {
     }
 
     requestReview(activeResume.id, user.id, reviewerId);
+  }
+
+  function getReviewerCredits(reviewerId: string) {
+    return creditTransactions
+      .filter((transaction) => transaction.userId === reviewerId)
+      .reduce((total, transaction) => total + transaction.amount, 0);
   }
 
   return (
@@ -46,10 +58,14 @@ export default function ResumePeerReview() {
             >
               <span className="truncate pr-2">
                 {reviewer.name}
-                <span className="ml-1 text-slate-400">· {reviewer.industry}</span>
+                <span className="ml-1 text-slate-400">
+                  · {reviewer.industry}
+                </span>
               </span>
 
-              <span className="text-blue-600">Request</span>
+              <span className="text-blue-600">
+                {getReviewerCredits(reviewer.id)} credits
+              </span>
             </button>
           ))}
       </div>
@@ -91,11 +107,16 @@ export default function ResumePeerReview() {
             );
 
             return (
-              <ActionRow
+              <button
                 key={request.id}
-                label={reviewer?.name ?? "Reviewer"}
-                value={request.status}
-              />
+                onClick={() => completeReview(request.id)}
+                className="flex w-full justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+              >
+                <span>{reviewer?.name ?? "Reviewer"}</span>
+                <span className="text-blue-600">
+                  {request.status === "completed" ? "completed" : "complete"}
+                </span>
+              </button>
             );
           })
         )}
