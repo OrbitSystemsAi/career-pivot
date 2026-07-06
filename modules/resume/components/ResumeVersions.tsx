@@ -13,7 +13,7 @@ function formatDate(value: string) {
 }
 
 export default function ResumeVersions() {
-  const { user, activeResumeId } = useUser();
+  const { user, activeResumeId, createResumeVersion } = useUser();
 
   const activeResume =
     user.resumes.find((resume) => resume.id === activeResumeId) ??
@@ -24,6 +24,13 @@ export default function ResumeVersions() {
       <PanelCard title="Resume Versions">
         <ActionRow label="No resume selected" value="N/A" />
       </PanelCard>
+    );
+  }
+
+  function handleCreateAiVersion() {
+    createResumeVersion(
+      activeResume.id,
+      `AI Optimized Version ${activeResume.versions.length + 1}`
     );
   }
 
@@ -58,12 +65,16 @@ export default function ResumeVersions() {
         <PanelCard title="Version Actions">
           <ActionRow label="Compare Versions" action="Open" />
           <ActionRow label="Restore Selected" action="Restore" />
-          <ActionRow label="Create AI Version" action="Run" />
+
+          <button onClick={handleCreateAiVersion} className="w-full">
+            <ActionRow label="Create AI Version" action="Run" />
+          </button>
+
           <ActionRow label="Export Current" action="Export" />
 
           <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
-            Resume optimization should create a new version instead of
-            overwriting the current document.
+            Resume optimization creates a new version instead of overwriting the
+            current document.
           </div>
         </PanelCard>
       </div>

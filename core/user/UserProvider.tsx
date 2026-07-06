@@ -18,6 +18,7 @@ type UserContextType = {
   addResume: (resume: AddResumeInput) => void;
   removeResume: (resumeId: string) => void;
   updateResumeTargetGoal: (resumeId: string, goalId: string) => void;
+  createResumeVersion: (resumeId: string, label: string) => void;
 };
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -208,6 +209,45 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     persistUser(nextUser);
   }
 
+  function createResumeVersion(resumeId: string, label: string) {
+    const createdDate = new Date().toISOString();
+
+    const nextUser: UserProfile = {
+      ...user,
+      resumes: user.resumes.map((resume) => {
+        if (resume.id !== resumeId) {
+          return resume;
+        }
+
+        const nextVersionNumber = resume.versions.length + 1;
+        const newVersionId = `${resume.id}-v${nextVersionNumber}-${Date.now()}`;
+
+        const newVersion: ResumeVersion = {
+          id: newVersionId,
+          label,
+          source: "ai_optimized",
+          createdDate,
+          isCurrent: true,
+        };
+
+        return {
+          ...resume,
+          version: nextVersionNumber,
+          currentVersionId: newVersionId,
+          versions: [
+            ...resume.versions.map((version) => ({
+              ...version,
+              isCurrent: false,
+            })),
+            newVersion,
+          ],
+        };
+      }),
+    };
+
+    persistUser(nextUser);
+  }
+
   if (!hasLoadedStorage) {
     return null;
   }
@@ -221,6 +261,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         addResume,
         removeResume,
         updateResumeTargetGoal,
+        createResumeVersion,
       }}
     >
       {children}
