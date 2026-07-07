@@ -5,7 +5,11 @@ import PanelCard from "@/core/ui/PanelCard";
 import { useReviews } from "@/core/reviews/ReviewProvider";
 import { useUser } from "@/core/user/UserProvider";
 
-export default function ResumePeerReview() {
+type ResumePeerReviewProps = {
+  onBack?: () => void;
+};
+
+export default function ResumePeerReview({ onBack }: ResumePeerReviewProps) {
   const { user, activeResumeId } = useUser();
   const {
     reviewers,
@@ -39,6 +43,12 @@ export default function ResumePeerReview() {
 
   return (
     <PanelCard title="Peer Review">
+      {onBack && (
+        <div className="mb-3">
+          <ActionRow label="Back to Actions" action="Back" onClick={onBack} />
+        </div>
+      )}
+
       <div className="mb-3 text-xs text-slate-500">
         Request feedback for {activeResume?.name ?? "selected resume"}.
       </div>
@@ -51,22 +61,12 @@ export default function ResumePeerReview() {
         {reviewers
           .filter((reviewer) => reviewer.isReviewer)
           .map((reviewer) => (
-            <button
+            <ActionRow
               key={reviewer.id}
+              label={`${reviewer.name} · ${reviewer.industry}`}
+              value={`${getReviewerCredits(reviewer.id)} credits`}
               onClick={() => handleRequestReview(reviewer.id)}
-              className="flex w-full justify-between rounded-xl px-3 py-2 text-left text-xs font-medium text-slate-500 hover:bg-blue-50 hover:text-blue-600"
-            >
-              <span className="truncate pr-2">
-                {reviewer.name}
-                <span className="ml-1 text-slate-400">
-                  · {reviewer.industry}
-                </span>
-              </span>
-
-              <span className="text-blue-600">
-                {getReviewerCredits(reviewer.id)} credits
-              </span>
-            </button>
+            />
           ))}
       </div>
 
@@ -78,18 +78,12 @@ export default function ResumePeerReview() {
         {reviewers
           .filter((reviewer) => !reviewer.isReviewer)
           .map((reviewer) => (
-            <button
+            <ActionRow
               key={reviewer.id}
+              label={`${reviewer.name} · Not a reviewer`}
+              action="Invite"
               onClick={() => handleRequestReview(reviewer.id)}
-              className="flex w-full justify-between rounded-xl px-3 py-2 text-left text-xs font-medium text-slate-500 hover:bg-blue-50 hover:text-blue-600"
-            >
-              <span className="truncate pr-2">
-                {reviewer.name}
-                <span className="ml-1 text-slate-400">· Not a reviewer</span>
-              </span>
-
-              <span className="text-blue-600">Invite</span>
-            </button>
+            />
           ))}
       </div>
 
@@ -107,16 +101,12 @@ export default function ResumePeerReview() {
             );
 
             return (
-              <button
+              <ActionRow
                 key={request.id}
+                label={reviewer?.name ?? "Reviewer"}
+                action={request.status === "completed" ? "completed" : "complete"}
                 onClick={() => completeReview(request.id)}
-                className="flex w-full justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-500 hover:bg-blue-50 hover:text-blue-600"
-              >
-                <span>{reviewer?.name ?? "Reviewer"}</span>
-                <span className="text-blue-600">
-                  {request.status === "completed" ? "completed" : "complete"}
-                </span>
-              </button>
+              />
             );
           })
         )}

@@ -26,7 +26,7 @@ export default function ResumeActions() {
   }
 
   if (showPeerReview) {
-    return <ResumePeerReview />;
+    return <ResumePeerReview onBack={() => setShowPeerReview(false)} />;
   }
 
   return (
