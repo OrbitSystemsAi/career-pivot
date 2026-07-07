@@ -1,5 +1,6 @@
 import type {
   ResumeExperience,
+  ResumeUnknownSection,
   StructuredResume,
 } from "./resumeStructureTypes";
 
@@ -36,6 +37,27 @@ const SECTION_PATTERNS: Record<SectionKey, string[]> = {
   ],
 };
 
+const KNOWN_SECTION_WORDS = [
+  "summary",
+  "profile",
+  "skills",
+  "competencies",
+  "experience",
+  "employment",
+  "career history",
+  "education",
+  "certifications",
+  "licenses",
+  "credentials",
+  "projects",
+  "awards",
+  "publications",
+  "volunteer",
+  "languages",
+  "technology",
+  "tools",
+];
+
 function normalizeLine(line: string) {
   return line.trim().replace(/\s+/g, " ");
 }
@@ -51,6 +73,18 @@ function isSectionHeader(line: string, patterns: string[]) {
       normalized.includes(normalizedPattern)
     );
   });
+}
+
+function looksLikeAnySectionHeader(line: string) {
+  const normalized = normalizeLine(line).toLowerCase().replace(/[:\-]/g, "");
+
+  if (normalized.length > 60) {
+    return false;
+  }
+
+  return KNOWN_SECTION_WORDS.some(
+    (word) => normalized === word || normalized.includes(word)
+  );
 }
 
 function findSectionIndexes(lines: string[]) {
@@ -105,7 +139,7 @@ function looksLikeDateRange(line: string) {
 }
 
 function looksLikeRoleLine(line: string) {
-  return /\b(manager|director|analyst|leader|consultant|engineer|specialist|coordinator|associate|vp|vice president|chief|head|officer)\b/i.test(
+  return /\b(manager|director|analyst|leader|consultant|engineer|specialist|coordinator|associate|vp|vice president|chief|head|officer|architect|developer|administrator|controller|finance|operations)\b/i.test(
     line
   );
 }
@@ -116,7 +150,7 @@ function looksLikeCompanyLine(line: string) {
     !line.startsWith("-") &&
     !looksLikeDateRange(line) &&
     line.length > 2 &&
-    line.length < 90
+    line.length < 100
   );
 }
 
@@ -142,9 +176,10 @@ function buildExperience(experienceLines: string[]): ResumeExperience[] {
     if (!currentExperience) {
       currentExperience = {
         id: `experience-${experiences.length + 1}`,
-        company: isPossibleCompany ? normalized : "Detected Company",
-        title: isPossibleRole ? normalized : "Detected Role",
+        company: isPossibleCompany ? normalized : "Experience",
+        title: isPossibleRole ? normalized : "Role",
         bullets: [],
+        rawLines: [normalized],
       };
 
       return;
@@ -160,15 +195,18 @@ function buildExperience(experienceLines: string[]): ResumeExperience[] {
       currentExperience = {
         id: `experience-${experiences.length + 1}`,
         company: normalized,
-        title: looksLikeRoleLine(nextLine) ? nextLine : "Detected Role",
+        title: looksLikeRoleLine(nextLine) ? nextLine : "Role",
         bullets: [],
+        rawLines: [normalized],
       };
 
       return;
     }
 
+    currentExperience.rawLines.push(normalized);
+
     if (
-      currentExperience.title === "Detected Role" &&
+      currentExperience.title === "Role" &&
       isPossibleRole &&
       !isBullet
     ) {
@@ -192,12 +230,7 @@ function buildExperience(experienceLines: string[]): ResumeExperience[] {
     experiences.push(currentExperience);
   }
 
-  return experiences.filter(
-    (experience) =>
-      experience.company !== "Detected Company" ||
-      experience.title !== "Detected Role" ||
-      experience.bullets.length > 0
-  );
+  return experiences;
 }
 
 function buildSkills(skillsLines: string[]) {
@@ -205,7 +238,49 @@ function buildSkills(skillsLines: string[]) {
     .flatMap((line) => line.split(/[,|•]/))
     .map((item) => normalizeLine(item))
     .filter(Boolean)
-    .filter((item) => item.length <= 80);
+    .filter((item) => item.length <= 100);
+}
+
+function buildUnknownSections(lines: string[], knownIndexes: number[]) {
+  const unknownSections: ResumeUnknownSection[] = [];
+
+  lines.forEach((line, index) => {
+    if (!looksLikeAnySectionHeader(line)) {
+      return;
+    }
+
+    if (knownIndexes.includes(index)) {
+      return;
+    }
+
+    const nextKnownOrUnknownIndex =
+      lines.findIndex(
+        (candidateLine, candidateIndex) =>
+          candidateIndex > index &&
+          (knownIndexes.includes(candidateIndex) ||
+            looksLikeAnySectionHeader(candidateLine))
+      ) ?? -1;
+
+    const endIndex =
+      nextKnownOrUnknownIndex > index ? nextKnownOrUnknownIndex : lines.length;
+
+    const sectionLines = lines
+      .slice(index + 1, endIndex)
+      .map(normalizeLine)
+      .filter(Boolean);
+
+    if (sectionLines.length === 0) {
+      return;
+    }
+
+    unknownSections.push({
+      id: `unknown-section-${unknownSections.length + 1}`,
+      title: normalizeLine(line),
+      lines: sectionLines,
+    });
+  });
+
+  return unknownSections;
 }
 
 export function buildStructuredResume(lines: string[]): StructuredResume {
@@ -247,6 +322,41 @@ export function buildStructuredResume(lines: string[]): StructuredResume {
     allSectionIndexes
   );
 
+  const knownLineSet = new Set<string>();
+
+  [
+    ...summaryLines,
+    ...skillsLines,
+    ...experienceLines,
+    ...educationLines,
+    ...certificationLines,
+  ].forEach((line) => knownLineSet.add(line));
+
+  allSectionIndexes.forEach((index) => knownLineSet.add(cleanedLines[index]));
+
+  const unknownSections = buildUnknownSections(cleanedLines, allSectionIndexes);
+
+  unknownSections.forEach((section) => {
+    knownLineSet.add(section.title);
+    section.lines.forEach((line) => knownLineSet.add(line));
+  });
+
+  const unclassifiedLines = cleanedLines.filter((line, index) => {
+    if (index === 0) {
+      return false;
+    }
+
+    if (knownLineSet.has(line)) {
+      return false;
+    }
+
+    if (line === extractEmail(fullText) || line === extractPhone(fullText)) {
+      return false;
+    }
+
+    return true;
+  });
+
   return {
     name: cleanedLines[0],
 
@@ -265,5 +375,9 @@ export function buildStructuredResume(lines: string[]): StructuredResume {
     education: educationLines,
 
     certifications: certificationLines,
+
+    unknownSections,
+
+    unclassifiedLines,
   };
 }

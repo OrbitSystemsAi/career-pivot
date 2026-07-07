@@ -118,11 +118,19 @@ export default function ResumeDocument() {
                       )}
                     </div>
 
-                    <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
-                      {experience.bullets.map((bullet) => (
-                        <li key={bullet}>{bullet}</li>
-                      ))}
-                    </ul>
+                    {experience.bullets.length > 0 ? (
+                      <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-slate-700">
+                        {experience.bullets.map((bullet) => (
+                          <li key={bullet}>{bullet}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
+                        {experience.rawLines.map((line) => (
+                          <div key={line}>{line}</div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -152,6 +160,34 @@ export default function ResumeDocument() {
               <div className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
                 {structuredResume.certifications.map((certification) => (
                   <div key={certification}>{certification}</div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {structuredResume.unknownSections.map((section) => (
+            <section key={section.id} className="mt-6">
+              <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">
+                {section.title}
+              </h2>
+
+              <div className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
+                {section.lines.map((line) => (
+                  <div key={line}>{line}</div>
+                ))}
+              </div>
+            </section>
+          ))}
+
+          {structuredResume.unclassifiedLines.length > 0 && (
+            <section className="mt-6">
+              <h2 className="text-xs font-bold uppercase tracking-wide text-slate-500">
+                Additional Resume Content
+              </h2>
+
+              <div className="mt-3 space-y-2 text-sm leading-6 text-slate-700">
+                {structuredResume.unclassifiedLines.map((line) => (
+                  <div key={line}>{line}</div>
                 ))}
               </div>
             </section>

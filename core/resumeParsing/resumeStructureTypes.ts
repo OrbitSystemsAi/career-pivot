@@ -5,6 +5,13 @@ export type ResumeExperience = {
   startDate?: string;
   endDate?: string;
   bullets: string[];
+  rawLines: string[];
+};
+
+export type ResumeUnknownSection = {
+  id: string;
+  title: string;
+  lines: string[];
 };
 
 export type StructuredResume = {
@@ -26,4 +33,8 @@ export type StructuredResume = {
   education: string[];
 
   certifications: string[];
+
+  unknownSections: ResumeUnknownSection[];
+
+  unclassifiedLines: string[];
 };
