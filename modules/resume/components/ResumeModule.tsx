@@ -2,6 +2,7 @@
 
 import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
+import { useOSState } from "@/core/state/OSStateProvider";
 import { useUser } from "@/core/user/UserProvider";
 
 function getResumeScore(skillCount: number, experienceCount: number) {
@@ -29,7 +30,9 @@ function getReadiness(score: number) {
 }
 
 export default function ResumeModule() {
-  const { user, activeResumeId } = useUser();
+  const { setActiveView } = useOSState();
+
+  const { user, activeResumeId, optimizeResume } = useUser();
 
   const activeResume =
     user.resumes.find((resume) => resume.id === activeResumeId) ??
@@ -48,12 +51,23 @@ export default function ResumeModule() {
 
   const skillCount = structuredResume?.skills.length ?? user.skills.length;
   const experienceCount = structuredResume?.experience.length ?? 1;
-  const hasTargetRole = Boolean(targetGoal?.title ?? activeResume?.targetJobTitle);
+  const hasTargetRole = Boolean(
+    targetGoal?.title ?? activeResume?.targetJobTitle
+  );
 
   const resumeScore = getResumeScore(skillCount, experienceCount);
   const atsScore = getAtsScore(skillCount);
   const roleAlignmentScore = getRoleAlignmentScore(hasTargetRole, skillCount);
   const readiness = getReadiness(resumeScore);
+
+  function handleOptimize() {
+    if (!activeResume) {
+      return;
+    }
+
+    optimizeResume(activeResume.id, "full_rewrite");
+    setActiveView("versions");
+  }
 
   return (
     <div className="grid h-full min-h-[520px] grid-cols-[1fr_22rem] gap-4 overflow-auto">
@@ -118,7 +132,9 @@ export default function ResumeModule() {
           </div>
 
           <div className="mt-2 text-sm font-semibold text-slate-700">
-            {targetGoal?.title ?? activeResume?.targetJobTitle ?? "No target selected"}
+            {targetGoal?.title ??
+              activeResume?.targetJobTitle ??
+              "No target selected"}
           </div>
 
           <div className="mt-1 text-xs text-slate-500">
@@ -145,7 +161,11 @@ export default function ResumeModule() {
           value={experienceCount < 2 ? "Experience Detail" : "Role Framing"}
         />
 
-        <ActionRow label="Suggested Action" action="Optimize" />
+        <ActionRow
+          label="Suggested Action"
+          action="Optimize"
+          onClick={handleOptimize}
+        />
 
         <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
           Summary uses the selected resume version, parsed skills, parsed
