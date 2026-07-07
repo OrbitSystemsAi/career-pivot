@@ -29,8 +29,8 @@ export const resumeModule: ModuleDefinition = {
   ],
 
   views: [
-    { label: "Overview", id: "overview" },
     { label: "Document", id: "document" },
+    { label: "Summary", id: "overview" },
     { label: "ATS", id: "ats" },
     { label: "Keywords", id: "keywords" },
     { label: "Versions", id: "versions" },
