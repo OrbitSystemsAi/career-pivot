@@ -1,13 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
 import { useOSState } from "@/core/state/OSStateProvider";
 import { useUser } from "@/core/user/UserProvider";
+import ResumePeerReview from "./ResumePeerReview";
 
 export default function ResumeActions() {
   const { setActiveView } = useOSState();
   const { user, activeResumeId, optimizeResume } = useUser();
+  const [showPeerReview, setShowPeerReview] = useState(false);
 
   const activeResume =
     user.resumes.find((resume) => resume.id === activeResumeId) ??
@@ -20,6 +23,10 @@ export default function ResumeActions() {
 
     optimizeResume(activeResume.id, "full_rewrite");
     setActiveView("versions");
+  }
+
+  if (showPeerReview) {
+    return <ResumePeerReview />;
   }
 
   return (
@@ -45,7 +52,7 @@ export default function ResumeActions() {
       <ActionRow
         label="Request Peer Review"
         action="Request"
-        onClick={() => setActiveView("summary")}
+        onClick={() => setShowPeerReview(true)}
       />
     </PanelCard>
   );
