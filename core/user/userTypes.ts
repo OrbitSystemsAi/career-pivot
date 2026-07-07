@@ -1,3 +1,5 @@
+import type { ParsedResumeDocument } from "@/core/resumeParsing/parsedResumeTypes";
+
 export type UserGoal = {
   id: string;
   title: string;
@@ -19,6 +21,7 @@ export type ResumeVersion = {
   source: "original" | "upload" | "ai_optimized" | "manual_edit";
   createdDate: string;
   isCurrent: boolean;
+  parsedDocument?: ParsedResumeDocument;
 };
 
 export type UserResume = {
