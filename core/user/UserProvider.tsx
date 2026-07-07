@@ -31,6 +31,7 @@ type UserContextType = {
   updateResumeTargetGoal: (resumeId: string, goalId: string) => void;
   createResumeVersion: (resumeId: string, label: string) => void;
   restoreResumeVersion: (resumeId: string, versionId: string) => void;
+  removeResumeVersion: (resumeId: string, versionId: string) => void;
   optimizeResume: (
     resumeId: string,
     optimizationType: ResumeOptimizationType
@@ -377,6 +378,54 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     persistUser(nextUser);
   }
 
+  function removeResumeVersion(resumeId: string, versionId: string) {
+    const nextUser: UserProfile = {
+      ...user,
+      resumes: user.resumes.map((resume) => {
+        if (resume.id !== resumeId || resume.versions.length <= 1) {
+          return resume;
+        }
+
+        const nextVersions = resume.versions.filter(
+          (version) => version.id !== versionId
+        );
+
+        const removedCurrentVersion = resume.currentVersionId === versionId;
+
+        const nextCurrentVersionId = removedCurrentVersion
+          ? nextVersions.at(-1)?.id ?? nextVersions[0]?.id ?? ""
+          : resume.currentVersionId;
+
+        return {
+          ...resume,
+          version: nextVersions.length,
+          currentVersionId: nextCurrentVersionId,
+          versions: nextVersions.map((version) => ({
+            ...version,
+            isCurrent: version.id === nextCurrentVersionId,
+          })),
+        };
+      }),
+    };
+
+    persistUser(nextUser);
+
+    if (compareVersionId === versionId) {
+      const updatedResume = nextUser.resumes.find(
+        (resume) => resume.id === resumeId
+      );
+
+      const nextCompareVersionId =
+        updatedResume?.versions.find(
+          (version) => version.id !== updatedResume.currentVersionId
+        )?.id ??
+        updatedResume?.versions[0]?.id ??
+        "";
+
+      setCompareVersionId(nextCompareVersionId);
+    }
+  }
+
   function optimizeResume(
     resumeId: string,
     optimizationType: ResumeOptimizationType
@@ -409,6 +458,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         updateResumeTargetGoal,
         createResumeVersion,
         restoreResumeVersion,
+        removeResumeVersion,
         optimizeResume,
       }}
     >

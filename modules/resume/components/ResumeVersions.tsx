@@ -20,8 +20,11 @@ export default function ResumeVersions() {
   const {
     user,
     activeResumeId,
+    compareVersionId,
+    setCompareVersionId,
     createResumeVersion,
     restoreResumeVersion,
+    removeResumeVersion,
   } = useUser();
 
   const activeResume =
@@ -29,8 +32,11 @@ export default function ResumeVersions() {
     user.resumes[0];
 
   const [selectedVersionId, setSelectedVersionId] = useState(
-    activeResume?.currentVersionId ?? ""
+    compareVersionId || activeResume?.currentVersionId || ""
   );
+
+  const [confirmRemoveVersionId, setConfirmRemoveVersionId] =
+    useState<string | null>(null);
 
   if (!activeResume) {
     return (
@@ -42,8 +48,18 @@ export default function ResumeVersions() {
 
   const selectedVersion =
     activeResume.versions.find((version) => version.id === selectedVersionId) ??
+    activeResume.versions.find((version) => version.id === compareVersionId) ??
     activeResume.versions.find((version) => version.isCurrent) ??
     activeResume.versions[0];
+
+  const canRemoveSelectedVersion =
+    Boolean(selectedVersion) && activeResume.versions.length > 1;
+
+  function handleSelectVersion(versionId: string) {
+    setSelectedVersionId(versionId);
+    setCompareVersionId(versionId);
+    setConfirmRemoveVersionId(null);
+  }
 
   function handleCreateAiVersion() {
     createResumeVersion(
@@ -61,7 +77,20 @@ export default function ResumeVersions() {
   }
 
   function handleCompareVersions() {
+    if (selectedVersion) {
+      setCompareVersionId(selectedVersion.id);
+    }
+
     setActiveView("compare");
+  }
+
+  function handleRemoveSelected() {
+    if (!selectedVersion || !canRemoveSelectedVersion) {
+      return;
+    }
+
+    removeResumeVersion(activeResume.id, selectedVersion.id);
+    setConfirmRemoveVersionId(null);
   }
 
   return (
@@ -75,7 +104,7 @@ export default function ResumeVersions() {
               return (
                 <button
                   key={version.id}
-                  onClick={() => setSelectedVersionId(version.id)}
+                  onClick={() => handleSelectVersion(version.id)}
                   className={`rounded-xl border px-4 py-3 text-left text-xs ${
                     isSelected
                       ? "border-blue-200 bg-blue-50 text-blue-600"
@@ -118,12 +147,46 @@ export default function ResumeVersions() {
             onClick={handleCreateAiVersion}
           />
 
+          {!confirmRemoveVersionId && (
+            <ActionRow
+              label="Remove Selected"
+              action={canRemoveSelectedVersion ? "Remove" : "Locked"}
+              onClick={
+                canRemoveSelectedVersion && selectedVersion
+                  ? () => setConfirmRemoveVersionId(selectedVersion.id)
+                  : undefined
+              }
+            />
+          )}
+
+          {confirmRemoveVersionId && (
+            <div className="mt-2 rounded-xl border border-red-100 bg-red-50 p-3 text-xs text-red-600">
+              <div className="font-semibold">Remove selected version?</div>
+
+              <div className="mt-2 flex gap-2">
+                <button
+                  onClick={handleRemoveSelected}
+                  className="rounded-lg bg-white px-3 py-1 text-red-600"
+                >
+                  Confirm
+                </button>
+
+                <button
+                  onClick={() => setConfirmRemoveVersionId(null)}
+                  className="rounded-lg bg-white px-3 py-1 text-slate-500"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
           <ActionRow label="Export Current" action="Export" />
 
           <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
-            Resume optimization creates a new version instead of overwriting the
-            current document. Restoring a version updates which version is marked
-            current.
+            You can remove saved versions, but each resume must keep at least
+            one version. If the current version is removed, OSai selects the most
+            recent remaining version.
           </div>
         </PanelCard>
       </div>
