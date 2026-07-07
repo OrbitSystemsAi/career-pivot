@@ -6,11 +6,15 @@ import PanelCard from "@/core/ui/PanelCard";
 import { useOSState } from "@/core/state/OSStateProvider";
 import { useUser } from "@/core/user/UserProvider";
 import ResumePeerReview from "./ResumePeerReview";
+import ResumeParserDebug from "./ResumeParserDebug";
 
 export default function ResumeActions() {
   const { setActiveView } = useOSState();
+
   const { user, activeResumeId, optimizeResume } = useUser();
-  const [showPeerReview, setShowPeerReview] = useState(false);
+
+  const [activePanel, setActivePanel] =
+    useState<"actions" | "review" | "debug">("actions");
 
   const activeResume =
     user.resumes.find((resume) => resume.id === activeResumeId) ??
@@ -25,8 +29,26 @@ export default function ResumeActions() {
     setActiveView("versions");
   }
 
-  if (showPeerReview) {
-    return <ResumePeerReview onBack={() => setShowPeerReview(false)} />;
+  if (activePanel === "review") {
+    return (
+      <ResumePeerReview
+        onBack={() => setActivePanel("actions")}
+      />
+    );
+  }
+
+  if (activePanel === "debug") {
+    return (
+      <div>
+        <ActionRow
+          label="Back to Actions"
+          action="Back"
+          onClick={() => setActivePanel("actions")}
+        />
+
+        <ResumeParserDebug />
+      </div>
+    );
   }
 
   return (
@@ -52,7 +74,13 @@ export default function ResumeActions() {
       <ActionRow
         label="Request Peer Review"
         action="Request"
-        onClick={() => setShowPeerReview(true)}
+        onClick={() => setActivePanel("review")}
+      />
+
+      <ActionRow
+        label="Parser Debug"
+        action="Open"
+        onClick={() => setActivePanel("debug")}
       />
     </PanelCard>
   );
