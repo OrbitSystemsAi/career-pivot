@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import type { ParsedResumeDocument } from "@/core/resumeParsing/parsedResumeTypes";
 import { mockUser } from "./mockUser";
 import type { ResumeVersion, UserProfile, UserResume } from "./userTypes";
 
@@ -9,6 +10,7 @@ type AddResumeInput = {
   fileName: string;
   fileType: string;
   fileSize: number;
+  parsedDocument?: ParsedResumeDocument;
 };
 
 type ResumeOptimizationType =
@@ -245,7 +247,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       source: "upload",
       version: 1,
       createdDate,
-      parseStatus: "uploaded",
+      parseStatus: resume.parsedDocument ? "parsed" : "uploaded",
       currentVersionId: versionId,
       versions: [
         {
@@ -254,6 +256,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           source: "upload",
           createdDate,
           isCurrent: true,
+          parsedDocument: resume.parsedDocument,
         },
       ],
     };
@@ -322,6 +325,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           return resume;
         }
 
+        const currentVersion = resume.versions.find(
+          (version) => version.id === resume.currentVersionId
+        );
+
         const nextVersionNumber = resume.versions.length + 1;
         const newVersionId = `${resume.id}-v${nextVersionNumber}-${Date.now()}`;
         createdVersionId = newVersionId;
@@ -332,6 +339,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           source: "ai_optimized",
           createdDate,
           isCurrent: true,
+          parsedDocument: currentVersion?.parsedDocument,
         };
 
         return {

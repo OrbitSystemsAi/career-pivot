@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import mammoth from "mammoth";
-import pdfParse from "pdf-parse";
 import { buildStructuredResume } from "@/core/resumeParsing/buildStructuredResume";
 import type { ParsedResumeDocument } from "@/core/resumeParsing/parsedResumeTypes";
 
@@ -24,15 +23,9 @@ export async function POST(request: Request) {
   ) {
     const result = await mammoth.extractRawText({ buffer });
     rawText = result.value;
-  } else if (
-    file.type === "application/pdf" ||
-    file.name.toLowerCase().endsWith(".pdf")
-  ) {
-    const result = await pdfParse(buffer);
-    rawText = result.text;
   } else {
     return NextResponse.json(
-      { error: "Unsupported file type" },
+      { error: "Unsupported file type. Please upload a .docx resume." },
       { status: 400 }
     );
   }
