@@ -12,16 +12,16 @@ export default function D4UtilityFrame() {
   const UtilityBottom = panels.utilityBottom;
 
   return (
-    <aside className="grid min-h-0 grid-rows-[20rem_minmax(0,1fr)_14rem] gap-4 overflow-hidden">
-      <div className="min-h-0 overflow-hidden">
+    <aside className="grid min-h-0 grid-rows-[18rem_minmax(0,1fr)_14rem] gap-4 overflow-hidden">
+      <div className="min-h-0 overflow-hidden rounded-[1.5rem]">
         <UtilityTop />
       </div>
 
-      <div className="min-h-0 overflow-hidden">
+      <div className="min-h-0 overflow-hidden rounded-[1.5rem]">
         <UtilityMiddle />
       </div>
 
-      <div className="min-h-0 overflow-hidden">
+      <div className="min-h-0 overflow-hidden rounded-[1.5rem]">
         <UtilityBottom />
       </div>
     </aside>

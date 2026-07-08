@@ -4,10 +4,13 @@ import D3VisualizationPanel from "../panels/D3VisualizationPanel";
 
 export default function D3WorkspaceFrame() {
   return (
-    <section className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <section className="flex min-h-0 flex-col overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white/90 shadow-sm backdrop-blur">
       <D3WorkspaceHeaderPanel />
       <D3WorkspaceControlsPanel />
-      <D3VisualizationPanel />
+
+      <div className="min-h-0 flex-1 bg-slate-50/80">
+        <D3VisualizationPanel />
+      </div>
     </section>
   );
 }

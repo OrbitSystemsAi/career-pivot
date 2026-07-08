@@ -5,13 +5,13 @@ import D4UtilityFrame from "./frames/D4UtilityFrame";
 
 export default function AppShell() {
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-slate-100">
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#f6f8fc]">
       <D1GlobalHeaderFrame />
 
       <div className="flex min-h-0 flex-1">
         <D2NavigationFrame />
 
-        <main className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_24rem] gap-4 p-4">
+        <main className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_24rem] gap-4 overflow-hidden bg-gradient-to-br from-white via-slate-50 to-blue-50/40 p-4">
           <D3WorkspaceFrame />
           <D4UtilityFrame />
         </main>
