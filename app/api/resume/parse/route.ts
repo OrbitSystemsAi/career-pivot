@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import mammoth from "mammoth";
+import { buildDocumentResume } from "@/core/resumeParsing/buildDocumentResume";
 import { buildStructuredResume } from "@/core/resumeParsing/buildStructuredResume";
 import type { ParsedResumeDocument } from "@/core/resumeParsing/parsedResumeTypes";
 
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
     fileName: file.name,
     rawText,
     lines,
+    documentResume: buildDocumentResume(lines),
     structuredResume: buildStructuredResume(lines),
     parsedDate: new Date().toISOString(),
   };
