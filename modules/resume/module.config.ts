@@ -30,7 +30,7 @@ export const resumeModule: ModuleDefinition = {
 
   views: [
     { label: "Document", id: "document" },
-    { label: "Summary", id: "overview" },
+    { label: "Summary", id: "summary" },
     { label: "ATS", id: "ats" },
     { label: "Keywords", id: "keywords" },
     { label: "Versions", id: "versions" },
@@ -38,7 +38,7 @@ export const resumeModule: ModuleDefinition = {
   ],
 
   panels: {
-    visualization: ResumeModule,
+    visualization: ResumeDocument,
 
     utilityTop: ResumeFilters,
     utilityMiddle: ResumeContext,
@@ -52,6 +52,10 @@ export const resumeModule: ModuleDefinition = {
   viewPanels: {
     document: {
       visualization: ResumeDocument,
+    },
+
+    summary: {
+      visualization: ResumeModule,
     },
 
     ats: {
