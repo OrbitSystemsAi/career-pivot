@@ -3,14 +3,6 @@
 import { useUser } from "@/core/user/UserProvider";
 import { resumeDocumentData } from "../data/resumeDocumentData";
 
-function isLikelyBullet(line: string) {
-  return (
-    line.startsWith("•") ||
-    line.startsWith("-") ||
-    /^[A-Z][A-Za-z\s&/()+.-]+$/.test(line)
-  );
-}
-
 export default function ResumeDocument() {
   const { user, activeResumeId } = useUser();
 
@@ -32,56 +24,39 @@ export default function ResumeDocument() {
   );
 
   const parsedDocument = activeVersion?.parsedDocument;
-  const documentResume = parsedDocument?.documentResume;
 
-  if (documentResume && !savedDocumentContent) {
+  if (parsedDocument?.htmlPreview && !savedDocumentContent) {
     return (
       <div className="h-full w-full overflow-auto">
         <div className="min-h-full w-full rounded-2xl border border-slate-200 bg-white px-12 py-10 shadow-sm">
-          <div className="border-b border-slate-200 pb-5">
-            <div className="flex items-start justify-between gap-8">
-              <div className="space-y-1 text-sm text-slate-500">
-                {documentResume.headerLines.map((line) => (
-                  <div key={line}>{line}</div>
-                ))}
+          <div className="mb-6 border-b border-slate-200 pb-4">
+            <div className="flex items-start justify-between gap-6">
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                  Document Preview
+                </div>
+
+                <div className="mt-2 text-sm font-semibold text-slate-700">
+                  {parsedDocument.fileName}
+                </div>
+
+                <div className="mt-1 text-xs text-slate-500">
+                  Target: {targetGoal?.title ?? activeResume?.targetJobTitle}
+                </div>
               </div>
 
               <div className="shrink-0 rounded-full bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-600">
                 {activeVersion?.label}
               </div>
             </div>
-
-            {documentResume.headline && (
-              <div className="mt-8 text-xl font-bold leading-8 text-slate-900">
-                {documentResume.headline}
-              </div>
-            )}
-
-            <div className="mt-4 text-sm font-semibold text-blue-600">
-              Target: {targetGoal?.title ?? activeResume?.targetJobTitle}
-            </div>
           </div>
 
-          {documentResume.sections.map((section) => (
-            <section key={section.id} className="mt-6">
-              <h2 className="text-sm font-bold text-blue-600">
-                {section.title}
-              </h2>
-
-              <div className="mt-3 space-y-3 text-sm leading-7 text-slate-700">
-                {section.lines.map((line) =>
-                  isLikelyBullet(line) ? (
-                    <div key={line} className="flex gap-3">
-                      <span className="mt-[0.15rem] text-slate-400">•</span>
-                      <span>{line.replace(/^[-•*]\s*/, "")}</span>
-                    </div>
-                  ) : (
-                    <p key={line}>{line}</p>
-                  )
-                )}
-              </div>
-            </section>
-          ))}
+          <div
+            className="resume-preview text-sm leading-7 text-slate-800 [&_a]:text-blue-600 [&_h1]:mb-3 [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:mt-6 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:uppercase [&_h2]:tracking-wide [&_h2]:text-blue-600 [&_li]:ml-5 [&_li]:list-disc [&_p]:mb-3 [&_strong]:font-bold [&_table]:w-full [&_td]:align-top"
+            dangerouslySetInnerHTML={{
+              __html: parsedDocument.htmlPreview,
+            }}
+          />
         </div>
       </div>
     );

@@ -15,21 +15,22 @@ export async function POST(request: Request) {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
-  let rawText = "";
-
   if (
-    file.type ===
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-    file.name.toLowerCase().endsWith(".docx")
+    file.type !==
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" &&
+    !file.name.toLowerCase().endsWith(".docx")
   ) {
-    const result = await mammoth.extractRawText({ buffer });
-    rawText = result.value;
-  } else {
     return NextResponse.json(
       { error: "Unsupported file type. Please upload a .docx resume." },
       { status: 400 }
     );
   }
+
+  const rawTextResult = await mammoth.extractRawText({ buffer });
+  const htmlResult = await mammoth.convertToHtml({ buffer });
+
+  const rawText = rawTextResult.value;
+  const htmlPreview = htmlResult.value;
 
   const lines = rawText
     .split(/\r?\n/)
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
   const parsedDocument: ParsedResumeDocument = {
     fileName: file.name,
     rawText,
+    htmlPreview,
     lines,
     documentResume: buildDocumentResume(lines),
     structuredResume: buildStructuredResume(lines),
