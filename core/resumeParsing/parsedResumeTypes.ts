@@ -6,6 +6,11 @@ export type ParsedResumeDocument = {
   rawText: string;
   htmlPreview?: string;
   lines: string[];
+
+  originalFileName?: string;
+  originalFileType?: string;
+  originalFileDataUrl?: string;
+
   documentResume?: DocumentResume;
   structuredResume?: StructuredResume;
   parsedDate: string;

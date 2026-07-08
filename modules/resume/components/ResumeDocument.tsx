@@ -31,7 +31,24 @@ export default function ResumeDocument() {
     window.print();
   }
 
+  function handleDownloadOriginal() {
+    if (!parsedDocument?.originalFileDataUrl) {
+      return;
+    }
+
+    const link = document.createElement("a");
+    link.href = parsedDocument.originalFileDataUrl;
+    link.download =
+      parsedDocument.originalFileName ?? parsedDocument.fileName ?? "resume.docx";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   if (parsedDocument?.htmlPreview && !savedDocumentContent) {
+    const canDownloadOriginal = Boolean(parsedDocument.originalFileDataUrl);
+
     return (
       <div className="h-full w-full overflow-auto">
         <div className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-slate-100 px-4 py-3">
@@ -53,7 +70,15 @@ export default function ResumeDocument() {
               Print
             </button>
 
-            <button className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-400">
+            <button
+              onClick={handleDownloadOriginal}
+              disabled={!canDownloadOriginal}
+              className={`rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold ${
+                canDownloadOriginal
+                  ? "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+                  : "cursor-not-allowed text-slate-300"
+              }`}
+            >
               Download Original
             </button>
           </div>

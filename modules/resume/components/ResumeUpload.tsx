@@ -5,6 +5,23 @@ import ActionRow from "@/core/ui/ActionRow";
 import type { ParsedResumeDocument } from "@/core/resumeParsing/parsedResumeTypes";
 import { useUser } from "@/core/user/UserProvider";
 
+function readFileAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject(new Error("Could not read uploaded file."));
+      }
+    };
+
+    reader.onerror = () => reject(new Error("Could not read uploaded file."));
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function ResumeUpload() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { addResume } = useUser();
@@ -48,14 +65,22 @@ export default function ResumeUpload() {
     setParseError(null);
 
     try {
-      const parsedDocument = await parseResumeFile(file);
+      const [parsedDocument, originalFileDataUrl] = await Promise.all([
+        parseResumeFile(file),
+        readFileAsDataUrl(file),
+      ]);
 
       addResume({
         name: file.name.replace(/\.[^/.]+$/, ""),
         fileName: file.name,
         fileType: file.type || "unknown",
         fileSize: file.size,
-        parsedDocument,
+        parsedDocument: {
+          ...parsedDocument,
+          originalFileName: file.name,
+          originalFileType: file.type || "unknown",
+          originalFileDataUrl,
+        },
       });
     } catch (error) {
       const message =
@@ -74,7 +99,7 @@ export default function ResumeUpload() {
       <input
         ref={fileInputRef}
         type="file"
-        accept=".pdf,.docx"
+        accept=".docx"
         className="hidden"
         onChange={handleFileChange}
       />
