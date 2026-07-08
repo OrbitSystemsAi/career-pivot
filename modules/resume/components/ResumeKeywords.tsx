@@ -4,43 +4,47 @@ import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
 import { useUser } from "@/core/user/UserProvider";
 
-const detectedKeywords = [
-  {
-    label: "Finance leadership",
-    value: "Strong",
-  },
-  {
-    label: "Business intelligence",
-    value: "Strong",
-  },
-  {
-    label: "Executive reporting",
-    value: "Strong",
-  },
-  {
-    label: "Digital transformation",
-    value: "Moderate",
-  },
+const targetKeywords = [
+  "AI governance",
+  "enterprise architecture",
+  "change management",
+  "healthcare operations",
+  "digital transformation",
+  "data strategy",
+  "executive reporting",
+  "automation",
+  "business intelligence",
+  "finance leadership",
 ];
 
-const missingKeywords = [
-  {
-    label: "AI governance",
-    value: "Missing",
-  },
-  {
-    label: "Enterprise architecture",
-    value: "Missing",
-  },
-  {
-    label: "Healthcare operations",
-    value: "Missing",
-  },
-  {
-    label: "Change management",
-    value: "Weak",
-  },
-];
+function normalize(value: string) {
+  return value.toLowerCase().trim();
+}
+
+function unique(values: string[]) {
+  return Array.from(new Set(values.filter(Boolean)));
+}
+
+function getDetectedKeywords(skills: string[], rawText: string) {
+  const normalizedText = normalize(rawText);
+
+  const detectedTargetKeywords = targetKeywords.filter((keyword) =>
+    normalizedText.includes(normalize(keyword))
+  );
+
+  return unique([...skills, ...detectedTargetKeywords]);
+}
+
+function getMissingKeywords(detectedKeywords: string[]) {
+  const normalizedDetected = detectedKeywords.map(normalize);
+
+  return targetKeywords.filter(
+    (keyword) =>
+      !normalizedDetected.some((detected) =>
+        detected.includes(normalize(keyword))
+      )
+  );
+}
 
 export default function ResumeKeywords() {
   const { user, activeResumeId, optimizeResume } = useUser();
@@ -49,9 +53,23 @@ export default function ResumeKeywords() {
     user.resumes.find((resume) => resume.id === activeResumeId) ??
     user.resumes[0];
 
+  const activeVersion =
+    activeResume?.versions.find(
+      (version) => version.id === activeResume.currentVersionId
+    ) ?? activeResume?.versions[0];
+
+  const parsedDocument = activeVersion?.parsedDocument;
+  const structuredResume = parsedDocument?.structuredResume;
+
   const targetGoal = user.goals.find(
     (goal) => goal.id === activeResume?.targetGoalId
   );
+
+  const skills = structuredResume?.skills ?? user.skills;
+  const rawText = parsedDocument?.rawText ?? skills.join(" ");
+
+  const detectedKeywords = getDetectedKeywords(skills, rawText);
+  const missingKeywords = getMissingKeywords(detectedKeywords);
 
   function handleOptimizeKeywords() {
     if (!activeResume) {
@@ -66,18 +84,28 @@ export default function ResumeKeywords() {
       <div className="grid h-full min-h-[520px] grid-cols-2 gap-4">
         <PanelCard title="Detected Keywords">
           <div className="mb-3 text-xs leading-5 text-slate-500">
-            Keywords currently supported by{" "}
+            Keywords currently detected in{" "}
             {activeResume?.name ?? "the selected resume"}.
           </div>
 
           <div className="space-y-1">
-            {detectedKeywords.map((keyword) => (
-              <ActionRow
-                key={keyword.label}
-                label={keyword.label}
-                value={keyword.value}
-              />
-            ))}
+            {detectedKeywords.length === 0 ? (
+              <ActionRow label="No keywords detected" value="0" />
+            ) : (
+              detectedKeywords.map((keyword) => (
+                <ActionRow
+                  key={keyword}
+                  label={keyword}
+                  value={
+                    targetKeywords
+                      .map(normalize)
+                      .includes(normalize(keyword))
+                      ? "Target"
+                      : "Detected"
+                  }
+                />
+              ))
+            )}
           </div>
         </PanelCard>
 
@@ -87,13 +115,13 @@ export default function ResumeKeywords() {
           </div>
 
           <div className="space-y-1">
-            {missingKeywords.map((keyword) => (
-              <ActionRow
-                key={keyword.label}
-                label={keyword.label}
-                value={keyword.value}
-              />
-            ))}
+            {missingKeywords.length === 0 ? (
+              <ActionRow label="No major keyword gaps" value="Good" />
+            ) : (
+              missingKeywords.map((keyword) => (
+                <ActionRow key={keyword} label={keyword} value="Missing" />
+              ))
+            )}
           </div>
 
           <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
