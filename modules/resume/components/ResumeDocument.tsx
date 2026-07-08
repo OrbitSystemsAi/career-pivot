@@ -31,6 +31,7 @@ export default function ResumeDocument() {
 
   const parsedDocument = activeVersion?.parsedDocument;
   const structuredResume = parsedDocument?.structuredResume;
+  const optimizationSummary = parsedDocument?.optimizationSummary;
 
   function handlePrint() {
     window.print();
@@ -125,6 +126,20 @@ export default function ResumeDocument() {
         <div className="bg-slate-100 px-8 py-6">
           {previewMode === "preview" && (
             <div className="mx-auto min-h-[1056px] w-full max-w-[816px] rounded-sm border border-slate-200 bg-white px-12 py-10 shadow-sm print:mx-0 print:max-w-none print:border-0 print:shadow-none">
+              {optimizationSummary && (
+                <div className="mb-6 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-700">
+                  <div className="font-semibold">
+                    {optimizationSummary.label}
+                  </div>
+
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5">
+                    {optimizationSummary.notes.map((note) => (
+                      <li key={note}>{note}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               <div
                 className="resume-preview text-sm leading-7 text-slate-800 [&_a]:text-blue-600 [&_h1]:mb-3 [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:mt-6 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:uppercase [&_h2]:tracking-wide [&_h2]:text-blue-600 [&_li]:ml-5 [&_li]:list-disc [&_p]:mb-3 [&_strong]:font-bold [&_table]:w-full [&_td]:align-top"
                 dangerouslySetInnerHTML={{
@@ -140,6 +155,20 @@ export default function ResumeDocument() {
                 Extracted Text
               </div>
 
+              {optimizationSummary && (
+                <div className="mb-6 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-700">
+                  <div className="font-semibold">
+                    {optimizationSummary.label}
+                  </div>
+
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5">
+                    {optimizationSummary.notes.map((note) => (
+                      <li key={note}>{note}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               <div className="whitespace-pre-wrap text-sm leading-7 text-slate-700">
                 {parsedDocument.rawText}
               </div>
@@ -150,8 +179,19 @@ export default function ResumeDocument() {
             <div className="mx-auto w-full max-w-[816px]">
               <PanelCard title="Parser Debug">
                 <ActionRow label="Parse Status" value={activeResume.parseStatus} />
-                <ActionRow label="Raw Lines" value={String(parsedDocument.lines.length)} />
-                <ActionRow label="Name" value={structuredResume?.name ?? "Missing"} />
+                <ActionRow label="Version" value={activeVersion?.label ?? "N/A"} />
+                <ActionRow
+                  label="Optimization"
+                  value={optimizationSummary?.type ?? "None"}
+                />
+                <ActionRow
+                  label="Raw Lines"
+                  value={String(parsedDocument.lines.length)}
+                />
+                <ActionRow
+                  label="Name"
+                  value={structuredResume?.name ?? "Missing"}
+                />
                 <ActionRow
                   label="Email"
                   value={structuredResume?.contact.email ?? "Missing"}

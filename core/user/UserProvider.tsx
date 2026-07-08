@@ -1,7 +1,10 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import type { ParsedResumeDocument } from "@/core/resumeParsing/parsedResumeTypes";
+import type {
+  ParsedResumeDocument,
+  ResumeOptimizationSummary,
+} from "@/core/resumeParsing/parsedResumeTypes";
 import { mockUser } from "./mockUser";
 import type { ResumeVersion, UserProfile, UserResume } from "./userTypes";
 
@@ -105,6 +108,79 @@ function getOptimizationLabel(
   }
 
   return "Full AI Rewrite Version";
+}
+
+function getOptimizationNotes(
+  optimizationType: ResumeOptimizationType,
+  targetRole?: string
+) {
+  if (optimizationType === "ats") {
+    return [
+      "Improved ATS alignment signals.",
+      "Prioritized missing target keywords where supported by experience.",
+      "Prepared this version for applicant tracking system review.",
+    ];
+  }
+
+  if (optimizationType === "keywords") {
+    return [
+      "Expanded keyword coverage for the target role.",
+      "Highlighted stronger matches between skills and job language.",
+      "Prepared this version for keyword comparison.",
+    ];
+  }
+
+  if (optimizationType === "target_role") {
+    return [
+      `Reframed resume language toward ${targetRole ?? "the target role"}.`,
+      "Strengthened role-specific positioning.",
+      "Improved alignment between experience and target career direction.",
+    ];
+  }
+
+  return [
+    "Created a full AI rewrite version.",
+    "Preserved original upload as prior version.",
+    "Prepared this version for review, compare, and export workflows.",
+  ];
+}
+
+function buildOptimizedParsedDocument(
+  currentParsedDocument: ParsedResumeDocument | undefined,
+  optimizationType: ResumeOptimizationType,
+  label: string,
+  createdFromVersionId: string | undefined,
+  createdDate: string,
+  targetRole?: string
+): ParsedResumeDocument | undefined {
+  const optimizationSummary: ResumeOptimizationSummary = {
+    type: optimizationType,
+    label,
+    notes: getOptimizationNotes(optimizationType, targetRole),
+    createdFromVersionId,
+    createdDate,
+  };
+
+  if (!currentParsedDocument) {
+    return {
+      fileName: label,
+      rawText: optimizationSummary.notes.join("\n"),
+      htmlPreview: `<h1>${label}</h1><p>${optimizationSummary.notes.join(
+        "</p><p>"
+      )}</p>`,
+      lines: optimizationSummary.notes,
+      optimizationSummary,
+      parsedDate: createdDate,
+    };
+  }
+
+  return {
+    ...currentParsedDocument,
+    fileName: currentParsedDocument.fileName,
+    htmlPreview: currentParsedDocument.htmlPreview,
+    optimizationSummary,
+    parsedDate: createdDate,
+  };
 }
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
@@ -442,11 +518,61 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const targetGoal = user.goals.find(
       (goal) => goal.id === resume?.targetGoalId
     );
-
-    createResumeVersion(
-      resumeId,
-      getOptimizationLabel(optimizationType, targetGoal?.title)
+    const currentVersion = resume?.versions.find(
+      (version) => version.id === resume.currentVersionId
     );
+
+    const label = getOptimizationLabel(optimizationType, targetGoal?.title);
+    const createdDate = new Date().toISOString();
+    let createdVersionId = "";
+
+    const nextUser: UserProfile = {
+      ...user,
+      resumes: user.resumes.map((item) => {
+        if (item.id !== resumeId) {
+          return item;
+        }
+
+        const nextVersionNumber = item.versions.length + 1;
+        const newVersionId = `${item.id}-v${nextVersionNumber}-${Date.now()}`;
+        createdVersionId = newVersionId;
+
+        const newVersion: ResumeVersion = {
+          id: newVersionId,
+          label,
+          source: "ai_optimized",
+          createdDate,
+          isCurrent: true,
+          parsedDocument: buildOptimizedParsedDocument(
+            currentVersion?.parsedDocument,
+            optimizationType,
+            label,
+            currentVersion?.id,
+            createdDate,
+            targetGoal?.title
+          ),
+        };
+
+        return {
+          ...item,
+          version: nextVersionNumber,
+          currentVersionId: newVersionId,
+          versions: [
+            ...item.versions.map((version) => ({
+              ...version,
+              isCurrent: false,
+            })),
+            newVersion,
+          ],
+        };
+      }),
+    };
+
+    persistUser(nextUser);
+
+    if (createdVersionId) {
+      setCompareVersionId(currentVersion?.id ?? createdVersionId);
+    }
   }
 
   if (!hasLoadedStorage) {

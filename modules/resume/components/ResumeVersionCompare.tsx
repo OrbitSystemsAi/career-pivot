@@ -37,6 +37,12 @@ export default function ResumeVersionCompare() {
     activeResume.versions.find((version) => version.id !== currentVersion?.id) ??
     activeResume.versions[0];
 
+  const currentOptimization =
+    currentVersion?.parsedDocument?.optimizationSummary;
+
+  const comparisonOptimization =
+    comparisonVersion?.parsedDocument?.optimizationSummary;
+
   return (
     <div className="h-full w-full overflow-auto">
       <div className="grid h-full min-h-[520px] grid-cols-2 gap-4">
@@ -51,17 +57,45 @@ export default function ResumeVersionCompare() {
             </div>
           </div>
 
-          <div className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-            <p>
-              This version is currently active and powers the Resume Document
-              view.
-            </p>
+          <div className="mt-4 space-y-2">
+            <ActionRow
+              label="Optimization"
+              value={currentOptimization?.type ?? "None"}
+            />
 
-            <p>
-              Future comparison logic will highlight wording changes, keyword
-              improvements, ATS score movement, and target-role alignment.
-            </p>
+            <ActionRow
+              label="Raw Lines"
+              value={String(currentVersion?.parsedDocument?.lines.length ?? 0)}
+            />
+
+            <ActionRow
+              label="Skills"
+              value={String(
+                currentVersion?.parsedDocument?.structuredResume?.skills.length ??
+                  0
+              )}
+            />
+
+            <ActionRow
+              label="Experience"
+              value={String(
+                currentVersion?.parsedDocument?.structuredResume?.experience
+                  .length ?? 0
+              )}
+            />
           </div>
+
+          {currentOptimization && (
+            <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 p-4 text-xs leading-5 text-blue-700">
+              <div className="font-semibold">{currentOptimization.label}</div>
+
+              <ul className="mt-2 list-disc space-y-1 pl-5">
+                {currentOptimization.notes.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </PanelCard>
 
         <PanelCard title="Selected Comparison">
@@ -78,11 +112,46 @@ export default function ResumeVersionCompare() {
           </div>
 
           <div className="mt-4 space-y-2">
-            <ActionRow label="Summary improved" value="+12%" />
-            <ActionRow label="Keyword match" value="+8%" />
-            <ActionRow label="Executive tone" value="Higher" />
-            <ActionRow label="Healthcare alignment" value="Improved" />
+            <ActionRow
+              label="Optimization"
+              value={comparisonOptimization?.type ?? "None"}
+            />
+
+            <ActionRow
+              label="Raw Lines"
+              value={String(
+                comparisonVersion?.parsedDocument?.lines.length ?? 0
+              )}
+            />
+
+            <ActionRow
+              label="Skills"
+              value={String(
+                comparisonVersion?.parsedDocument?.structuredResume?.skills
+                  .length ?? 0
+              )}
+            />
+
+            <ActionRow
+              label="Experience"
+              value={String(
+                comparisonVersion?.parsedDocument?.structuredResume?.experience
+                  .length ?? 0
+              )}
+            />
           </div>
+
+          {comparisonOptimization && (
+            <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs leading-5 text-slate-600">
+              <div className="font-semibold">{comparisonOptimization.label}</div>
+
+              <ul className="mt-2 list-disc space-y-1 pl-5">
+                {comparisonOptimization.notes.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </PanelCard>
       </div>
     </div>
