@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { styles } from "@/core/design/styles";
 import PanelCard from "@/core/ui/PanelCard";
 import { useUser } from "@/core/user/UserProvider";
 import ResumeUpload from "./ResumeUpload";
@@ -17,7 +18,7 @@ export default function ResumeFilters() {
 
   return (
     <PanelCard title="Resume Library">
-      <div className="flex flex-col gap-1">
+      <div className={styles.list.container}>
         {user.resumes.map((resume) => {
           const selected = resume.id === activeResumeId;
           const canRemove = resume.source === "upload";
@@ -26,43 +27,39 @@ export default function ResumeFilters() {
           return (
             <div
               key={resume.id}
-              className={`rounded-xl px-3 py-2 text-xs font-medium ${
-                selected
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+              className={`rounded-xl px-3 py-2 text-xs transition ${
+                selected ? styles.list.rowSelected : styles.list.rowDefault
               }`}
             >
               {!confirming && (
                 <div className="grid grid-cols-[1fr_auto_auto] items-center gap-2">
                   <button
                     onClick={() => setActiveResumeId(resume.id)}
-                    className="truncate text-left"
+                    className={styles.list.rowText}
                   >
                     {resume.name}
                   </button>
 
-                  <span className="text-slate-400">
+                  <span className={styles.list.rowMeta}>
                     {resume.source === "upload" ? "upload" : resume.status}
                   </span>
 
                   {canRemove ? (
                     <button
                       onClick={() => setConfirmRemoveId(resume.id)}
-                      className="text-slate-400 hover:text-red-500"
+                      className={styles.list.rowAction}
                     >
                       Remove
                     </button>
                   ) : (
-                    <span className="text-slate-300">Base</span>
+                    <span className={styles.list.rowMuted}>Base</span>
                   )}
                 </div>
               )}
 
               {confirming && (
                 <div className="space-y-2">
-                  <div className="text-slate-600">
-                    Remove this resume?
-                  </div>
+                  <div className="text-slate-600">Remove this resume?</div>
 
                   <div className="flex gap-2">
                     <button
@@ -86,7 +83,9 @@ export default function ResumeFilters() {
         })}
       </div>
 
-      <ResumeUpload />
+      <div className={styles.list.divider}>
+        <ResumeUpload />
+      </div>
     </PanelCard>
   );
 }

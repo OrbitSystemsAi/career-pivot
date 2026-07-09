@@ -25,4 +25,17 @@ export const styles = {
     muted: "text-xs text-slate-500",
     value: "text-slate-900",
   },
+
+  list: {
+    container: "flex flex-col gap-1",
+    row:
+      "grid grid-cols-[1fr_auto_auto] items-center gap-2 rounded-xl px-3 py-2 text-xs transition",
+    rowSelected: "bg-blue-50 text-slate-900",
+    rowDefault: "text-slate-500 hover:bg-blue-50 hover:text-slate-900",
+    rowText: "truncate text-left",
+    rowMeta: "text-slate-400",
+    rowAction: "text-slate-500 hover:text-slate-900",
+    rowMuted: "text-slate-300",
+    divider: "mt-3 border-t border-slate-100 pt-3",
+  },
 };
