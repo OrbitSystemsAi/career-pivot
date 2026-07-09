@@ -15,14 +15,14 @@ export default function ActionRow({
     <>
       <span>{label}</span>
 
-      {value && <span className="text-blue-600">{value}</span>}
+      {value && <span className="text-slate-900">{value}</span>}
 
-      {action && <span className="text-blue-600">{action}</span>}
+      {action && <span className="text-slate-900">{action}</span>}
     </>
   );
 
   const className =
-    "flex w-full justify-between rounded-xl px-3 py-2 text-xs font-medium text-slate-500 hover:bg-blue-50 hover:text-blue-600";
+    "flex w-full justify-between rounded-xl px-3 py-2 text-xs text-slate-500 hover:bg-blue-50 hover:text-slate-900";
 
   if (!onClick) {
     return <div className={className}>{content}</div>;

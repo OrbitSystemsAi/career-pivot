@@ -17,7 +17,7 @@ export default function D5BottomWorkspaceFrame({
     <section className="absolute bottom-5 left-6 right-6 z-50 overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white/95 shadow-[0_24px_80px_rgba(15,23,42,0.14)] backdrop-blur">
       <button
         onClick={onToggle}
-        className="flex h-12 w-full items-center justify-between border-b border-slate-100 px-5 text-xs font-bold uppercase tracking-wide text-slate-400 hover:bg-blue-50 hover:text-blue-600"
+        className="flex h-12 w-full items-center justify-between border-b border-slate-100 px-5 text-xs uppercase tracking-wide text-slate-500 hover:bg-blue-50 hover:text-slate-900"
       >
         <span>D5 Intelligence Workspace</span>
         <span>{isOpen ? "Hide" : "Show"}</span>

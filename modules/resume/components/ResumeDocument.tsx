@@ -8,6 +8,14 @@ import { resumeDocumentData } from "../data/resumeDocumentData";
 
 type PreviewMode = "preview" | "text" | "debug";
 
+function controlButtonClass(selected: boolean) {
+  return `rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs transition ${
+    selected
+      ? "bg-blue-50 text-slate-900"
+      : "text-slate-500 hover:bg-blue-50 hover:text-slate-900"
+  }`;
+}
+
 export default function ResumeDocument() {
   const [previewMode, setPreviewMode] = useState<PreviewMode>("preview");
   const { user, activeResumeId } = useUser();
@@ -59,11 +67,11 @@ export default function ResumeDocument() {
       <div className="h-full w-full overflow-auto">
         <div className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-slate-100 px-4 py-3">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <div className="text-xs uppercase tracking-wide text-slate-400">
               Document
             </div>
 
-            <div className="mt-1 text-sm font-semibold text-slate-700">
+            <div className="mt-1 text-sm text-slate-700">
               {parsedDocument.fileName}
             </div>
           </div>
@@ -71,40 +79,28 @@ export default function ResumeDocument() {
           <div className="flex gap-2">
             <button
               onClick={() => setPreviewMode("preview")}
-              className={`rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold ${
-                previewMode === "preview"
-                  ? "text-blue-600"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
-              }`}
+              className={controlButtonClass(previewMode === "preview")}
             >
               Preview
             </button>
 
             <button
               onClick={() => setPreviewMode("text")}
-              className={`rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold ${
-                previewMode === "text"
-                  ? "text-blue-600"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
-              }`}
+              className={controlButtonClass(previewMode === "text")}
             >
               Parsed Text
             </button>
 
             <button
               onClick={() => setPreviewMode("debug")}
-              className={`rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold ${
-                previewMode === "debug"
-                  ? "text-blue-600"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
-              }`}
+              className={controlButtonClass(previewMode === "debug")}
             >
               Debug
             </button>
 
             <button
               onClick={handlePrint}
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-500 transition hover:bg-blue-50 hover:text-slate-900"
             >
               Print
             </button>
@@ -112,9 +108,9 @@ export default function ResumeDocument() {
             <button
               onClick={handleDownloadOriginal}
               disabled={!canDownloadOriginal}
-              className={`rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold ${
+              className={`rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs transition ${
                 canDownloadOriginal
-                  ? "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+                  ? "text-slate-500 hover:bg-blue-50 hover:text-slate-900"
                   : "cursor-not-allowed text-slate-300"
               }`}
             >
@@ -127,10 +123,8 @@ export default function ResumeDocument() {
           {previewMode === "preview" && (
             <div className="mx-auto min-h-[1056px] w-full max-w-[816px] rounded-sm border border-slate-200 bg-white px-12 py-10 shadow-sm print:mx-0 print:max-w-none print:border-0 print:shadow-none">
               {optimizationSummary && (
-                <div className="mb-6 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-700">
-                  <div className="font-semibold">
-                    {optimizationSummary.label}
-                  </div>
+                <div className="mb-6 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-slate-700">
+                  <div>{optimizationSummary.label}</div>
 
                   <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5">
                     {optimizationSummary.notes.map((note) => (
@@ -141,7 +135,7 @@ export default function ResumeDocument() {
               )}
 
               <div
-                className="resume-preview text-sm leading-7 text-slate-800 [&_a]:text-blue-600 [&_h1]:mb-3 [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:mt-6 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:uppercase [&_h2]:tracking-wide [&_h2]:text-blue-600 [&_li]:ml-5 [&_li]:list-disc [&_p]:mb-3 [&_strong]:font-bold [&_table]:w-full [&_td]:align-top"
+                className="resume-preview text-sm leading-7 text-slate-800 [&_a]:text-slate-900 [&_h1]:mb-3 [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:mt-6 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:uppercase [&_h2]:tracking-wide [&_h2]:text-slate-900 [&_li]:ml-5 [&_li]:list-disc [&_p]:mb-3 [&_strong]:font-bold [&_table]:w-full [&_td]:align-top"
                 dangerouslySetInnerHTML={{
                   __html: parsedDocument.htmlPreview,
                 }}
@@ -151,15 +145,13 @@ export default function ResumeDocument() {
 
           {previewMode === "text" && (
             <div className="mx-auto min-h-[1056px] w-full max-w-[816px] rounded-sm border border-slate-200 bg-white px-12 py-10 shadow-sm">
-              <div className="mb-4 text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <div className="mb-4 text-xs uppercase tracking-wide text-slate-400">
                 Extracted Text
               </div>
 
               {optimizationSummary && (
-                <div className="mb-6 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-700">
-                  <div className="font-semibold">
-                    {optimizationSummary.label}
-                  </div>
+                <div className="mb-6 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-slate-700">
+                  <div>{optimizationSummary.label}</div>
 
                   <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5">
                     {optimizationSummary.notes.map((note) => (
@@ -277,12 +269,12 @@ export default function ResumeDocument() {
               </div>
             </div>
 
-            <div className="rounded-full bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-600">
+            <div className="rounded-full bg-blue-50 px-4 py-2 text-xs text-slate-900">
               {activeVersion?.label}
             </div>
           </div>
 
-          <div className="mt-4 text-sm font-semibold text-blue-600">
+          <div className="mt-4 text-sm text-slate-900">
             Target: {targetGoal?.title ?? activeResume?.targetJobTitle}
           </div>
         </div>
