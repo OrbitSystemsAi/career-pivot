@@ -1,20 +1,20 @@
+import { styles } from "@/core/design/styles";
+
 type PanelCardProps = {
-  title?: string;
+  title: string;
   children: React.ReactNode;
 };
 
 export default function PanelCard({ title, children }: PanelCardProps) {
   return (
-    <div className="flex h-full min-h-0 flex-col rounded-2xl border border-slate-200 bg-white p-4">
-      {title && (
-        <div className="mb-3 shrink-0 text-xs font-semibold uppercase tracking-wide text-slate-400">
-          {title}
-        </div>
-      )}
+    <section className={`h-full overflow-hidden ${styles.surface.panel}`}>
+      <div className="border-b border-slate-100 px-4 py-3">
+        <h3 className={styles.text.label}>{title}</h3>
+      </div>
 
-      <div className="min-h-0 flex-1 overflow-auto">
+      <div className="h-[calc(100%-2.75rem)] overflow-auto p-4">
         {children}
       </div>
-    </div>
+    </section>
   );
 }
