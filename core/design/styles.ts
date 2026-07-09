@@ -3,9 +3,22 @@ export const styles = {
     app: "bg-[#f7f8fb] text-slate-900",
     workspace:
       "bg-[radial-gradient(circle_at_50%_35%,rgba(224,247,250,0.65),transparent_34%),linear-gradient(180deg,#ffffff_0%,#f6f8fb_45%,#eef7fb_100%)]",
+    shellPanel:
+      "rounded-[1.75rem] border border-slate-200 bg-white/95 shadow-[0_18px_60px_rgba(15,23,42,0.06)]",
     panel: "rounded-[1.5rem] border border-slate-200 bg-white shadow-sm",
     panelSoft:
       "rounded-[1.5rem] border border-slate-200 bg-white/95 shadow-[0_18px_50px_rgba(15,23,42,0.04)]",
+    documentPage:
+      "mx-auto min-h-[1056px] w-full max-w-[816px] rounded-sm border border-slate-200 bg-white px-12 py-10 shadow-sm print:mx-0 print:max-w-none print:border-0 print:shadow-none",
+  },
+
+  layout: {
+    appShell: "flex h-screen w-screen flex-col overflow-hidden",
+    main:
+      "grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_24rem] gap-5 overflow-hidden p-5",
+    d4: "grid min-h-0 grid-rows-[18rem_minmax(0,1fr)_14rem] gap-5 overflow-hidden",
+    d5:
+      "absolute bottom-5 left-6 right-6 z-50 overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white/95 shadow-[0_24px_80px_rgba(15,23,42,0.14)] backdrop-blur",
   },
 
   button: {
@@ -15,11 +28,21 @@ export const styles = {
     selected: "rounded-xl bg-blue-50 text-xs text-slate-900 transition",
     bordered:
       "rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-500 transition hover:bg-blue-50 hover:text-slate-900",
+    borderedSelected:
+      "rounded-xl border border-slate-200 bg-blue-50 px-3 py-2 text-xs text-slate-900 transition",
     disabled:
       "cursor-not-allowed rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-300",
+    nav:
+      "flex h-14 w-20 items-center justify-center rounded-2xl text-xs transition",
+    navSelected: "bg-blue-50 text-slate-900",
+    navDefault: "text-slate-500 hover:bg-blue-50 hover:text-slate-900",
+    tab: "rounded-xl px-4 py-2 text-xs transition",
+    tabSelected: "bg-blue-50 text-slate-900",
+    tabDefault: "text-slate-500 hover:bg-blue-50 hover:text-slate-900",
   },
 
   text: {
+    title: "text-sm text-slate-900",
     label: "text-xs uppercase tracking-wide text-slate-400",
     body: "text-sm text-slate-700",
     muted: "text-xs text-slate-500",
@@ -37,5 +60,13 @@ export const styles = {
     rowAction: "text-slate-500 hover:text-slate-900",
     rowMuted: "text-slate-300",
     divider: "mt-3 border-t border-slate-100 pt-3",
+  },
+
+  document: {
+    toolbar:
+      "sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-slate-100 px-4 py-3",
+    canvas: "bg-slate-100 px-8 py-6",
+    preview:
+      "resume-preview text-sm leading-7 text-slate-800 [&_a]:text-slate-900 [&_h1]:mb-3 [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:mt-6 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:uppercase [&_h2]:tracking-wide [&_h2]:text-slate-900 [&_li]:ml-5 [&_li]:list-disc [&_p]:mb-3 [&_strong]:font-bold [&_table]:w-full [&_td]:align-top",
   },
 };

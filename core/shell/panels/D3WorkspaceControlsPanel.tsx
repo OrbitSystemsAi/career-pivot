@@ -1,5 +1,6 @@
 "use client";
 
+import { styles } from "@/core/design/styles";
 import { getActiveModule } from "@/core/moduleEngine/getActiveModule";
 import { useOSState } from "@/core/state/OSStateProvider";
 
@@ -17,10 +18,8 @@ export default function D3WorkspaceControlsPanel() {
             <button
               key={view.id}
               onClick={() => setActiveView(view.id)}
-              className={`rounded-xl px-4 py-2 text-xs transition ${
-                selected
-                  ? "bg-blue-50 text-slate-900"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-slate-900"
+              className={`${styles.button.tab} ${
+                selected ? styles.button.tabSelected : styles.button.tabDefault
               }`}
             >
               {view.label}

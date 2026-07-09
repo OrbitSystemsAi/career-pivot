@@ -1,5 +1,6 @@
 "use client";
 
+import { styles } from "@/core/design/styles";
 import { moduleRegistry } from "@/core/registry/moduleRegistry";
 import { useOSState } from "@/core/state/OSStateProvider";
 
@@ -16,10 +17,8 @@ export default function D2NavigationFrame() {
             <button
               key={module.id}
               onClick={() => setActiveModule(module.id)}
-              className={`flex h-14 w-20 items-center justify-center rounded-2xl text-xs transition ${
-                selected
-                  ? "bg-blue-50 text-slate-900"
-                  : "text-slate-500 hover:bg-blue-50 hover:text-slate-900"
+              className={`${styles.button.nav} ${
+                selected ? styles.button.navSelected : styles.button.navDefault
               }`}
             >
               {module.name}

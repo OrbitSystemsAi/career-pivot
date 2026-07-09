@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { styles } from "@/core/design/styles";
 import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
 import { useUser } from "@/core/user/UserProvider";
@@ -9,11 +10,7 @@ import { resumeDocumentData } from "../data/resumeDocumentData";
 type PreviewMode = "preview" | "text" | "debug";
 
 function controlButtonClass(selected: boolean) {
-  return `rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs transition ${
-    selected
-      ? "bg-blue-50 text-slate-900"
-      : "text-slate-500 hover:bg-blue-50 hover:text-slate-900"
-  }`;
+  return selected ? styles.button.borderedSelected : styles.button.bordered;
 }
 
 export default function ResumeDocument() {
@@ -65,11 +62,9 @@ export default function ResumeDocument() {
 
     return (
       <div className="h-full w-full overflow-auto">
-        <div className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-slate-100 px-4 py-3">
+        <div className={styles.document.toolbar}>
           <div>
-            <div className="text-xs uppercase tracking-wide text-slate-400">
-              Document
-            </div>
+            <div className={styles.text.label}>Document</div>
 
             <div className="mt-1 text-sm text-slate-700">
               {parsedDocument.fileName}
@@ -98,30 +93,27 @@ export default function ResumeDocument() {
               Debug
             </button>
 
-            <button
-              onClick={handlePrint}
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-500 transition hover:bg-blue-50 hover:text-slate-900"
-            >
+            <button onClick={handlePrint} className={styles.button.bordered}>
               Print
             </button>
 
             <button
               onClick={handleDownloadOriginal}
               disabled={!canDownloadOriginal}
-              className={`rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs transition ${
+              className={
                 canDownloadOriginal
-                  ? "text-slate-500 hover:bg-blue-50 hover:text-slate-900"
-                  : "cursor-not-allowed text-slate-300"
-              }`}
+                  ? styles.button.bordered
+                  : styles.button.disabled
+              }
             >
               Download Original
             </button>
           </div>
         </div>
 
-        <div className="bg-slate-100 px-8 py-6">
+        <div className={styles.document.canvas}>
           {previewMode === "preview" && (
-            <div className="mx-auto min-h-[1056px] w-full max-w-[816px] rounded-sm border border-slate-200 bg-white px-12 py-10 shadow-sm print:mx-0 print:max-w-none print:border-0 print:shadow-none">
+            <div className={styles.surface.documentPage}>
               {optimizationSummary && (
                 <div className="mb-6 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-slate-700">
                   <div>{optimizationSummary.label}</div>
@@ -135,7 +127,7 @@ export default function ResumeDocument() {
               )}
 
               <div
-                className="resume-preview text-sm leading-7 text-slate-800 [&_a]:text-slate-900 [&_h1]:mb-3 [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:mt-6 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:uppercase [&_h2]:tracking-wide [&_h2]:text-slate-900 [&_li]:ml-5 [&_li]:list-disc [&_p]:mb-3 [&_strong]:font-bold [&_table]:w-full [&_td]:align-top"
+                className={styles.document.preview}
                 dangerouslySetInnerHTML={{
                   __html: parsedDocument.htmlPreview,
                 }}
@@ -144,7 +136,7 @@ export default function ResumeDocument() {
           )}
 
           {previewMode === "text" && (
-            <div className="mx-auto min-h-[1056px] w-full max-w-[816px] rounded-sm border border-slate-200 bg-white px-12 py-10 shadow-sm">
+            <div className={styles.surface.documentPage}>
               <div className="mb-4 text-xs uppercase tracking-wide text-slate-400">
                 Extracted Text
               </div>

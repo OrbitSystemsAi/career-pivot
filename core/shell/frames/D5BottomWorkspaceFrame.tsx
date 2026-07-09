@@ -1,5 +1,6 @@
 "use client";
 
+import { styles } from "@/core/design/styles";
 import D5BottomCenterPanel from "../panels/D5BottomCenterPanel";
 import D5BottomLeftPanel from "../panels/D5BottomLeftPanel";
 import D5BottomRightPanel from "../panels/D5BottomRightPanel";
@@ -14,7 +15,7 @@ export default function D5BottomWorkspaceFrame({
   onToggle,
 }: D5BottomWorkspaceFrameProps) {
   return (
-    <section className="absolute bottom-5 left-6 right-6 z-50 overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white/95 shadow-[0_24px_80px_rgba(15,23,42,0.14)] backdrop-blur">
+    <section className={styles.layout.d5}>
       <button
         onClick={onToggle}
         className="flex h-12 w-full items-center justify-between border-b border-slate-100 px-5 text-xs uppercase tracking-wide text-slate-500 hover:bg-blue-50 hover:text-slate-900"
