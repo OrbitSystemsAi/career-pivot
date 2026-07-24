@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import mammoth from "mammoth";
-import { PDFParse } from "pdf-parse";
 import type { ParseParameters } from "pdf-parse";
 import { buildDocumentResume } from "@/core/resumeParsing/buildDocumentResume";
 import { buildStructuredResume } from "@/core/resumeParsing/buildStructuredResume";
@@ -73,6 +72,7 @@ function buildPdfPreview(rawText: string) {
 }
 
 async function extractPdfText(buffer: Buffer, options: ParseParameters) {
+  const { PDFParse } = await import("pdf-parse");
   const parser = new PDFParse({
     data: new Uint8Array(buffer),
     disableFontFace: true,
