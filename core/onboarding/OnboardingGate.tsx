@@ -8,5 +8,10 @@ import OnboardingScreen from "./OnboardingScreen";
 export default function OnboardingGate({ children }: { children: ReactNode }) {
   const { requiresOnboarding } = useAuth();
 
-  return requiresOnboarding ? <OnboardingScreen /> : children;
+  return (
+    <>
+      {children}
+      {requiresOnboarding ? <OnboardingScreen /> : null}
+    </>
+  );
 }

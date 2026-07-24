@@ -18,7 +18,7 @@ export default function NetworkContext() {
           {network.connectedSources.map((source) => (
             <ActionRow
               key={source}
-              label={source === "linkedin" ? "LinkedIn" : "OSai Network"}
+              label={source === "linkedin" ? "LinkedIn" : "Career Pivot Network"}
               value="Connected"
             />
           ))}

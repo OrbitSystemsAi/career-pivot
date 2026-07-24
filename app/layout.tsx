@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "OSai — Career Clarity and Action",
+  title: "Career Pivot — Career Clarity and Action",
   description:
     "Define your direction, build an evidence-backed roadmap, and turn career goals into action.",
 };

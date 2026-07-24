@@ -181,7 +181,7 @@ export default function ResumeVersions() {
 
           <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
             You can remove saved versions, but each resume must keep at least
-            one version. If the current version is removed, OSai selects the most
+            one version. If the current version is removed, Career Pivot selects the most
             recent remaining version.
           </div>
         </PanelCard>

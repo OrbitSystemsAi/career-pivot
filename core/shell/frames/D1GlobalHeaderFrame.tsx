@@ -71,7 +71,7 @@ export default function D1GlobalHeaderFrame() {
     <header className="relative z-50 grid h-16 grid-cols-[6rem_minmax(0,1fr)_16rem] items-center overflow-visible bg-transparent text-white">
       <div className="flex h-full min-w-0 items-center px-5">
         <div>
-          <div className="text-sm font-semibold text-white">OSai</div>
+          <div className="text-sm font-semibold text-white">Career Pivot</div>
         </div>
       </div>
 
@@ -131,7 +131,7 @@ export default function D1GlobalHeaderFrame() {
             {isDeleteArmed ? (
               <div className="border-t border-[#f0c7ad] bg-[#fff7f1] px-4 py-3">
                 <p className="text-xs font-semibold text-[#8f3d08]">
-                  Delete all OSai data?
+                  Delete all Career Pivot data?
                 </p>
                 <p className="mt-1 text-xs leading-5 text-[#8a6550]">
                   This cannot be undone.

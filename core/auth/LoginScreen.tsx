@@ -4,6 +4,11 @@ import { FormEvent, useState } from "react";
 
 import { useAuth } from "./AuthProvider";
 
+type LoginScreenProps = {
+  initialMode?: "login" | "create";
+  onBack?: () => void;
+};
+
 type PasswordVisibilityButtonProps = {
   isVisible: boolean;
   label: string;
@@ -64,9 +69,12 @@ function PasswordVisibilityButton({
   );
 }
 
-export default function LoginScreen() {
+export default function LoginScreen({
+  initialMode = "login",
+  onBack,
+}: LoginScreenProps) {
   const { createAccount, login } = useAuth();
-  const [mode, setMode] = useState<"login" | "create">("login");
+  const [mode, setMode] = useState<"login" | "create">(initialMode);
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -111,17 +119,18 @@ export default function LoginScreen() {
   }
 
   return (
-    <main
-      className="flex min-h-screen items-center justify-center px-5 py-10 text-[#123541]"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(9,39,54,.86),rgba(9,43,57,.94)),url('/nav-texture.png')",
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-      }}
+    <div
+      aria-label={
+        mode === "login"
+          ? "Log in to Career Pivot"
+          : "Create a Career Pivot account"
+      }
+      aria-modal="true"
+      className="fixed inset-0 z-50 h-screen overflow-hidden bg-[#092b39]/70 px-5 py-6 text-[#123541] backdrop-blur-sm sm:px-8 sm:py-8"
+      role="dialog"
     >
-      <section className="grid w-full max-w-5xl overflow-hidden rounded-[2rem] bg-white shadow-2xl lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="relative hidden min-h-[610px] overflow-hidden bg-[#0c3241] p-12 text-white lg:flex lg:flex-col lg:justify-between">
+      <section className="mx-auto grid h-[calc(100vh-3rem)] w-full max-w-6xl overflow-hidden rounded-[2rem] bg-white shadow-2xl sm:h-[calc(100vh-4rem)] lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="relative hidden min-h-0 overflow-hidden bg-[#0c3241] p-12 text-white lg:flex lg:flex-col lg:justify-between">
           <div
             aria-hidden="true"
             className="absolute inset-0 opacity-50"
@@ -132,7 +141,7 @@ export default function LoginScreen() {
             }}
           />
           <div className="relative">
-            <p className="text-xl font-semibold">OSai</p>
+            <p className="text-xl font-semibold">Career Pivot</p>
             <h1 className="mt-24 max-w-sm text-5xl font-semibold leading-[1.05] tracking-[-0.04em]">
               See your next chapter clearly.
             </h1>
@@ -143,10 +152,29 @@ export default function LoginScreen() {
           </p>
         </div>
 
-        <div className="flex min-h-[610px] flex-col justify-center px-7 py-12 sm:px-14 lg:px-16">
-          <div className="mb-10 lg:hidden">
-            <p className="text-lg font-semibold text-[#0c3241]">OSai</p>
+        <div className="min-h-0 overflow-y-auto px-7 py-12 sm:px-14 lg:px-16">
+          <div className="flex min-h-full flex-col justify-center">
+          <div className="mb-10 flex items-center justify-between lg:hidden">
+            <p className="text-lg font-semibold text-[#0c3241]">Career Pivot</p>
+            {onBack ? (
+              <button
+                className="text-sm font-semibold text-[#116a7e] hover:text-[#ff7a00]"
+                onClick={onBack}
+                type="button"
+              >
+                Back
+              </button>
+            ) : null}
           </div>
+          {onBack ? (
+            <button
+              className="mb-7 hidden w-fit items-center gap-2 text-sm font-semibold text-[#50677a] transition hover:text-[#ff7a00] lg:flex"
+              onClick={onBack}
+              type="button"
+            >
+              <span aria-hidden="true">←</span> Back to introduction
+            </button>
+          ) : null}
           <h2 className="text-4xl font-semibold tracking-[-0.035em] text-[#123541]">
             {mode === "login" ? "Welcome back" : "Create your account"}
           </h2>
@@ -157,7 +185,9 @@ export default function LoginScreen() {
           </p>
 
           <p className="mt-4 text-sm text-[#64748b]">
-            {mode === "login" ? "New to OSai? " : "Already have an account? "}
+            {mode === "login"
+              ? "New to Career Pivot? "
+              : "Already have an account? "}
             <button
               className="font-semibold text-[#116a7e] underline decoration-[#ff7a00] decoration-2 underline-offset-4 transition hover:text-[#ff7a00]"
               onClick={() =>
@@ -313,8 +343,9 @@ export default function LoginScreen() {
           <p className="mt-8 text-center text-xs leading-5 text-[#80909e]">
             Development access: authentication is stored only in this browser.
           </p>
+          </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
