@@ -128,7 +128,7 @@ async function parsePdf(buffer: Buffer): Promise<ParsedFile> {
   };
 }
 
-export async function POST(request: Request) {
+async function parseResumeRequest(request: Request) {
   const formData = await request.formData();
   const file = formData.get("file");
 
@@ -190,4 +190,20 @@ export async function POST(request: Request) {
   };
 
   return NextResponse.json(parsedDocument);
+}
+
+export async function POST(request: Request) {
+  try {
+    return await parseResumeRequest(request);
+  } catch (error) {
+    console.error("Unexpected resume parsing error", error);
+
+    return NextResponse.json(
+      {
+        error:
+          "We couldn’t read that résumé. Please try a text-based PDF or DOCX file.",
+      },
+      { status: 500 }
+    );
+  }
 }
