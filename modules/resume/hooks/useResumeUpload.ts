@@ -25,8 +25,9 @@ function readFileAsDataUrl(file: File) {
 }
 
 async function getResumeParseError(response: Response) {
-  const fallbackMessage =
-    "We couldn’t read that résumé. Please try a text-based PDF or DOCX file.";
+  const fallbackMessage = response.status >= 500
+    ? "The résumé service had a temporary problem. Please try the upload again."
+    : "We couldn’t read that résumé. Please try a text-based PDF or DOCX file.";
   const contentType = response.headers.get("content-type") ?? "";
 
   if (contentType.includes("application/json")) {

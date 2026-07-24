@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 type LandingScreenProps = {
   onCreateAccount: () => void;
@@ -11,6 +12,20 @@ export default function LandingScreen({
   onCreateAccount,
   onLogin,
 }: LandingScreenProps) {
+  const [isChaotic, setIsChaotic] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const transitionTimer = window.setInterval(() => {
+      setIsChaotic((currentState) => !currentState);
+    }, 15_000);
+
+    return () => window.clearInterval(transitionTimer);
+  }, []);
+
   return (
     <main className="h-dvh overflow-hidden bg-white text-[#103744]">
       <section className="flex h-full min-h-0 flex-col bg-white">
@@ -73,14 +88,106 @@ export default function LandingScreen({
           </div>
 
           <div className="relative mx-auto h-[min(48vh,430px)] w-full max-w-[900px] self-end lg:h-[min(68vh,690px)] lg:self-center">
-            <Image
-              alt="One professional progressing through five distinct ages and career chapters"
-              className="object-contain object-bottom"
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 60vw"
-              src="/career-pivot-life-stages-v2.png"
-            />
+            <p
+              aria-live="polite"
+              className="absolute left-1/2 top-0 z-30 -translate-x-1/2 text-[clamp(2rem,4.2vw,4.8rem)] font-semibold leading-none tracking-[-0.055em] text-[#0b3948]"
+            >
+              {isChaotic ? "or This?" : "This?"}
+            </p>
+
+            <svg
+              aria-hidden="true"
+              className="absolute inset-x-0 top-[7%] z-20 h-[31%] w-full overflow-visible"
+              preserveAspectRatio="none"
+              viewBox="0 0 900 210"
+            >
+              <defs>
+                <marker
+                  id="career-arrowhead"
+                  markerHeight="8"
+                  markerWidth="8"
+                  orient="auto"
+                  refX="7"
+                  refY="4"
+                  viewBox="0 0 8 8"
+                >
+                  <path d="M0 0 8 4 0 8Z" fill="currentColor" />
+                </marker>
+              </defs>
+
+              <g
+                className={`text-[#f28c28] transition-opacity duration-700 ${
+                  isChaotic ? "opacity-0" : "opacity-100"
+                }`}
+              >
+                <path
+                  d="M18 184 C260 148 520 101 878 34"
+                  fill="none"
+                  markerEnd="url(#career-arrowhead)"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="4"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </g>
+
+              <g
+                className={`text-[#f28c28] transition-opacity duration-700 ${
+                  isChaotic ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <path
+                  d="M18 182 C210 130 365 148 520 60 S735 82 876 28"
+                  fill="none"
+                  markerEnd="url(#career-arrowhead)"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="3.5"
+                  vectorEffect="non-scaling-stroke"
+                />
+                <path
+                  d="M18 188 C170 80 300 88 415 50 C535 10 580 118 700 100 S815 82 875 55"
+                  fill="none"
+                  markerEnd="url(#career-arrowhead)"
+                  stroke="currentColor"
+                  strokeDasharray="10 9"
+                  strokeLinecap="round"
+                  strokeWidth="3.5"
+                  vectorEffect="non-scaling-stroke"
+                />
+                <path
+                  d="M18 176 C205 120 325 62 445 54 C560 47 625 96 690 132 C760 172 815 189 878 198"
+                  fill="none"
+                  markerEnd="url(#career-arrowhead)"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="4.5"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </g>
+            </svg>
+
+            <div className="absolute inset-x-0 bottom-0 top-[17%]">
+              <Image
+                alt="One professional progressing through five distinct ages and career chapters"
+                className={`object-contain object-bottom transition-opacity duration-1000 ${
+                  isChaotic ? "opacity-0" : "opacity-100"
+                }`}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                src="/career-pivot-life-stages-v2.png"
+              />
+              <Image
+                alt="The same professional navigating five messy and unexpected career chapters"
+                className={`object-contain object-bottom transition-opacity duration-1000 ${
+                  isChaotic ? "opacity-100" : "opacity-0"
+                }`}
+                fill
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                src="/career-pivot-messy-paths.png"
+              />
+            </div>
           </div>
         </div>
 
