@@ -15,15 +15,7 @@ export default function AppShell() {
   const showUtility = moduleDefinition.shell?.showUtility ?? true;
 
   return (
-    <div
-      className={`${styles.layout.appShell} ${styles.surface.app}`}
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(9,39,54,.84),rgba(9,43,57,.92)),url('/nav-texture.png')",
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-      }}
-    >
+    <div className={`${styles.layout.appShell} ${styles.surface.app}`}>
       <D1GlobalHeaderFrame />
 
       <div className="flex min-h-0 flex-1 pb-12">

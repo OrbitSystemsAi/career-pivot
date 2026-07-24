@@ -20,8 +20,8 @@ import ExperienceTimelineTile from "./ExperienceTimelineTile";
 import HighlightsTile from "./HighlightsTile";
 import HomeHeaderMenu from "./HomeHeaderMenu";
 import HomeLayoutDesigner from "./HomeLayoutDesigner";
+import HomeMagazine from "./HomeMagazine";
 import IndustriesVennTile from "./IndustriesVennTile";
-import ProfilePhotoControl from "./ProfilePhotoControl";
 
 type HighlightTileProps = {
   className?: string;
@@ -344,17 +344,8 @@ export default function HomeDashboard() {
     <div className="relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
         <header
           data-testid="home-profile-header"
-          className="relative z-10 grid shrink-0 gap-x-7 gap-y-4 rounded-2xl bg-white px-6 pb-0 pt-6 text-[#102f39] sm:grid-cols-[auto_minmax(0,1fr)]"
+          className="relative z-10 grid shrink-0 gap-y-4 rounded-2xl bg-white px-6 pb-0 pt-6 text-[#102f39]"
         >
-          <div className="flex flex-col items-center self-start">
-            <ProfilePhotoControl
-              name={user.name}
-              image={user.profileImage}
-              onChange={(profileImage) => updateProfile({ profileImage })}
-              onDelete={() => updateProfile({ profileImage: undefined })}
-            />
-          </div>
-
           <div className="min-w-0 text-left">
             <div className="flex items-start justify-between gap-5">
               <div className="min-w-0">
@@ -390,7 +381,17 @@ export default function HomeDashboard() {
           data-testid="home-dashboard-body"
           className="relative min-h-0 flex-1 overflow-y-auto"
         >
-        {activeView === "layout" ? <HomeLayoutDesigner /> : <>
+        {activeView === "layout" ? <HomeLayoutDesigner /> : homeLayoutId === "career-editorial" ? (
+          <HomeMagazine
+            currentTitle={profile.resumeValues.currentTitle}
+            highlights={effectiveHighlights}
+            name={user.name}
+            onChooseLayout={() => setActiveView("layout")}
+            proofCount={acceptedEvidence}
+            readiness={hasResume && plan ? plan.readiness : undefined}
+            savedCount={user.opportunityProgress.savedOpportunityIds.length}
+          />
+        ) : <>
         <section className="home-layout-grid grid auto-rows-[minmax(9rem,auto)] grid-cols-1 gap-4 sm:grid-cols-2" data-home-layout={homeLayoutId}>
           <div className="min-w-0 sm:col-span-2" data-home-slot="experience">
             <ExperienceTileGroup

@@ -12,7 +12,7 @@ import {
 
 export const homeModule: ModuleDefinition = {
   id: "home",
-  name: "Home",
+  name: "Cover",
   description: "Your Best Work",
   icon: "⌂",
   metrics: [
