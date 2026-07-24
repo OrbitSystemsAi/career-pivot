@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import mammoth from "mammoth";
-import type { ParseParameters } from "pdf-parse";
+import { extractText, getDocumentProxy } from "unpdf";
 import { buildDocumentResume } from "@/core/resumeParsing/buildDocumentResume";
 import { buildStructuredResume } from "@/core/resumeParsing/buildStructuredResume";
 import { convertDocxToPdf } from "@/core/resumeParsing/convertDocxToPdf";
@@ -71,60 +71,23 @@ function buildPdfPreview(rawText: string) {
     .join("");
 }
 
-async function extractPdfText(buffer: Buffer, options: ParseParameters) {
-  const { PDFParse } = await import("pdf-parse");
-  const parser = new PDFParse({
-    data: new Uint8Array(buffer),
-    disableFontFace: true,
-    isEvalSupported: false,
-    stopAtErrors: false,
-    useSystemFonts: true,
-  });
+async function extractPdfText(buffer: Buffer) {
+  const document = await getDocumentProxy(new Uint8Array(buffer));
 
   try {
-    const result = await parser.getText(options);
+    const result = await extractText(document, { mergePages: true });
     return result.text.trim();
   } finally {
-    await parser.destroy();
+    await document.destroy();
   }
 }
 
 async function parsePdf(buffer: Buffer): Promise<ParsedFile> {
-  const parseAttempts: ParseParameters[] = [
-    { pageJoiner: "\n\n" },
-    {
-      cellSeparator: " ",
-      disableNormalization: true,
-      includeMarkedContent: true,
-      itemJoiner: " ",
-      lineEnforce: false,
-      pageJoiner: "\n\n",
-    },
-  ];
-  let lastError: unknown;
-
-  for (const options of parseAttempts) {
-    try {
-      const rawText = await extractPdfText(buffer, options);
-
-      if (rawText) {
-        return {
-          rawText,
-          htmlPreview: buildPdfPreview(rawText),
-        };
-      }
-    } catch (error) {
-      lastError = error;
-    }
-  }
-
-  if (lastError) {
-    throw lastError;
-  }
+  const rawText = await extractPdfText(buffer);
 
   return {
-    rawText: "",
-    htmlPreview: "",
+    rawText,
+    htmlPreview: buildPdfPreview(rawText),
   };
 }
 
