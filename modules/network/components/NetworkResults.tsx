@@ -1,31 +1,28 @@
+"use client";
+
 import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
-
-const results = [
-  {
-    label: "Warm Connections",
-    value: "14",
-  },
-  {
-    label: "Referral Paths",
-    value: "8",
-  },
-  {
-    label: "Outreach Ready",
-    value: "5",
-  },
-];
+import { useUser } from "@/core/user/UserProvider";
+import { getNetworkIntelligence } from "@/modules/network/lib/networkIntelligence";
 
 export default function NetworkResults() {
+  const { user } = useUser();
+  const network = getNetworkIntelligence(user);
+
   return (
     <PanelCard title="Network Results">
-      {results.map((result) => (
-        <ActionRow
-          key={result.label}
-          label={result.label}
-          value={result.value}
-        />
-      ))}
+      {!network.hasConnectedSource ? (
+        <ActionRow label="No connected network results" />
+      ) : (
+        <>
+          <ActionRow
+            label="Relationships"
+            value={String(network.connections.length)}
+          />
+          <ActionRow label="Warm paths" value={String(network.warmPaths)} />
+          <ActionRow label="Recruiters" value={String(network.recruiters)} />
+        </>
+      )}
     </PanelCard>
   );
 }

@@ -1,31 +1,25 @@
+"use client";
+
 import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
-
-const filters = [
-  {
-    label: "Relationship",
-    value: "Warm",
-  },
-  {
-    label: "Companies",
-    value: "Target",
-  },
-  {
-    label: "Recruiters",
-    value: "Active",
-  },
-];
+import { useUser } from "@/core/user/UserProvider";
+import { getNetworkIntelligence } from "@/modules/network/lib/networkIntelligence";
 
 export default function NetworkFilters() {
+  const { user } = useUser();
+  const network = getNetworkIntelligence(user);
+
   return (
     <PanelCard title="Network Filters">
-      {filters.map((filter) => (
-        <ActionRow
-          key={filter.label}
-          label={filter.label}
-          value={filter.value}
-        />
-      ))}
+      <ActionRow
+        label={
+          network.hasConnections
+            ? "Choose filters after selecting a network view"
+            : network.hasConnectedSource
+              ? "No network records available"
+              : "No network source connected"
+        }
+      />
     </PanelCard>
   );
 }

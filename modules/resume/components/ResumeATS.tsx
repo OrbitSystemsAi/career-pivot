@@ -3,107 +3,22 @@
 import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
 import { useUser } from "@/core/user/UserProvider";
-
-const targetKeywords = [
-  "AI governance",
-  "enterprise architecture",
-  "change management",
-  "healthcare operations",
-  "digital transformation",
-  "data strategy",
-  "executive reporting",
-  "automation",
-];
-
-function normalize(value: string) {
-  return value.toLowerCase().trim();
-}
-
-function getDetectedKeywords(skills: string[], rawText: string) {
-  const normalizedText = normalize(rawText);
-
-  return targetKeywords.filter((keyword) => {
-    const normalizedKeyword = normalize(keyword);
-
-    return (
-      normalizedText.includes(normalizedKeyword) ||
-      skills.some((skill) => normalize(skill).includes(normalizedKeyword))
-    );
-  });
-}
-
-function getMissingKeywords(skills: string[], rawText: string) {
-  const detected = getDetectedKeywords(skills, rawText);
-
-  return targetKeywords.filter((keyword) => !detected.includes(keyword));
-}
+import { getResumeIntelligence } from "@/modules/resume/lib/resumeIntelligence";
+import ResumeEmptyState from "./ResumeEmptyState";
 
 export default function ResumeATS() {
   const { user, activeResumeId, optimizeResume } = useUser();
+  const intelligence = getResumeIntelligence(user, activeResumeId);
+  const { activeResume, analysis } = intelligence;
 
-  const activeResume =
-    user.resumes.find((resume) => resume.id === activeResumeId) ??
-    user.resumes[0];
+  if (!activeResume) {
+    return <ResumeEmptyState />;
+  }
 
-  const activeVersion =
-    activeResume?.versions.find(
-      (version) => version.id === activeResume.currentVersionId
-    ) ?? activeResume?.versions[0];
-
-  const parsedDocument = activeVersion?.parsedDocument;
-  const structuredResume = parsedDocument?.structuredResume;
-
-  const targetGoal = user.goals.find(
-    (goal) => goal.id === activeResume?.targetGoalId
-  );
-
-  const skills = structuredResume?.skills ?? user.skills;
-  const rawText = parsedDocument?.rawText ?? skills.join(" ");
-
-  const detectedKeywords = getDetectedKeywords(skills, rawText);
-  const missingKeywords = getMissingKeywords(skills, rawText);
-
-  const keywordScore =
-    targetKeywords.length > 0
-      ? Math.round((detectedKeywords.length / targetKeywords.length) * 100)
-      : 0;
-
-  const titleAlignment = targetGoal?.title ? 82 : 55;
-  const leadershipSignals = rawText.toLowerCase().includes("leader") ? 88 : 65;
-  const industryFit = targetGoal?.industry
-    ? rawText.toLowerCase().includes(targetGoal.industry.toLowerCase())
-      ? 84
-      : 71
-    : 60;
-
-  const atsScore = Math.round(
-    (keywordScore + titleAlignment + leadershipSignals + industryFit) / 4
-  );
-
-  const atsBreakdown = [
-    {
-      label: "Title Alignment",
-      value: `${titleAlignment}%`,
-    },
-    {
-      label: "Keyword Match",
-      value: `${keywordScore}%`,
-    },
-    {
-      label: "Leadership Signals",
-      value: `${leadershipSignals}%`,
-    },
-    {
-      label: "Industry Fit",
-      value: `${industryFit}%`,
-    },
-  ];
+  const current = analysis.current;
+  const target = analysis.target;
 
   function handleOptimizeATS() {
-    if (!activeResume) {
-      return;
-    }
-
     optimizeResume(activeResume.id, "ats");
   }
 
@@ -111,60 +26,147 @@ export default function ResumeATS() {
     <div className="h-full w-full overflow-auto">
       <div className="grid h-full min-h-[520px] grid-cols-[1fr_22rem] gap-4">
         <PanelCard title="ATS Alignment">
-          <div className="mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-6">
-            <div className="text-5xl font-bold text-blue-600">
-              {atsScore}%
+          <div className="grid grid-cols-2 gap-4">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+              <div className="text-4xl text-slate-900">
+                {current.atsScore}%
+              </div>
+
+              <div className="mt-2 text-sm text-slate-700">
+                Current Role ATS Score
+              </div>
+
+              <div className="mt-1 text-xs text-slate-500">
+                {current.role.title}
+              </div>
             </div>
 
-            <div className="mt-2 text-sm font-semibold text-slate-700">
-              ATS Match Score
-            </div>
+            <div className="rounded-2xl border border-slate-200 bg-slate-100 p-6">
+              <div className="text-4xl text-slate-900">
+                {target.atsScore}%
+              </div>
 
-            <div className="mt-1 text-xs text-slate-500">
-              {activeResume?.name ?? "Selected resume"} →{" "}
-              {targetGoal?.title ?? "Target role"}
+              <div className="mt-2 text-sm text-slate-700">
+                Target Role ATS Score
+              </div>
+
+              <div className="mt-1 text-xs text-slate-500">
+                {target.role.title}
+              </div>
             </div>
           </div>
 
-          <div className="space-y-1">
-            {atsBreakdown.map((item) => (
+          <div className="mt-5 grid grid-cols-2 gap-4">
+            <div>
+              <div className="mb-2 text-xs uppercase tracking-wide text-slate-400">
+                Current Role
+              </div>
+
               <ActionRow
-                key={item.label}
-                label={item.label}
-                value={item.value}
+                label="Title Alignment"
+                value={`${current.titleAlignment}%`}
               />
-            ))}
+              <ActionRow
+                label="Keyword Coverage"
+                value={`${current.keywordCoverage}%`}
+              />
+              <ActionRow
+                label="Experience Alignment"
+                value={`${current.experienceAlignment}%`}
+              />
+              <ActionRow
+                label="Skills Alignment"
+                value={`${current.skillsAlignment}%`}
+              />
+              <ActionRow
+                label="Leadership"
+                value={`${current.leadershipAlignment}%`}
+              />
+              <ActionRow
+                label="Industry Alignment"
+                value={`${current.industryAlignment}%`}
+              />
+            </div>
+
+            <div>
+              <div className="mb-2 text-xs uppercase tracking-wide text-slate-400">
+                Target Role
+              </div>
+
+              <ActionRow
+                label="Title Alignment"
+                value={`${target.titleAlignment}%`}
+              />
+              <ActionRow
+                label="Keyword Coverage"
+                value={`${target.keywordCoverage}%`}
+              />
+              <ActionRow
+                label="Experience Alignment"
+                value={`${target.experienceAlignment}%`}
+              />
+              <ActionRow
+                label="Skills Alignment"
+                value={`${target.skillsAlignment}%`}
+              />
+              <ActionRow
+                label="Leadership"
+                value={`${target.leadershipAlignment}%`}
+              />
+              <ActionRow
+                label="Industry Alignment"
+                value={`${target.industryAlignment}%`}
+              />
+            </div>
           </div>
         </PanelCard>
 
         <PanelCard title="ATS Improvements">
           <div className="mb-3 text-xs leading-5 text-slate-500">
-            Add these terms naturally where they are supported by real
-            experience.
+            Improvements are based on the selected target role.
           </div>
 
           <div className="space-y-1">
-            {missingKeywords.length === 0 ? (
+            {!analysis.hasTarget ? (
+              <ActionRow
+                label="Select a target role to calculate ATS improvements"
+                value="0"
+              />
+            ) : target.missingKeywords.length === 0 ? (
               <ActionRow label="No major keyword gaps" value="Good" />
             ) : (
-              missingKeywords.map((keyword) => (
-                <ActionRow key={keyword} label={keyword} action="Add" />
+              target.missingKeywords.map((keyword) => (
+                <ActionRow
+                  key={keyword}
+                  label={keyword}
+                  action="Add"
+                />
               ))
             )}
           </div>
 
-          <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
-            ATS optimization should improve alignment without keyword stuffing
-            or changing the truth of the resume.
-          </div>
+          {analysis.hasTarget ? (
+            <div className="mt-4 border-t border-slate-100 pt-4">
+              {target.recommendations.map((recommendation) => (
+                <div
+                  key={recommendation}
+                  className="mb-2 text-xs leading-5 text-slate-500"
+                >
+                  {recommendation}
+                </div>
+              ))}
+            </div>
+          ) : null}
 
-          <div className="mt-4">
-            <ActionRow
-              label="Create ATS Optimized Version"
-              action="Run"
-              onClick={handleOptimizeATS}
-            />
-          </div>
+          {analysis.hasTarget ? (
+            <div className="mt-4">
+              <ActionRow
+                label="Create ATS Optimized Version"
+                action="Run"
+                onClick={handleOptimizeATS}
+              />
+            </div>
+          ) : null}
         </PanelCard>
       </div>
     </div>

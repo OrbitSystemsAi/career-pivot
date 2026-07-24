@@ -1,18 +1,23 @@
+"use client";
+
 import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
-
-const actions = [
-  "Create new agent",
-  "Schedule scan",
-  "Review recommendations",
-];
+import { useUser } from "@/core/user/UserProvider";
+import { getAgentIntelligence } from "@/modules/agents/lib/agentIntelligence";
 
 export default function AgentActions() {
+  const { user } = useUser();
+  const agents = getAgentIntelligence(user);
+
   return (
     <PanelCard title="Actions">
-      {actions.map((item) => (
-        <ActionRow key={item} label={item} action="Open" />
-      ))}
+      <ActionRow
+        label={
+          agents.recruitedAgents.length > 0
+            ? "Select an agent to review available tasks"
+            : "Recruit an agent from the main workspace"
+        }
+      />
     </PanelCard>
   );
 }

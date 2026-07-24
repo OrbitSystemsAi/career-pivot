@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
+import ActionRow from "@/core/ui/ActionRow";
 import { useOSState } from "@/core/state/OSStateProvider";
 import { useUser } from "@/core/user/UserProvider";
+import { getActiveResume } from "@/modules/resume/lib/resumeIntelligence";
+import ResumeEmptyState from "./ResumeEmptyState";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -27,9 +29,7 @@ export default function ResumeVersions() {
     removeResumeVersion,
   } = useUser();
 
-  const activeResume =
-    user.resumes.find((resume) => resume.id === activeResumeId) ??
-    user.resumes[0];
+  const activeResume = getActiveResume(user, activeResumeId);
 
   const [selectedVersionId, setSelectedVersionId] = useState(
     compareVersionId || activeResume?.currentVersionId || ""
@@ -39,11 +39,7 @@ export default function ResumeVersions() {
     useState<string | null>(null);
 
   if (!activeResume) {
-    return (
-      <PanelCard title="Resume Versions">
-        <ActionRow label="No resume selected" value="N/A" />
-      </PanelCard>
-    );
+    return <ResumeEmptyState />;
   }
 
   const selectedVersion =

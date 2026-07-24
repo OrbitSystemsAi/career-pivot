@@ -3,6 +3,7 @@
 import { styles } from "@/core/design/styles";
 import { getActiveModulePanels } from "@/core/moduleEngine/getActiveModulePanels";
 import { useOSState } from "@/core/state/OSStateProvider";
+import { PanelCardRailProvider } from "@/core/ui/PanelCard";
 
 export default function D4UtilityFrame() {
   const { activeModule, activeView } = useOSState();
@@ -13,17 +14,15 @@ export default function D4UtilityFrame() {
   const UtilityBottom = panels.utilityBottom;
 
   return (
-    <aside className={styles.layout.d4}>
-      <div className="min-h-0 overflow-hidden rounded-[1.75rem]">
-        <UtilityTop />
-      </div>
+    <aside className={styles.layout.d4} data-region="d4">
+      <div className="h-full min-h-0 overflow-auto border-l border-[#416b75] bg-transparent text-[#d3e1e4] shadow-sm">
+        <PanelCardRailProvider>
+          <UtilityTop />
 
-      <div className="min-h-0 overflow-hidden rounded-[1.75rem]">
-        <UtilityMiddle />
-      </div>
+          <UtilityMiddle />
 
-      <div className="min-h-0 overflow-hidden rounded-[1.75rem]">
-        <UtilityBottom />
+          <UtilityBottom />
+        </PanelCardRailProvider>
       </div>
     </aside>
   );

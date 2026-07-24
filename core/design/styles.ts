@@ -1,10 +1,10 @@
 export const styles = {
   surface: {
-    app: "bg-[#f7f8fb] text-slate-900",
+    app: "bg-[#173a46] text-slate-900",
     workspace:
-      "bg-[radial-gradient(circle_at_50%_35%,rgba(224,247,250,0.65),transparent_34%),linear-gradient(180deg,#ffffff_0%,#f6f8fb_45%,#eef7fb_100%)]",
+      "bg-transparent",
     shellPanel:
-      "rounded-[1.75rem] border border-slate-200 bg-white/95 shadow-[0_18px_60px_rgba(15,23,42,0.06)]",
+      "rounded-[1.75rem] border border-[#b7cbd0] bg-white shadow-[0_18px_60px_rgba(5,35,43,0.18)]",
     panel: "rounded-[1.5rem] border border-slate-200 bg-white shadow-sm",
     panelSoft:
       "rounded-[1.5rem] border border-slate-200 bg-white/95 shadow-[0_18px_50px_rgba(15,23,42,0.04)]",
@@ -15,10 +15,10 @@ export const styles = {
   layout: {
     appShell: "flex h-screen w-screen flex-col overflow-hidden",
     main:
-      "grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_24rem] gap-5 overflow-hidden p-5",
-    d4: "grid min-h-0 grid-rows-[18rem_minmax(0,1fr)_14rem] gap-5 overflow-hidden",
+      "grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_16rem] gap-0 overflow-hidden pr-0",
+    d4: "h-full min-h-0 overflow-hidden",
     d5:
-      "absolute bottom-5 left-6 right-6 z-50 overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white/95 shadow-[0_24px_80px_rgba(15,23,42,0.14)] backdrop-blur",
+      "relative z-50 overflow-hidden border border-[#416b75] bg-[#1b414c] text-white shadow-[0_24px_80px_rgba(5,35,43,0.24)]",
   },
 
   button: {
@@ -33,12 +33,15 @@ export const styles = {
     disabled:
       "cursor-not-allowed rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-300",
     nav:
-      "flex h-14 w-20 items-center justify-center rounded-2xl text-xs transition",
-    navSelected: "bg-blue-50 text-slate-900",
-    navDefault: "text-slate-500 hover:bg-blue-50 hover:text-slate-900",
+      "flex h-9 w-full items-center justify-start px-3 py-2 text-left text-xs transition",
+    railHeader:
+      "flex h-9 w-full items-center justify-between px-3 py-2 text-xs transition",
+    navSelected:
+      "bg-[#2b6874] text-white shadow-[inset_4px_0_0_#fb923c]",
+    navDefault: "text-[#d3e1e4] hover:bg-[#275a65] hover:text-white",
     tab: "rounded-xl px-4 py-2 text-xs transition",
-    tabSelected: "bg-blue-50 text-slate-900",
-    tabDefault: "text-slate-500 hover:bg-blue-50 hover:text-slate-900",
+    tabSelected: "border-b-2 border-orange-400 text-[#123743]",
+    tabDefault: "text-slate-500 hover:bg-[#e8f2f3] hover:text-[#123743]",
   },
 
   text: {

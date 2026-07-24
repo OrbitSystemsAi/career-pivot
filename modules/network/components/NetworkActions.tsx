@@ -1,13 +1,23 @@
+"use client";
+
 import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
-import { networkActions } from "../data/networkData";
+import { useUser } from "@/core/user/UserProvider";
+import { getNetworkIntelligence } from "@/modules/network/lib/networkIntelligence";
 
 export default function NetworkActions() {
+  const { user } = useUser();
+  const network = getNetworkIntelligence(user);
+
   return (
     <PanelCard title="Actions">
-      {networkActions.map((item) => (
-        <ActionRow key={item} label={item} action="Run" />
-      ))}
+      <ActionRow
+        label={
+          network.hasConnectedSource
+            ? "Network actions will use connected data only"
+            : "Connect a network source to enable actions"
+        }
+      />
     </PanelCard>
   );
 }

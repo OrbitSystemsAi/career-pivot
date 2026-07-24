@@ -16,12 +16,7 @@ export const agentsModule: ModuleDefinition = {
   description: "Agent Intelligence",
   icon: "🤖",
 
-  metrics: [
-    { label: "Active Agents", value: "12", change: "↑ +4" },
-    { label: "Tasks Run", value: "248", change: "↑ +31" },
-    { label: "Opportunities", value: "24", change: "↑ +9" },
-    { label: "Time Saved", value: "18h", change: "↑ +6h" },
-  ],
+  metrics: [],
 
   views: [
     { label: "Overview", id: "overview" },

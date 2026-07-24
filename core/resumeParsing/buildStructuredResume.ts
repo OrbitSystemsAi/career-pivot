@@ -65,14 +65,7 @@ function normalizeLine(line: string) {
 function isSectionHeader(line: string, patterns: string[]) {
   const normalized = normalizeLine(line).toLowerCase().replace(/[:\-]/g, "");
 
-  return patterns.some((pattern) => {
-    const normalizedPattern = pattern.toLowerCase();
-
-    return (
-      normalized === normalizedPattern ||
-      normalized.includes(normalizedPattern)
-    );
-  });
+  return patterns.some((pattern) => normalized === pattern.toLowerCase());
 }
 
 function looksLikeAnySectionHeader(line: string) {
@@ -134,12 +127,19 @@ function extractLinkedIn(text: string) {
   return text.match(/linkedin\.com\/[A-Za-z0-9/_-]+/i)?.[0];
 }
 
+function extractLocation(lines: string[]) {
+  const statePattern =
+    /\b[A-Za-z .'-]+,\s*(?:AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)\b/i;
+
+  return lines.slice(1, 8).find((line) => statePattern.test(line))?.match(statePattern)?.[0];
+}
+
 function looksLikeDateRange(line: string) {
   return /\b(19|20)\d{2}\b/.test(line) || /\bpresent\b/i.test(line);
 }
 
 function looksLikeRoleLine(line: string) {
-  return /\b(manager|director|analyst|leader|consultant|engineer|specialist|coordinator|associate|vp|vice president|chief|head|officer|architect|developer|administrator|controller|finance|operations)\b/i.test(
+  return /\b(manager|director|analyst|leader|consultant|engineer|specialist|coordinator|associate|vp|vice president|chief|head|officer|architect|developer|administrator|controller|finance|operations|founder|principal|owner|president|partner|executive)\b/i.test(
     line
   );
 }
@@ -158,6 +158,35 @@ function cleanBullet(line: string) {
   return normalizeLine(line).replace(/^[-•*]\s*/, "");
 }
 
+function cleanRoleTitle(line: string) {
+  const month =
+    "(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
+  const datedPoint = `(?:(?:${month}\\.?\\s+)?(?:19|20)\\d{2}|(?:0?[1-9]|1[0-2])\\/(?:19|20)\\d{2})`;
+  const dateRange = new RegExp(
+    `\\s*(?:[|(]\\s*)?${datedPoint}\\s*(?:-|–|—|to)\\s*(?:Present|Current|${datedPoint})\\s*\\)?\\s*$`,
+    "i",
+  );
+
+  return normalizeLine(line)
+    .replace(dateRange, "")
+    .replace(/\s*[|,(]\s*$/, "")
+    .trim();
+}
+
+function extractDateRange(line: string) {
+  const month =
+    "(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
+  const datedPoint = `(?:(?:${month}\\.?\\s+)?(?:19|20)\\d{2}|(?:0?[1-9]|1[0-2])\\/(?:19|20)\\d{2})`;
+  const match = normalizeLine(line).match(
+    new RegExp(
+      `(${datedPoint})\\s*(?:-|–|—|to)\\s*(Present|Current|${datedPoint})`,
+      "i",
+    ),
+  );
+
+  return match ? { startDate: match[1], endDate: match[2] } : null;
+}
+
 function buildExperience(experienceLines: string[]): ResumeExperience[] {
   if (experienceLines.length === 0) {
     return [];
@@ -174,12 +203,15 @@ function buildExperience(experienceLines: string[]): ResumeExperience[] {
     const nextLine = experienceLines[index + 1] ?? "";
 
     if (!currentExperience) {
+      const dateRange = extractDateRange(normalized);
       currentExperience = {
         id: `experience-${experiences.length + 1}`,
         company: isPossibleCompany ? normalized : "Experience",
-        title: isPossibleRole ? normalized : "Role",
+        title: isPossibleRole ? cleanRoleTitle(normalized) : "Role",
         bullets: [],
         rawLines: [normalized],
+        startDate: dateRange?.startDate,
+        endDate: dateRange?.endDate,
       };
 
       return;
@@ -188,16 +220,21 @@ function buildExperience(experienceLines: string[]): ResumeExperience[] {
     if (
       !isBullet &&
       isPossibleCompany &&
+      !/^[-•*]/.test(nextLine.trim()) &&
       (looksLikeRoleLine(nextLine) || looksLikeDateRange(nextLine))
     ) {
       experiences.push(currentExperience);
 
+      const dateRange = extractDateRange(nextLine);
+
       currentExperience = {
         id: `experience-${experiences.length + 1}`,
         company: normalized,
-        title: looksLikeRoleLine(nextLine) ? nextLine : "Role",
+        title: looksLikeRoleLine(nextLine) ? cleanRoleTitle(nextLine) : "Role",
         bullets: [],
         rawLines: [normalized],
+        startDate: dateRange?.startDate,
+        endDate: dateRange?.endDate,
       };
 
       return;
@@ -210,15 +247,22 @@ function buildExperience(experienceLines: string[]): ResumeExperience[] {
       isPossibleRole &&
       !isBullet
     ) {
-      currentExperience.title = normalized;
+      currentExperience.title = cleanRoleTitle(normalized);
+      const dateRange = extractDateRange(normalized);
+      if (dateRange) {
+        currentExperience.startDate = dateRange.startDate;
+        currentExperience.endDate = dateRange.endDate;
+      }
       return;
     }
 
     if (looksLikeDateRange(normalized) && !isBullet) {
-      const [startDate, endDate] = normalized.split(/\s[-–]\s/);
+      const dateRange = extractDateRange(normalized);
 
-      currentExperience.startDate = startDate;
-      currentExperience.endDate = endDate;
+      if (dateRange) {
+        currentExperience.startDate = dateRange.startDate;
+        currentExperience.endDate = dateRange.endDate;
+      }
 
       return;
     }
@@ -363,6 +407,7 @@ export function buildStructuredResume(lines: string[]): StructuredResume {
     contact: {
       email: extractEmail(fullText),
       phone: extractPhone(fullText),
+      location: extractLocation(cleanedLines),
       linkedin: extractLinkedIn(fullText),
     },
 

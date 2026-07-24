@@ -19,6 +19,10 @@ export type ParsedResumeDocument = {
   originalFileType?: string;
   originalFileDataUrl?: string;
 
+  previewFileName?: string;
+  previewFileType?: string;
+  previewFileDataUrl?: string;
+
   optimizationSummary?: ResumeOptimizationSummary;
 
   documentResume?: DocumentResume;

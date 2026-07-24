@@ -4,18 +4,8 @@ import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
 import { useOSState } from "@/core/state/OSStateProvider";
 import { useUser } from "@/core/user/UserProvider";
-
-function getResumeScore(skillCount: number, experienceCount: number) {
-  return Math.min(95, 60 + skillCount * 3 + experienceCount * 5);
-}
-
-function getAtsScore(skillCount: number) {
-  return Math.min(92, 55 + skillCount * 4);
-}
-
-function getRoleAlignmentScore(hasTargetRole: boolean, skillCount: number) {
-  return Math.min(96, (hasTargetRole ? 70 : 50) + skillCount * 3);
-}
+import { getResumeIntelligence } from "@/modules/resume/lib/resumeIntelligence";
+import ResumeEmptyState from "./ResumeEmptyState";
 
 function getReadiness(score: number) {
   if (score >= 85) {
@@ -23,48 +13,30 @@ function getReadiness(score: number) {
   }
 
   if (score >= 70) {
-    return "Medium";
+    return "Moderate";
   }
 
-  return "Low";
+  return "Developing";
 }
 
 export default function ResumeModule() {
   const { setActiveView } = useOSState();
-
   const { user, activeResumeId, optimizeResume } = useUser();
 
-  const activeResume =
-    user.resumes.find((resume) => resume.id === activeResumeId) ??
-    user.resumes[0];
+  const intelligence = getResumeIntelligence(user, activeResumeId);
+  const {
+    activeResume,
+    activeVersion,
+    skillCount,
+    experienceCount,
+    analysis,
+  } = intelligence;
 
-  const activeVersion =
-    activeResume?.versions.find(
-      (version) => version.id === activeResume.currentVersionId
-    ) ?? activeResume?.versions[0];
-
-  const structuredResume = activeVersion?.parsedDocument?.structuredResume;
-
-  const targetGoal = user.goals.find(
-    (goal) => goal.id === activeResume?.targetGoalId
-  );
-
-  const skillCount = structuredResume?.skills.length ?? user.skills.length;
-  const experienceCount = structuredResume?.experience.length ?? 1;
-  const hasTargetRole = Boolean(
-    targetGoal?.title ?? activeResume?.targetJobTitle
-  );
-
-  const resumeScore = getResumeScore(skillCount, experienceCount);
-  const atsScore = getAtsScore(skillCount);
-  const roleAlignmentScore = getRoleAlignmentScore(hasTargetRole, skillCount);
-  const readiness = getReadiness(resumeScore);
+  if (!activeResume) {
+    return <ResumeEmptyState />;
+  }
 
   function handleOptimize() {
-    if (!activeResume) {
-      return;
-    }
-
     optimizeResume(activeResume.id, "full_rewrite");
     setActiveView("versions");
   }
@@ -73,78 +45,105 @@ export default function ResumeModule() {
     <div className="grid h-full min-h-[520px] grid-cols-[1fr_22rem] gap-4 overflow-auto">
       <PanelCard title="Resume Intelligence Summary">
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border border-slate-100 bg-white p-5">
-            <div className="text-3xl font-bold text-blue-600">
-              {resumeScore}%
+          <div className="rounded-2xl border border-slate-200 bg-white p-5">
+            <div className="text-3xl text-slate-900">
+              {analysis.resumeQualityScore}%
             </div>
 
-            <div className="mt-2 text-xs font-semibold text-slate-500">
-              Resume Score
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-slate-100 bg-white p-5">
-            <div className="text-3xl font-bold text-blue-600">
-              {atsScore}%
-            </div>
-
-            <div className="mt-2 text-xs font-semibold text-slate-500">
-              ATS Match
+            <div className="mt-2 text-xs text-slate-500">
+              Resume Quality
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-100 bg-white p-5">
-            <div className="text-3xl font-bold text-blue-600">
-              {roleAlignmentScore}%
+          <div className="rounded-2xl border border-slate-200 bg-white p-5">
+            <div className="text-3xl text-slate-900">
+              {analysis.current.overallScore}%
             </div>
 
-            <div className="mt-2 text-xs font-semibold text-slate-500">
-              Role Alignment
+            <div className="mt-2 text-xs text-slate-500">
+              Current Role Match
+            </div>
+
+            <div className="mt-1 truncate text-xs text-slate-400">
+              {analysis.current.role.title}
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-100 bg-white p-5">
-            <div className="text-3xl font-bold text-blue-600">{readiness}</div>
+          <div className="rounded-2xl border border-slate-200 bg-slate-100 p-5">
+            <div className="text-3xl text-slate-900">
+              {analysis.target.overallScore}%
+            </div>
 
-            <div className="mt-2 text-xs font-semibold text-slate-500">
-              Recruiter Readiness
+            <div className="mt-2 text-xs text-slate-500">
+              Target Role Match
+            </div>
+
+            <div className="mt-1 truncate text-xs text-slate-400">
+              {analysis.target.role.title}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-5">
+            <div className="text-3xl text-slate-900">
+              {analysis.issueCount}
+            </div>
+
+            <div className="mt-2 text-xs text-slate-500">
+              Issues
             </div>
           </div>
         </div>
 
-        <div className="mt-6 rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <div className="text-xs font-semibold uppercase text-slate-500">
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div className="text-xs uppercase tracking-wide text-slate-400">
+              Current Positioning
+            </div>
+
+            <div className="mt-2 text-sm text-slate-700">
+              {analysis.current.role.title}
+            </div>
+
+            <div className="mt-3 text-xs text-slate-500">
+              Readiness: {getReadiness(analysis.current.overallScore)}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+            <div className="text-xs uppercase tracking-wide text-slate-400">
+              Target Positioning
+            </div>
+
+            <div className="mt-2 text-sm text-slate-700">
+              {analysis.target.role.title}
+            </div>
+
+            <div className="mt-3 text-xs text-slate-500">
+              Readiness: {getReadiness(analysis.target.overallScore)}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4">
+          <div className="text-xs uppercase tracking-wide text-slate-400">
             Active Resume
           </div>
 
-          <div className="mt-2 text-sm font-semibold text-slate-700">
-            {activeResume?.name ?? "No resume selected"}
+          <div className="mt-2 text-sm text-slate-700">
+            {activeResume.name}
           </div>
 
           <div className="mt-1 text-xs text-slate-500">
             Current version: {activeVersion?.label ?? "No version selected"}
           </div>
         </div>
-
-        <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4">
-          <div className="text-xs font-semibold uppercase text-slate-500">
-            Target
-          </div>
-
-          <div className="mt-2 text-sm font-semibold text-slate-700">
-            {targetGoal?.title ??
-              activeResume?.targetJobTitle ??
-              "No target selected"}
-          </div>
-
-          <div className="mt-1 text-xs text-slate-500">
-            Optimizing resume language, keywords, and positioning.
-          </div>
-        </div>
       </PanelCard>
 
-      <PanelCard title="AI Recommendations">
-        <ActionRow label="Detected Skills" value={String(skillCount)} />
+      <PanelCard title="Recommendations">
+        <ActionRow
+          label="Detected Skills"
+          value={String(skillCount)}
+        />
 
         <ActionRow
           label="Experience Sections"
@@ -152,25 +151,31 @@ export default function ResumeModule() {
         />
 
         <ActionRow
-          label="Improve"
-          value={skillCount < 8 ? "Keyword Depth" : "Executive Impact"}
+          label="Parser Confidence"
+          value={`${analysis.parserConfidence}%`}
         />
 
         <ActionRow
-          label="Improve"
-          value={experienceCount < 2 ? "Experience Detail" : "Role Framing"}
+          label="Target ATS"
+          value={`${analysis.target.atsScore}%`}
         />
 
+        <div className="mt-4 border-t border-slate-100 pt-4">
+          {analysis.target.recommendations.map((recommendation) => (
+            <div
+              key={recommendation}
+              className="mb-3 text-xs leading-5 text-slate-500"
+            >
+              {recommendation}
+            </div>
+          ))}
+        </div>
+
         <ActionRow
-          label="Suggested Action"
-          action="Optimize"
+          label="Create Optimized Version"
+          action="Run"
           onClick={handleOptimize}
         />
-
-        <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
-          Summary uses the selected resume version, parsed skills, parsed
-          experience, and target role to create a working intelligence view.
-        </div>
       </PanelCard>
     </div>
   );

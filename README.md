@@ -1,3 +1,17 @@
+# OSai Frontend
+
+OSai helps users define traditional or nontraditional career goals, receive
+feasibility guidance, build evidence-backed roadmaps, execute reviewed agent
+tasks, and discover goal-aware opportunities.
+
+Release checks:
+
+```bash
+npm run lint
+npx tsc --noEmit
+npm run build
+```
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

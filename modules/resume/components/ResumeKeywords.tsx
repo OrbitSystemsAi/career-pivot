@@ -3,131 +3,97 @@
 import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
 import { useUser } from "@/core/user/UserProvider";
-
-const targetKeywords = [
-  "AI governance",
-  "enterprise architecture",
-  "change management",
-  "healthcare operations",
-  "digital transformation",
-  "data strategy",
-  "executive reporting",
-  "automation",
-  "business intelligence",
-  "finance leadership",
-];
-
-function normalize(value: string) {
-  return value.toLowerCase().trim();
-}
-
-function unique(values: string[]) {
-  return Array.from(new Set(values.filter(Boolean)));
-}
-
-function getDetectedKeywords(skills: string[], rawText: string) {
-  const normalizedText = normalize(rawText);
-
-  const detectedTargetKeywords = targetKeywords.filter((keyword) =>
-    normalizedText.includes(normalize(keyword))
-  );
-
-  return unique([...skills, ...detectedTargetKeywords]);
-}
-
-function getMissingKeywords(detectedKeywords: string[]) {
-  const normalizedDetected = detectedKeywords.map(normalize);
-
-  return targetKeywords.filter(
-    (keyword) =>
-      !normalizedDetected.some((detected) =>
-        detected.includes(normalize(keyword))
-      )
-  );
-}
+import { getResumeIntelligence } from "@/modules/resume/lib/resumeIntelligence";
+import ResumeEmptyState from "./ResumeEmptyState";
 
 export default function ResumeKeywords() {
   const { user, activeResumeId, optimizeResume } = useUser();
+  const intelligence = getResumeIntelligence(user, activeResumeId);
+  const { activeResume, analysis } = intelligence;
 
-  const activeResume =
-    user.resumes.find((resume) => resume.id === activeResumeId) ??
-    user.resumes[0];
-
-  const activeVersion =
-    activeResume?.versions.find(
-      (version) => version.id === activeResume.currentVersionId
-    ) ?? activeResume?.versions[0];
-
-  const parsedDocument = activeVersion?.parsedDocument;
-  const structuredResume = parsedDocument?.structuredResume;
-
-  const targetGoal = user.goals.find(
-    (goal) => goal.id === activeResume?.targetGoalId
-  );
-
-  const skills = structuredResume?.skills ?? user.skills;
-  const rawText = parsedDocument?.rawText ?? skills.join(" ");
-
-  const detectedKeywords = getDetectedKeywords(skills, rawText);
-  const missingKeywords = getMissingKeywords(detectedKeywords);
+  if (!activeResume) {
+    return <ResumeEmptyState />;
+  }
 
   function handleOptimizeKeywords() {
-    if (!activeResume) {
-      return;
-    }
-
     optimizeResume(activeResume.id, "keywords");
   }
 
   return (
     <div className="h-full w-full overflow-auto">
       <div className="grid h-full min-h-[520px] grid-cols-2 gap-4">
-        <PanelCard title="Detected Keywords">
+        <PanelCard title="Current Role Keywords">
           <div className="mb-3 text-xs leading-5 text-slate-500">
-            Keywords currently detected in{" "}
-            {activeResume?.name ?? "the selected resume"}.
+            Keyword coverage for {analysis.current.role.title}:{" "}
+            {analysis.current.keywordCoverage}%.
           </div>
 
           <div className="space-y-1">
-            {detectedKeywords.length === 0 ? (
+            {analysis.current.detectedKeywords.length === 0 ? (
               <ActionRow label="No keywords detected" value="0" />
             ) : (
-              detectedKeywords.map((keyword) => (
+              analysis.current.detectedKeywords.map((keyword) => (
                 <ActionRow
                   key={keyword}
                   label={keyword}
-                  value={
-                    targetKeywords
-                      .map(normalize)
-                      .includes(normalize(keyword))
-                      ? "Target"
-                      : "Detected"
-                  }
+                  value="Detected"
                 />
               ))
             )}
           </div>
+
+          {analysis.current.missingKeywords.length > 0 && (
+            <div className="mt-4 border-t border-slate-100 pt-4">
+              <div className="mb-2 text-xs uppercase tracking-wide text-slate-400">
+                Current Role Gaps
+              </div>
+
+              {analysis.current.missingKeywords.map((keyword) => (
+                <ActionRow
+                  key={keyword}
+                  label={keyword}
+                  value="Missing"
+                />
+              ))}
+            </div>
+          )}
         </PanelCard>
 
-        <PanelCard title="Keyword Opportunities">
+        <PanelCard title="Target Role Keywords">
           <div className="mb-3 text-xs leading-5 text-slate-500">
-            Recommended terms for {targetGoal?.title ?? "the target role"}.
+            Keyword coverage for {analysis.target.role.title}:{" "}
+            {analysis.target.keywordCoverage}%.
           </div>
 
           <div className="space-y-1">
-            {missingKeywords.length === 0 ? (
-              <ActionRow label="No major keyword gaps" value="Good" />
+            {analysis.target.detectedKeywords.length === 0 ? (
+              <ActionRow label="No target keywords detected" value="0" />
             ) : (
-              missingKeywords.map((keyword) => (
-                <ActionRow key={keyword} label={keyword} value="Missing" />
+              analysis.target.detectedKeywords.map((keyword) => (
+                <ActionRow
+                  key={keyword}
+                  label={keyword}
+                  value="Detected"
+                />
               ))
             )}
           </div>
 
-          <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs leading-5 text-slate-500">
-            Add keywords only when they are supported by real experience,
-            projects, achievements, or measurable outcomes.
-          </div>
+          {analysis.target.missingKeywords.length > 0 && (
+            <div className="mt-4 border-t border-slate-100 pt-4">
+              <div className="mb-2 text-xs uppercase tracking-wide text-slate-400">
+                Target Role Opportunities
+              </div>
+
+              {analysis.target.missingKeywords.map((keyword) => (
+                <ActionRow
+                  key={keyword}
+                  label={keyword}
+                  value="Missing"
+                />
+              ))}
+            </div>
+          )}
 
           <div className="mt-4">
             <ActionRow

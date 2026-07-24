@@ -1,31 +1,33 @@
+"use client";
+
 import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
-
-const context = [
-  {
-    label: "LinkedIn Paths",
-    value: "14",
-  },
-  {
-    label: "Recruiters",
-    value: "37",
-  },
-  {
-    label: "Companies",
-    value: "22",
-  },
-];
+import { useUser } from "@/core/user/UserProvider";
+import { getNetworkIntelligence } from "@/modules/network/lib/networkIntelligence";
 
 export default function NetworkContext() {
+  const { user } = useUser();
+  const network = getNetworkIntelligence(user);
+
   return (
     <PanelCard title="Network Context">
-      {context.map((item) => (
-        <ActionRow
-          key={item.label}
-          label={item.label}
-          value={item.value}
-        />
-      ))}
+      {!network.hasConnectedSource ? (
+        <ActionRow label="Connect a source to establish network context" />
+      ) : (
+        <>
+          {network.connectedSources.map((source) => (
+            <ActionRow
+              key={source}
+              label={source === "linkedin" ? "LinkedIn" : "OSai Network"}
+              value="Connected"
+            />
+          ))}
+          <ActionRow
+            label="Available relationships"
+            value={String(network.connections.length)}
+          />
+        </>
+      )}
     </PanelCard>
   );
 }

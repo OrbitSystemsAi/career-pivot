@@ -3,6 +3,8 @@
 import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
 import { useUser } from "@/core/user/UserProvider";
+import { getActiveResume } from "@/modules/resume/lib/resumeIntelligence";
+import ResumeEmptyState from "./ResumeEmptyState";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -15,16 +17,10 @@ function formatDate(value: string) {
 export default function ResumeVersionCompare() {
   const { user, activeResumeId, compareVersionId } = useUser();
 
-  const activeResume =
-    user.resumes.find((resume) => resume.id === activeResumeId) ??
-    user.resumes[0];
+  const activeResume = getActiveResume(user, activeResumeId);
 
   if (!activeResume) {
-    return (
-      <PanelCard title="Compare Versions">
-        <ActionRow label="No resume selected" value="N/A" />
-      </PanelCard>
-    );
+    return <ResumeEmptyState />;
   }
 
   const currentVersion =

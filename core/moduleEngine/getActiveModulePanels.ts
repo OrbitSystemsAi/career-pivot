@@ -1,13 +1,13 @@
 import { getActiveModule } from "./getActiveModule";
 
 export function getActiveModulePanels(activeModule: string, activeView: string) {
-  const module = getActiveModule(activeModule);
+  const activeModuleDefinition = getActiveModule(activeModule);
 
   return {
-    module,
+    module: activeModuleDefinition,
     panels: {
-      ...module.panels,
-      ...(module.viewPanels?.[activeView] ?? {}),
+      ...activeModuleDefinition.panels,
+      ...(activeModuleDefinition.viewPanels?.[activeView] ?? {}),
     },
   };
 }

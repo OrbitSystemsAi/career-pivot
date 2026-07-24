@@ -5,6 +5,7 @@ import ActionRow from "@/core/ui/ActionRow";
 import PanelCard from "@/core/ui/PanelCard";
 import { useOSState } from "@/core/state/OSStateProvider";
 import { useUser } from "@/core/user/UserProvider";
+import { getResumeIntelligence } from "@/modules/resume/lib/resumeIntelligence";
 import ResumePeerReview from "./ResumePeerReview";
 import ResumeParserDebug from "./ResumeParserDebug";
 
@@ -15,10 +16,7 @@ export default function ResumeActions() {
 
   const [activePanel, setActivePanel] =
     useState<"actions" | "review" | "debug">("actions");
-
-  const activeResume =
-    user.resumes.find((resume) => resume.id === activeResumeId) ??
-    user.resumes[0];
+  const { activeResume, hasResume } = getResumeIntelligence(user, activeResumeId);
 
   function handleOptimize() {
     if (!activeResume) {
@@ -27,6 +25,14 @@ export default function ResumeActions() {
 
     optimizeResume(activeResume.id, "full_rewrite");
     setActiveView("versions");
+  }
+
+  if (!hasResume) {
+    return (
+      <PanelCard title="Actions">
+        <ActionRow label="Please upload to get started" />
+      </PanelCard>
+    );
   }
 
   if (activePanel === "review") {

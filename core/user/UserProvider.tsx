@@ -1,12 +1,34 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { useAuth } from "@/core/auth/AuthProvider";
 import type {
   ParsedResumeDocument,
   ResumeOptimizationSummary,
 } from "@/core/resumeParsing/parsedResumeTypes";
+import { getResumeProfilePrefill } from "@/core/resumeParsing/getResumeProfilePrefill";
+import { buildStructuredResume } from "@/core/resumeParsing/buildStructuredResume";
+import { serializeStructuredResume } from "@/core/resumeParsing/serializeStructuredResume";
+import type { ResumeExperience } from "@/core/resumeParsing/resumeStructureTypes";
 import { mockUser } from "./mockUser";
-import type { ResumeVersion, UserProfile, UserResume } from "./userTypes";
+import { cleanProfileName } from "./cleanProfileName";
+import type {
+  CareerPreference,
+  PlanningProgress,
+  OpportunityProgress,
+  AgentRole,
+  ResumeVersion,
+  UserGoal,
+  UserProfile,
+  UserResume,
+} from "./userTypes";
 
 type AddResumeInput = {
   name: string;
@@ -32,9 +54,26 @@ type UserContextType = {
   setCompareVersionId: (versionId: string) => void;
 
   addResume: (resume: AddResumeInput) => void;
+  addGoal: (goal: UserGoal) => void;
+  updateGoal: (goal: UserGoal) => void;
+  deleteGoal: (goalId: string) => void;
+  updateProfile: (profile: Partial<UserProfile>) => void;
+  recruitAgent: (role: AgentRole, name: string) => void;
+  updateAgentStatus: (
+    agentId: string,
+    status: "active" | "paused"
+  ) => void;
+  removeAgent: (agentId: string) => void;
+  updatePlanningProgress: (progress: PlanningProgress) => void;
+  updateOpportunityProgress: (progress: OpportunityProgress) => void;
   removeResume: (resumeId: string) => void;
+  updateCareerPreference: (preference: CareerPreference) => void;
   updateResumeTargetGoal: (resumeId: string, goalId: string) => void;
   createResumeVersion: (resumeId: string, label: string) => void;
+  updateResumeExperience: (
+    resumeId: string,
+    experience: ResumeExperience[],
+  ) => void;
   restoreResumeVersion: (resumeId: string, versionId: string) => void;
   removeResumeVersion: (resumeId: string, versionId: string) => void;
   optimizeResume: (
@@ -46,8 +85,55 @@ type UserContextType = {
 const UserContext = createContext<UserContextType | null>(null);
 
 const USER_STORAGE_KEY = "osai.userProfile";
+const USER_STORAGE_VERSION_KEY = "osai.userProfileVersion";
+const USER_STORAGE_VERSION = "evidence-planning-v1";
 const ACTIVE_RESUME_STORAGE_KEY = "osai.activeResumeId";
 const COMPARE_VERSION_STORAGE_KEY = "osai.compareVersionId";
+
+function getScopedStorageKey(key: string, email: string) {
+  return `${key}.${encodeURIComponent(email)}`;
+}
+
+function createEmptyUser(name: string, email: string): UserProfile {
+  return {
+    id: `user-${email}`,
+    name,
+    headline: "",
+    highlights: [],
+    location: "",
+    currentTitle: "",
+    currentIndustry: "",
+    targetIndustries: [],
+    skills: [],
+    goals: [],
+    resumes: [],
+    careerPreference: {},
+    planningProgress: {
+      taskStatuses: {},
+      submittedEvidence: [],
+      agentArtifacts: [],
+    },
+    opportunityProgress: {
+      savedOpportunityIds: [],
+      dismissedOpportunityIds: [],
+    },
+    network: {
+      connectedSources: [],
+      connections: [],
+    },
+    agentWorkforce: {
+      recruitedAgents: [],
+      taskRuns: [],
+    },
+    reviewerProfile: {
+      isReviewer: false,
+      reviewIndustries: [],
+      reviewSeniority: [],
+      creditsEarned: 0,
+      creditsAvailable: 0,
+    },
+  };
+}
 
 function normalizeResume(resume: UserResume): UserResume {
   const fallbackVersionId = `${resume.id}-v${resume.version ?? 1}`;
@@ -85,8 +171,55 @@ function normalizeResume(resume: UserResume): UserResume {
 }
 
 function normalizeUser(user: UserProfile): UserProfile {
+  const agentArtifacts = user.planningProgress?.agentArtifacts ?? [];
+  const submittedEvidence = (
+    user.planningProgress?.submittedEvidence ?? []
+  ).map((item) => ({
+    ...item,
+    origin:
+      item.origin ??
+      (agentArtifacts.some(
+        (artifact) =>
+          artifact.taskId === item.taskId && artifact.status === "accepted"
+      )
+        ? ("agent_artifact" as const)
+        : ("user" as const)),
+  }));
+
   return {
     ...user,
+    name: cleanProfileName(user.name),
+    headline: user.headline ?? mockUser.headline,
+    yearsExperience: user.yearsExperience ?? mockUser.yearsExperience,
+    highlights: user.highlights ?? mockUser.highlights,
+    careerPreference: {
+      ...(user.careerPreference ?? {}),
+      selectedCareerIds:
+        user.careerPreference?.selectedCareerIds ??
+        (user.careerPreference?.selectedCareerId
+          ? [user.careerPreference.selectedCareerId]
+          : []),
+    },
+    planningProgress: {
+      taskStatuses: user.planningProgress?.taskStatuses ?? {},
+      submittedEvidence,
+      agentArtifacts,
+    },
+    opportunityProgress: {
+      savedOpportunityIds:
+        user.opportunityProgress?.savedOpportunityIds ?? [],
+      dismissedOpportunityIds:
+        user.opportunityProgress?.dismissedOpportunityIds ?? [],
+    },
+    network: {
+      connectedSources: user.network?.connectedSources ?? [],
+      connections: user.network?.connections ?? [],
+    },
+    agentWorkforce: {
+      recruitedAgents: user.agentWorkforce?.recruitedAgents ?? [],
+      taskRuns: user.agentWorkforce?.taskRuns ?? [],
+    },
+    goals: user.goals ?? [],
     resumes: user.resumes.map((resume) => normalizeResume(resume)),
   };
 }
@@ -184,7 +317,25 @@ function buildOptimizedParsedDocument(
 }
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserProfile>(mockUser);
+  const { requiresOnboarding, session } = useAuth();
+  const accountEmail = session?.email ?? "anonymous";
+  const userStorageKey = getScopedStorageKey(USER_STORAGE_KEY, accountEmail);
+  const userStorageVersionKey = getScopedStorageKey(
+    USER_STORAGE_VERSION_KEY,
+    accountEmail
+  );
+  const activeResumeStorageKey = getScopedStorageKey(
+    ACTIVE_RESUME_STORAGE_KEY,
+    accountEmail
+  );
+  const compareVersionStorageKey = getScopedStorageKey(
+    COMPARE_VERSION_STORAGE_KEY,
+    accountEmail
+  );
+  const [user, setUser] = useState<UserProfile>(() =>
+    createEmptyUser(session?.displayName ?? "OSai User", accountEmail)
+  );
+  const userRef = useRef(user);
 
   const defaultResumeId =
     mockUser.resumes.find((resume) => resume.status === "active")?.id ??
@@ -207,28 +358,57 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
 
   useEffect(() => {
-    const storedUser = window.localStorage.getItem(USER_STORAGE_KEY);
+    userRef.current = user;
+  }, [user]);
+
+  useEffect(() => {
+    const storedUser = window.localStorage.getItem(userStorageKey);
+    const storedUserVersion = window.localStorage.getItem(
+      userStorageVersionKey
+    );
     const storedResumeId = window.localStorage.getItem(
-      ACTIVE_RESUME_STORAGE_KEY
+      activeResumeStorageKey
     );
     const storedCompareVersionId = window.localStorage.getItem(
-      COMPARE_VERSION_STORAGE_KEY
+      compareVersionStorageKey
     );
 
-    let resolvedUser = mockUser;
+    let resolvedUser = createEmptyUser(
+      session?.displayName ?? "OSai User",
+      accountEmail
+    );
 
-    if (storedUser) {
+    if (storedUser && storedUserVersion === USER_STORAGE_VERSION) {
       try {
         resolvedUser = JSON.parse(storedUser) as UserProfile;
       } catch {
-        resolvedUser = mockUser;
+        resolvedUser = createEmptyUser(
+          session?.displayName ?? "OSai User",
+          accountEmail
+        );
+      }
+    } else if (!requiresOnboarding) {
+      const legacyUser = window.localStorage.getItem(USER_STORAGE_KEY);
+      const legacyVersion = window.localStorage.getItem(
+        USER_STORAGE_VERSION_KEY
+      );
+
+      if (legacyUser && legacyVersion === USER_STORAGE_VERSION) {
+        try {
+          resolvedUser = JSON.parse(legacyUser) as UserProfile;
+        } catch {
+          resolvedUser = mockUser;
+        }
       }
     }
 
     const normalizedUser = normalizeUser(resolvedUser);
 
+    // Intentional one-time hydration from the browser persistence boundary.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setUser(normalizedUser);
-    window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(normalizedUser));
+    window.localStorage.setItem(userStorageKey, JSON.stringify(normalizedUser));
+    window.localStorage.setItem(userStorageVersionKey, USER_STORAGE_VERSION);
 
     const fallbackResumeId =
       normalizedUser.resumes.find((resume) => resume.status === "active")?.id ??
@@ -258,26 +438,34 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     );
 
     setActiveResumeIdState(resolvedResumeId);
-    window.localStorage.setItem(ACTIVE_RESUME_STORAGE_KEY, resolvedResumeId);
+    window.localStorage.setItem(activeResumeStorageKey, resolvedResumeId);
 
     if (storedCompareVersionId && storedCompareVersionExists) {
       setCompareVersionIdState(storedCompareVersionId);
     } else {
       setCompareVersionIdState(fallbackCompareVersionId);
       window.localStorage.setItem(
-        COMPARE_VERSION_STORAGE_KEY,
+        compareVersionStorageKey,
         fallbackCompareVersionId
       );
     }
 
     setHasLoadedStorage(true);
-  }, []);
+  }, [
+    accountEmail,
+    activeResumeStorageKey,
+    compareVersionStorageKey,
+    requiresOnboarding,
+    session?.displayName,
+    userStorageKey,
+    userStorageVersionKey,
+  ]);
 
   function persistUser(nextUser: UserProfile) {
     const normalizedUser = normalizeUser(nextUser);
 
     setUser(normalizedUser);
-    window.localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(normalizedUser));
+    window.localStorage.setItem(userStorageKey, JSON.stringify(normalizedUser));
   }
 
   function setActiveResumeId(resumeId: string) {
@@ -293,16 +481,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setActiveResumeIdState(resumeId);
     setCompareVersionIdState(nextCompareVersionId);
 
-    window.localStorage.setItem(ACTIVE_RESUME_STORAGE_KEY, resumeId);
+    window.localStorage.setItem(activeResumeStorageKey, resumeId);
     window.localStorage.setItem(
-      COMPARE_VERSION_STORAGE_KEY,
+      compareVersionStorageKey,
       nextCompareVersionId
     );
   }
 
   function setCompareVersionId(versionId: string) {
     setCompareVersionIdState(versionId);
-    window.localStorage.setItem(COMPARE_VERSION_STORAGE_KEY, versionId);
+    window.localStorage.setItem(compareVersionStorageKey, versionId);
   }
 
   function addResume(resume: AddResumeInput) {
@@ -337,13 +525,162 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       ],
     };
 
+    const prefill = resume.parsedDocument
+      ? getResumeProfilePrefill(resume.parsedDocument)
+      : null;
     const nextUser: UserProfile = {
       ...user,
+      name:
+        user.name && user.name !== "OSai User"
+          ? user.name
+          : prefill?.name ?? user.name,
+      location: user.location || prefill?.location || "",
+      currentTitle: user.currentTitle || prefill?.currentTitle || "",
+      currentIndustry: user.currentIndustry || prefill?.currentIndustry || "",
+      headline: user.headline || prefill?.headline || "",
+      yearsExperience: user.yearsExperience ?? prefill?.yearsExperience,
+      skills:
+        prefill?.skills && prefill.skills.length > 0
+          ? Array.from(new Set([...user.skills, ...prefill.skills]))
+          : user.skills,
       resumes: [...user.resumes, newResume],
     };
 
     persistUser(nextUser);
     setActiveResumeId(newResume.id);
+  }
+
+  function addGoal(goal: UserGoal) {
+    persistUser({
+      ...user,
+      goals: [...user.goals, goal],
+    });
+  }
+
+  function updateGoal(goal: UserGoal) {
+    persistUser({
+      ...user,
+      goals: user.goals.map((item) => (item.id === goal.id ? goal : item)),
+    });
+  }
+
+  function deleteGoal(goalId: string) {
+    persistUser({
+      ...user,
+      goals: user.goals.filter((goal) => goal.id !== goalId),
+      resumes: user.resumes.map((resume) =>
+        resume.targetGoalId === goalId
+          ? {
+              ...resume,
+              targetGoalId: "",
+              targetJobTitle: undefined,
+            }
+          : resume
+      ),
+      planningProgress: {
+        ...user.planningProgress,
+        submittedEvidence: user.planningProgress.submittedEvidence.filter(
+          (evidence) => evidence.goalId !== goalId
+        ),
+        agentArtifacts: user.planningProgress.agentArtifacts.filter(
+          (artifact) => artifact.goalId !== goalId
+        ),
+      },
+    });
+  }
+
+  const updateProfile = useCallback(
+    (profile: Partial<UserProfile>) => {
+      const currentUser = userRef.current;
+      const normalizedUser = normalizeUser({
+        ...currentUser,
+        ...profile,
+        id: currentUser.id,
+        goals: currentUser.goals,
+        resumes: currentUser.resumes,
+        planningProgress: currentUser.planningProgress,
+        opportunityProgress: currentUser.opportunityProgress,
+        reviewerProfile: currentUser.reviewerProfile,
+      });
+
+      userRef.current = normalizedUser;
+      setUser(normalizedUser);
+      window.localStorage.setItem(
+        userStorageKey,
+        JSON.stringify(normalizedUser)
+      );
+    },
+    [userStorageKey]
+  );
+
+  function recruitAgent(role: AgentRole, name: string) {
+    if (
+      user.agentWorkforce.recruitedAgents.some(
+        (agent) => agent.role === role
+      )
+    ) {
+      return;
+    }
+
+    persistUser({
+      ...user,
+      agentWorkforce: {
+        ...user.agentWorkforce,
+        recruitedAgents: [
+          ...user.agentWorkforce.recruitedAgents,
+          {
+            id: `agent-${role}-${Date.now()}`,
+            role,
+            name,
+            status: "active",
+            recruitedAt: new Date().toISOString(),
+          },
+        ],
+      },
+    });
+  }
+
+  function updateAgentStatus(
+    agentId: string,
+    status: "active" | "paused"
+  ) {
+    persistUser({
+      ...user,
+      agentWorkforce: {
+        ...user.agentWorkforce,
+        recruitedAgents: user.agentWorkforce.recruitedAgents.map((agent) =>
+          agent.id === agentId ? { ...agent, status } : agent
+        ),
+      },
+    });
+  }
+
+  function removeAgent(agentId: string) {
+    persistUser({
+      ...user,
+      agentWorkforce: {
+        recruitedAgents: user.agentWorkforce.recruitedAgents.filter(
+          (agent) => agent.id !== agentId
+        ),
+        taskRuns: user.agentWorkforce.taskRuns.filter(
+          (run) => run.agentId !== agentId
+        ),
+      },
+    });
+  }
+
+  function updatePlanningProgress(progress: PlanningProgress) {
+    persistUser({
+      ...user,
+      planningProgress: progress,
+    });
+  }
+
+  function updateOpportunityProgress(progress: OpportunityProgress) {
+    persistUser({
+      ...user,
+      opportunityProgress: progress,
+    });
   }
 
   function removeResume(resumeId: string) {
@@ -369,6 +706,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     persistUser(nextUser);
     setActiveResumeId(nextActiveResumeId);
+  }
+
+  function updateCareerPreference(preference: CareerPreference) {
+    persistUser({
+      ...user,
+      careerPreference: {
+        ...user.careerPreference,
+        ...preference,
+      },
+    });
   }
 
   function updateResumeTargetGoal(resumeId: string, goalId: string) {
@@ -439,6 +786,101 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setCompareVersionId(createdVersionId);
     }
   }
+
+  const updateResumeExperience = useCallback(
+    (resumeId: string, experience: ResumeExperience[]) => {
+      const currentUser = userRef.current;
+      const createdDate = new Date().toISOString();
+      const currentResume = currentUser.resumes.find(
+        (resume) => resume.id === resumeId,
+      );
+      const currentVersion = currentResume?.versions.find(
+        (version) => version.id === currentResume.currentVersionId,
+      );
+      const currentDocument = currentVersion?.parsedDocument;
+      const currentStructuredResume =
+        currentDocument?.structuredResume ??
+        (currentDocument?.lines.length
+          ? buildStructuredResume(currentDocument.lines)
+          : undefined);
+
+      if (!currentResume || !currentDocument || !currentStructuredResume) {
+        return;
+      }
+
+      const nextStructuredResume = {
+        ...currentStructuredResume,
+        experience,
+      };
+      const serializedResume = serializeStructuredResume(nextStructuredResume);
+      const nextVersionNumber = currentResume.versions.length + 1;
+      const nextVersionId = `${currentResume.id}-v${nextVersionNumber}-${Date.now()}`;
+      const nextDocument: ParsedResumeDocument = {
+        ...currentDocument,
+        ...serializedResume,
+        fileName: `${currentResume.name} — Career History Update`,
+        parsedDate: createdDate,
+        structuredResume: nextStructuredResume,
+      };
+      const existingIndustryHistory = currentUser.industryHistory ?? [];
+      const nextIndustryHistory = experience.map((role) => {
+        const existing = existingIndustryHistory.find(
+          (job) =>
+            job.id === role.id ||
+            (job.company.trim().toLowerCase() === role.company.trim().toLowerCase() &&
+              job.title.trim().toLowerCase() === role.title.trim().toLowerCase()),
+        );
+
+        return {
+          id: role.id,
+          industry: existing?.industry ?? currentUser.currentIndustry ?? "",
+          title: role.title,
+          company: role.company,
+          startDate: role.startDate,
+          endDate: role.endDate,
+        };
+      });
+      const currentRole =
+        experience.find((role) => /present|current/i.test(role.endDate ?? "")) ??
+        experience[0];
+      const nextUser = normalizeUser({
+        ...currentUser,
+        currentTitle: currentRole?.title ?? currentUser.currentTitle,
+        industryHistory: nextIndustryHistory,
+        industryHistoryResumeId: resumeId,
+        resumes: currentUser.resumes.map((resume) =>
+          resume.id === resumeId
+            ? {
+                ...resume,
+                currentVersionId: nextVersionId,
+                version: nextVersionNumber,
+                versions: [
+                  ...resume.versions.map((version) => ({
+                    ...version,
+                    isCurrent: false,
+                  })),
+                  {
+                    id: nextVersionId,
+                    label: "Career History Update",
+                    source: "manual_edit" as const,
+                    createdDate,
+                    isCurrent: true,
+                    parsedDocument: nextDocument,
+                  },
+                ],
+              }
+            : resume,
+        ),
+      });
+
+      userRef.current = nextUser;
+      setUser(nextUser);
+      window.localStorage.setItem(userStorageKey, JSON.stringify(nextUser));
+      setCompareVersionIdState(currentVersion.id);
+      window.localStorage.setItem(compareVersionStorageKey, currentVersion.id);
+    },
+    [compareVersionStorageKey, userStorageKey],
+  );
 
   function restoreResumeVersion(resumeId: string, versionId: string) {
     const nextUser: UserProfile = {
@@ -588,9 +1030,20 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         compareVersionId,
         setCompareVersionId,
         addResume,
+        addGoal,
+        updateGoal,
+        deleteGoal,
+        updateProfile,
+        recruitAgent,
+        updateAgentStatus,
+        removeAgent,
+        updatePlanningProgress,
+        updateOpportunityProgress,
         removeResume,
+        updateCareerPreference,
         updateResumeTargetGoal,
         createResumeVersion,
+        updateResumeExperience,
         restoreResumeVersion,
         removeResumeVersion,
         optimizeResume,

@@ -36,4 +36,12 @@ export type ModuleDefinition = {
   panels: ModulePanels;
 
   viewPanels?: Record<string, Partial<ModulePanels>>;
+
+  shell?: {
+    showWorkspaceHeader?: boolean;
+    showWorkspaceControls?: boolean;
+    showUtility?: boolean;
+    showBottomWorkspace?: boolean;
+    visualizationPadding?: boolean;
+  };
 };

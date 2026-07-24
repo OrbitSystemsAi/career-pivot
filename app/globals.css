@@ -1,26 +1,142 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #173a46;
+  --foreground: #102f39;
+  --petroleum-950: #102f39;
+  --petroleum-900: #153642;
+  --petroleum-800: #1b414c;
+  --petroleum-700: #234f5b;
+  --petroleum-600: #2b6874;
+  --petroleum-500: #168391;
+  --petroleum-100: #e8f2f3;
+  --petroleum-50: #f3f8f8;
+  --accent-orange: #f28c28;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@keyframes onboarding-coach-phrase-cycle {
+  0% {
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.onboarding-coach-phrase {
+  animation: onboarding-coach-phrase-cycle 20s ease-in-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onboarding-coach-phrase {
+    animation: none;
+  }
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent-orange) 28%, white);
+  color: var(--petroleum-950);
+}
+
+/* Shared module palette: existing semantic blue utilities inherit the approved
+   petroleum system without requiring one-off color decisions in every module. */
+.bg-blue-50 { background-color: var(--petroleum-100) !important; }
+.bg-blue-100 { background-color: #d6e8ea !important; }
+.bg-blue-500 { background-color: var(--petroleum-500) !important; }
+.bg-blue-600, .bg-blue-700 { background-color: #126174 !important; }
+.text-blue-400, .text-blue-500, .text-blue-600, .text-blue-700,
+.text-blue-800, .text-blue-900 { color: #126174 !important; }
+.border-blue-100, .border-blue-200, .border-blue-300,
+.border-blue-400 { border-color: #9fc1c8 !important; }
+.ring-blue-50, .ring-blue-100 { --tw-ring-color: #c7dcdf !important; }
+.accent-blue-600 { accent-color: #126174 !important; }
+.hover\:bg-blue-50:hover { background-color: var(--petroleum-100) !important; }
+.hover\:bg-blue-500:hover, .hover\:bg-blue-700:hover {
+  background-color: #174f5a !important;
+}
+.focus\:border-blue-400:focus { border-color: var(--petroleum-500) !important; }
+.focus\:ring-blue-50:focus { --tw-ring-color: var(--petroleum-100) !important; }
+
+/* D3 is the protected analytical canvas: white at every content depth. */
+[data-region="d3"] {
+  background: white;
+}
+[data-region="d3"] .bg-slate-50,
+[data-region="d3"] .bg-slate-100,
+[data-region="d3"] .bg-white\/95,
+[data-region="d3"] .from-white,
+[data-region="d3"] .via-slate-50 {
+  background-color: white !important;
+  background-image: none !important;
+}
+
+/* Utility rail uses the petroleum family rather than borrowing D3's white. */
+[data-region="d4"] .group {
+  border-color: #416b75;
+  background: transparent;
+}
+[data-region="d4"] .group:nth-of-type(3n + 1) {
+  background: transparent;
+}
+[data-region="d4"] .group:nth-of-type(3n + 2) {
+  background: transparent;
+}
+[data-region="d4"] .group:nth-of-type(3n + 3) {
+  background: transparent;
+}
+[data-region="d4"] .group summary:hover {
+  background: transparent;
+}
+[data-region="d4"] .group summary {
+  background: transparent;
+}
+[data-region="d4"] .group h3,
+[data-region="d4"] .group .text-slate-400,
+[data-region="d4"] .group .text-slate-500,
+[data-region="d4"] .group .text-slate-600,
+[data-region="d4"] .group .text-slate-700,
+[data-region="d4"] .group .text-slate-900 {
+  color: #d3e1e4 !important;
+}
+[data-region="d4"] .group .text-amber-700 {
+  color: #ffb25c !important;
+}
+[data-region="d4"] .d4-section-body {
+  background: #ffffff;
+  color: #173a46;
+}
+[data-region="d4"] .d4-section-body .text-slate-400 {
+  color: #94a3b8 !important;
+}
+[data-region="d4"] .d4-section-body .text-slate-500 {
+  color: #64748b !important;
+}
+[data-region="d4"] .d4-section-body .text-slate-600 {
+  color: #475569 !important;
+}
+[data-region="d4"] .d4-section-body .text-slate-700,
+[data-region="d4"] .d4-section-body .text-slate-900 {
+  color: #173a46 !important;
+}
+[data-region="d4"] .d4-section-body .text-amber-700 {
+  color: #b45309 !important;
 }

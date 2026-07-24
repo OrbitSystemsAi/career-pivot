@@ -2,6 +2,7 @@ import type { ModuleDefinition } from "@/core/types/module";
 
 import {
   CareerGraph,
+  CareerMarket,
   CareerTimeline,
   CareerSkills,
   CareerStrengths,
@@ -16,6 +17,11 @@ import {
   CareerMarketFilters,
   CareerMarketContext,
   CareerMarketRanking,
+  GoalCreation,
+  EvidencePlan,
+  CareerAssumptionsPanel,
+  CareerRiskSignalsPanel,
+  CareerDecisionPanel,
 } from "@/modules/career";
 
 export const careerModule: ModuleDefinition = {
@@ -25,16 +31,18 @@ export const careerModule: ModuleDefinition = {
   icon: "🚀",
 
   metrics: [
-    { label: "Career Match", value: "72%", change: "↑ +12%" },
-    { label: "Market Reach", value: "1.2K", change: "↑ +18%" },
-    { label: "Salary Lift", value: "$42K", change: "↑ +8%" },
-    { label: "Open Roles", value: "91", change: "↑ +4%" },
+    { label: "Current Career", value: "0%" },
+    { label: "Selected Career", value: "0%" },
+    { label: "Next Titles", value: "0" },
+    { label: "Resume Skills", value: "0" },
   ],
 
   views: [
+    { label: "Goal", id: "goal" },
+    { label: "Paths", id: "market" },
+    { label: "Plan", id: "plan" },
     { label: "Graph", id: "graph" },
     { label: "Timeline", id: "timeline" },
-    { label: "Market", id: "market" },
     { label: "Skills", id: "skills" },
   ],
 
@@ -51,11 +59,26 @@ export const careerModule: ModuleDefinition = {
   },
 
   viewPanels: {
+    goal: {
+      visualization: GoalCreation,
+    },
+    plan: {
+      visualization: EvidencePlan,
+    },
     timeline: {
       visualization: CareerTimeline,
+      utilityTop: CareerAssumptionsPanel,
+      utilityMiddle: CareerRiskSignalsPanel,
+      utilityBottom: CareerDecisionPanel,
+    },
+    graph: {
+      utilityTop: CareerAssumptionsPanel,
+      utilityMiddle: CareerRiskSignalsPanel,
+      utilityBottom: CareerDecisionPanel,
     },
 
     market: {
+      visualization: CareerMarket,
       utilityTop: CareerMarketFilters,
       utilityMiddle: CareerMarketContext,
       utilityBottom: CareerMarketRanking,

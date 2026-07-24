@@ -16,12 +16,7 @@ export const networkModule: ModuleDefinition = {
   description: "Network Intelligence",
   icon: "🌐",
 
-  metrics: [
-    { label: "Network Score", value: "68%", change: "↑ +21%" },
-    { label: "Warm Paths", value: "14", change: "↑ +6" },
-    { label: "Recruiters", value: "37", change: "↑ +8" },
-    { label: "Target Companies", value: "22", change: "↑ +5" },
-  ],
+  metrics: [],
 
   views: [
     { label: "Map", id: "map" },

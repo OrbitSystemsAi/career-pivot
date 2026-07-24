@@ -1,4 +1,14 @@
 export { default as CareerGraph } from "./components/CareerGraph";
+export { default as CareerMarket } from "./components/CareerMarket";
+export { default as CareerMapCanvas } from "./components/CareerMapCanvas";
+export { default as CareerTrajectoryChart } from "./components/CareerTrajectoryChart";
+export {
+  CareerAssumptionsPanel,
+  CareerDecisionPanel,
+  CareerRiskSignalsPanel,
+} from "./components/CareerTrajectoryInsights";
+export { default as GoalCreation } from "./components/GoalCreation";
+export { default as EvidencePlan } from "./components/EvidencePlan";
 export { default as CareerTimeline } from "./components/CareerTimeline";
 export { default as CareerSkills } from "./components/CareerSkills";
 

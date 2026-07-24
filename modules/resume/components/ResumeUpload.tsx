@@ -22,6 +22,21 @@ function readFileAsDataUrl(file: File) {
   });
 }
 
+async function getResumeParseError(response: Response) {
+  const fallbackMessage = "Resume parsing failed";
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (contentType.includes("application/json")) {
+    const body = (await response.json().catch(() => null)) as {
+      error?: string;
+    } | null;
+
+    return body?.error ?? fallbackMessage;
+  }
+
+  return (await response.text()) || fallbackMessage;
+}
+
 export default function ResumeUpload() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { addResume } = useUser();
@@ -47,8 +62,7 @@ export default function ResumeUpload() {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || "Resume parsing failed");
+      throw new Error(await getResumeParseError(response));
     }
 
     return (await response.json()) as ParsedResumeDocument;
@@ -86,7 +100,6 @@ export default function ResumeUpload() {
       const message =
         error instanceof Error ? error.message : "Resume parsing failed";
 
-      console.error("Resume parsing failed:", message);
       setParseError(message);
     } finally {
       setIsParsing(false);
@@ -99,7 +112,7 @@ export default function ResumeUpload() {
       <input
         ref={fileInputRef}
         type="file"
-        accept=".docx"
+        accept=".docx,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf"
         className="hidden"
         onChange={handleFileChange}
       />

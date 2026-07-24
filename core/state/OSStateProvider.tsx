@@ -15,8 +15,8 @@ type OSStateContextType = {
 
 const OSStateContext = createContext<OSStateContextType | null>(null);
 
-const DEFAULT_MODULE = "career";
-const DEFAULT_VIEW = "graph";
+const DEFAULT_MODULE = "home";
+const DEFAULT_VIEW = "overview";
 const DEFAULT_D5_OPEN = false;
 
 const MODULE_STORAGE_KEY = "osai.activeModule";
@@ -39,6 +39,8 @@ export function OSStateProvider({
     const storedD5Open = window.localStorage.getItem(D5_STORAGE_KEY);
 
     if (storedModule) {
+      // Intentional one-time hydration from the browser persistence boundary.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveModuleState(storedModule);
     }
 

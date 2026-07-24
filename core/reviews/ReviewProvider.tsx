@@ -57,6 +57,8 @@ export function ReviewProvider({ children }: { children: React.ReactNode }) {
 
     if (storedRequests) {
       try {
+        // Intentional one-time hydration from the browser persistence boundary.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setReviewRequests(JSON.parse(storedRequests));
       } catch {
         setReviewRequests(mockReviewRequests);
