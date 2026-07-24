@@ -89,6 +89,130 @@ body {
   background-image: none !important;
 }
 
+/* Home layout presets place the real dashboard sections, not just the grid
+   columns. Mobile keeps a readable single/two-column flow. */
+@media (min-width: 1280px) {
+  .home-layout-grid {
+    grid-auto-flow: dense;
+    grid-template-rows: repeat(3, minmax(9rem, auto));
+  }
+
+  .home-layout-grid > [data-home-slot="experience"] { grid-area: experience; }
+  .home-layout-grid > [data-home-slot="industries"] { grid-area: industries; }
+  .home-layout-grid > [data-home-slot="direction"] { grid-area: direction; }
+  .home-layout-grid > [data-home-slot="readiness"] { grid-area: readiness; }
+  .home-layout-grid > [data-home-slot="proof"] { grid-area: proof; }
+  .home-layout-grid > [data-home-slot="impact"] { grid-area: impact; }
+  .home-layout-grid > [data-home-slot="saved"] { grid-area: saved; }
+  .home-layout-grid > [data-home-slot] > * { height: 100%; }
+
+  .home-layout-grid[data-home-layout="career-editorial"] {
+    grid-template-columns: 1.15fr 1.15fr 1fr 1fr;
+    grid-template-areas:
+      "experience experience industries direction"
+      "experience experience industries readiness"
+      "proof proof impact saved";
+  }
+
+  .home-layout-grid[data-home-layout="social-journal"] {
+    grid-template-columns: 1.35fr 1.35fr 1fr;
+    grid-template-areas:
+      "experience experience industries"
+      "experience experience direction"
+      "proof readiness impact"
+      "proof saved saved";
+  }
+
+  .home-layout-grid[data-home-layout="left-rail"] {
+    grid-template-columns: .8fr 1.2fr 1.2fr 1fr;
+    grid-template-areas:
+      "direction experience experience industries"
+      "readiness experience experience industries"
+      "impact proof proof saved";
+  }
+
+  .home-layout-grid[data-home-layout="featured-story"] {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+      "experience experience experience"
+      "experience experience experience"
+      "industries direction readiness"
+      "proof proof impact"
+      "saved saved impact";
+  }
+
+  .home-layout-grid[data-home-layout="post-stream"] {
+    grid-template-columns: 1.45fr 1.15fr .9fr;
+    grid-template-areas:
+      "experience experience industries"
+      "experience experience readiness"
+      "proof direction impact"
+      "proof saved saved";
+  }
+
+  .home-layout-grid[data-home-layout="milestone"] {
+    grid-template-columns: .8fr 1.5fr .8fr;
+    grid-template-areas:
+      "direction experience industries"
+      "direction experience industries"
+      "readiness experience impact"
+      "proof proof saved";
+  }
+
+  .home-layout-grid[data-home-layout="portfolio"] {
+    grid-template-columns: .8fr 1.45fr 1fr;
+    grid-template-areas:
+      "direction experience experience"
+      "readiness experience experience"
+      "industries proof proof"
+      "industries impact saved";
+  }
+
+  .home-layout-grid[data-home-layout="community"] {
+    grid-template-columns: 1fr 1.45fr 1fr;
+    grid-template-areas:
+      "industries experience experience"
+      "direction experience experience"
+      "readiness proof impact"
+      "saved proof impact";
+  }
+
+  .home-layout-grid[data-home-layout="career-chronicle"] {
+    grid-template-columns: .8fr 1.4fr 1fr 1fr;
+    grid-template-areas:
+      "direction experience experience industries"
+      "direction experience experience industries"
+      "readiness proof impact saved";
+  }
+
+  .home-layout-grid[data-home-layout="goals-growth"] {
+    grid-template-columns: 1.25fr 1fr 1fr;
+    grid-template-areas:
+      "direction experience experience"
+      "readiness experience experience"
+      "proof industries industries"
+      "impact saved saved";
+  }
+
+  .home-layout-grid[data-home-layout="profile-magazine"] {
+    grid-template-columns: .85fr 1.5fr 1fr;
+    grid-template-areas:
+      "industries experience experience"
+      "industries experience experience"
+      "direction proof readiness"
+      "direction impact saved";
+  }
+
+  .home-layout-grid[data-home-layout="network-desk"] {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas:
+      "industries direction readiness"
+      "experience experience proof"
+      "experience experience proof"
+      "impact saved saved";
+  }
+}
+
 /* Utility rail uses the petroleum family rather than borrowing D3's white. */
 [data-region="d4"] .group {
   border-color: #416b75;

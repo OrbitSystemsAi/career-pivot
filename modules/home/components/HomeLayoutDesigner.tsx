@@ -1,23 +1,10 @@
 "use client";
 
-import { useState } from "react";
-
-type LayoutId =
-  | "career-editorial"
-  | "social-journal"
-  | "left-rail"
-  | "featured-story"
-  | "post-stream"
-  | "milestone"
-  | "portfolio"
-  | "community"
-  | "career-chronicle"
-  | "goals-growth"
-  | "profile-magazine"
-  | "network-desk";
+import { useEffect, useState } from "react";
+import { useOSState, type HomeLayoutId } from "@/core/state/OSStateProvider";
 
 type LayoutOption = {
-  id: LayoutId;
+  id: HomeLayoutId;
   name: string;
   description: string;
   frames: string[];
@@ -183,28 +170,31 @@ function FramePreview({ option }: { option: LayoutOption }) {
 }
 
 export default function HomeLayoutDesigner() {
+  const { homeLayoutId, setActiveView, setHomeLayoutId } = useOSState();
   const [selectedLayout, setSelectedLayout] = useState<LayoutOption | null>(null);
   const [frameVisuals, setFrameVisuals] = useState<string[]>([]);
-  const [saved, setSaved] = useState(false);
 
-  function scrollWorkspaceToTop() {
-    window.requestAnimationFrame(() => {
-      document.querySelector<HTMLElement>('[data-testid="home-dashboard-body"]')?.scrollTo({ top: 0 });
-    });
-  }
+  useEffect(() => {
+    if (!selectedLayout) return;
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setSelectedLayout(null);
+    }
+
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [selectedLayout]);
 
   function selectLayout(option: LayoutOption) {
     setSelectedLayout(option);
     setFrameVisuals(
       option.defaults,
     );
-    setSaved(false);
-    scrollWorkspaceToTop();
   }
 
-  if (!selectedLayout) {
-    return (
-      <section className="mx-auto flex min-h-full w-full max-w-6xl flex-col px-6 pb-10 pt-7" data-testid="layout-selector">
+  return (
+      <section className="relative mx-auto flex h-full min-h-0 w-full max-w-6xl flex-col overflow-hidden" data-testid="layout-selector">
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-10 pt-7">
         <div className="max-w-2xl">
           <h2 className="text-3xl font-semibold tracking-tight text-[#123743]">Choose your home layout</h2>
           <p className="mt-2 text-sm leading-6 text-[#667c84]">Choose from 12 magazine-inspired ways to tell your career story, share posts, and show your connections.</p>
@@ -213,43 +203,55 @@ export default function HomeLayoutDesigner() {
         <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {layoutOptions.map((option) => (
             <button
-              className="group rounded-2xl border border-[#c8d8dc] bg-white p-4 text-left shadow-[0_12px_32px_rgba(15,48,64,0.06)] transition hover:-translate-y-0.5 hover:border-[#168391] hover:shadow-[0_16px_36px_rgba(15,48,64,0.12)] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#d4eef1]"
+              aria-current={option.id === homeLayoutId ? "true" : undefined}
+              className={`group rounded-2xl border bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-[#168391] hover:shadow-[0_16px_36px_rgba(15,48,64,0.12)] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#d4eef1] ${option.id === homeLayoutId ? "border-2 border-[#168391] shadow-[0_0_0_3px_#d4eef1,0_12px_32px_rgba(15,48,64,0.1)]" : "border-[#c8d8dc] shadow-[0_12px_32px_rgba(15,48,64,0.06)]"}`}
               key={option.id}
               onClick={() => selectLayout(option)}
               type="button"
             >
               <FramePreview option={option} />
               <span className="mt-4 block text-sm font-semibold text-[#173a46] group-hover:text-[#0e7886]">{option.name}</span>
+              {option.id === homeLayoutId ? <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[.12em] text-[#168391]">Current layout</span> : null}
               <span className="mt-1 block text-xs leading-5 text-[#70838a]">{option.description}</span>
             </button>
           ))}
         </div>
-      </section>
-    );
-  }
+        </div>
 
-  return (
-    <section className="mx-auto flex min-h-full w-full max-w-6xl flex-col px-6 pb-10 pt-7" data-testid="layout-configurator">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+        {selectedLayout ? (
+          <div
+            aria-labelledby="layout-configurator-title"
+            aria-modal="true"
+            className="absolute inset-3 z-30 flex items-center justify-center overflow-hidden rounded-2xl bg-[#102f39]/45 p-4 backdrop-blur-[2px]"
+            data-testid="layout-configurator"
+            onMouseDown={(event) => {
+              if (event.currentTarget === event.target) setSelectedLayout(null);
+            }}
+            role="dialog"
+          >
+            <div className="flex max-h-full w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-[#bfd4d9] bg-white p-5 shadow-[0_24px_70px_rgba(15,48,64,0.28)] sm:p-6">
+      <div className="flex shrink-0 flex-wrap items-start justify-between gap-4">
         <div>
           <button
             className="text-sm font-semibold text-[#168391] transition hover:text-[#ff7a00] focus:outline-none focus-visible:text-[#ff7a00]"
             onClick={() => {
               setSelectedLayout(null);
-              scrollWorkspaceToTop();
             }}
             type="button"
           >
             ← Back to layouts
           </button>
-          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#123743]">Configure your frames</h2>
+          <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#123743]" id="layout-configurator-title">Configure your frames</h2>
           <p className="mt-2 text-sm text-[#667c84]">{selectedLayout.name} layout · choose what appears in each frame.</p>
         </div>
         <div className="flex items-center gap-3">
-          {saved ? <span className="text-xs font-semibold text-[#168391]">Layout saved</span> : null}
           <button
             className="rounded-xl bg-[#ff7a00] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#db6700] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#ffd8b7]"
-            onClick={() => setSaved(true)}
+            onClick={() => {
+              setHomeLayoutId(selectedLayout.id);
+              setSelectedLayout(null);
+              setActiveView("overview");
+            }}
             type="button"
           >
             Save layout
@@ -257,7 +259,7 @@ export default function HomeLayoutDesigner() {
         </div>
       </div>
 
-      <div className={`mt-7 grid min-h-[28rem] flex-1 gap-3 rounded-2xl border border-[#c8d8dc] bg-[#f8fbfc] p-4 ${selectedLayout.gridClass}`}>
+      <div className={`mt-5 grid min-h-0 flex-1 gap-3 overflow-y-auto rounded-2xl border border-[#c8d8dc] bg-[#f8fbfc] p-4 ${selectedLayout.gridClass}`}>
         {selectedLayout.frames.map((frame, index) => (
           <label
             className={`flex min-h-28 flex-col items-center justify-center rounded-xl border border-dashed border-[#a9c3ca] bg-white p-4 text-center shadow-sm ${selectedLayout.frameClasses[index] ?? ""}`}
@@ -275,6 +277,9 @@ export default function HomeLayoutDesigner() {
           </label>
         ))}
       </div>
-    </section>
+            </div>
+          </div>
+        ) : null}
+      </section>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { styles } from "@/core/design/styles";
 import { getActiveModule } from "@/core/moduleEngine/getActiveModule";
 import { useOSState } from "@/core/state/OSStateProvider";
 import D3WorkspaceHeaderPanel from "../panels/D3WorkspaceHeaderPanel";
@@ -20,9 +19,7 @@ export default function D3WorkspaceFrame() {
 
   return (
     <div data-region="d3" className="flex min-h-0 flex-col p-[3px]">
-      <section
-        className={`flex min-h-0 flex-1 flex-col overflow-hidden ${styles.surface.shellPanel} rounded-t-[0.875rem]`}
-      >
+      <section className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white">
         {showWorkspaceHeader ? <D3WorkspaceHeaderPanel /> : null}
         {showWorkspaceControls ? <D3WorkspaceControlsPanel /> : null}
         <D3VisualizationPanel />

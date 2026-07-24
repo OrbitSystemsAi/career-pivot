@@ -11,17 +11,51 @@ type OSStateContextType = {
 
   isD5Open: boolean;
   setIsD5Open: (isOpen: boolean) => void;
+
+  homeLayoutId: HomeLayoutId;
+  setHomeLayoutId: (layoutId: HomeLayoutId) => void;
 };
+
+export type HomeLayoutId =
+  | "career-editorial"
+  | "social-journal"
+  | "left-rail"
+  | "featured-story"
+  | "post-stream"
+  | "milestone"
+  | "portfolio"
+  | "community"
+  | "career-chronicle"
+  | "goals-growth"
+  | "profile-magazine"
+  | "network-desk";
 
 const OSStateContext = createContext<OSStateContextType | null>(null);
 
 const DEFAULT_MODULE = "home";
 const DEFAULT_VIEW = "overview";
 const DEFAULT_D5_OPEN = false;
+const DEFAULT_HOME_LAYOUT: HomeLayoutId = "career-editorial";
 
 const MODULE_STORAGE_KEY = "osai.activeModule";
 const VIEW_STORAGE_KEY = "osai.activeView";
 const D5_STORAGE_KEY = "osai.isD5Open";
+const HOME_LAYOUT_STORAGE_KEY = "osai.homeLayout";
+
+const homeLayoutIds = new Set<HomeLayoutId>([
+  "career-editorial",
+  "social-journal",
+  "left-rail",
+  "featured-story",
+  "post-stream",
+  "milestone",
+  "portfolio",
+  "community",
+  "career-chronicle",
+  "goals-growth",
+  "profile-magazine",
+  "network-desk",
+]);
 
 export function OSStateProvider({
   children,
@@ -31,12 +65,14 @@ export function OSStateProvider({
   const [activeModule, setActiveModuleState] = useState(DEFAULT_MODULE);
   const [activeView, setActiveViewState] = useState(DEFAULT_VIEW);
   const [isD5Open, setIsD5OpenState] = useState(DEFAULT_D5_OPEN);
+  const [homeLayoutId, setHomeLayoutIdState] = useState<HomeLayoutId>(DEFAULT_HOME_LAYOUT);
   const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
 
   useEffect(() => {
     const storedModule = window.localStorage.getItem(MODULE_STORAGE_KEY);
     const storedView = window.localStorage.getItem(VIEW_STORAGE_KEY);
     const storedD5Open = window.localStorage.getItem(D5_STORAGE_KEY);
+    const storedHomeLayout = window.localStorage.getItem(HOME_LAYOUT_STORAGE_KEY);
 
     if (storedModule) {
       // Intentional one-time hydration from the browser persistence boundary.
@@ -50,6 +86,10 @@ export function OSStateProvider({
 
     if (storedD5Open) {
       setIsD5OpenState(storedD5Open === "true");
+    }
+
+    if (storedHomeLayout && homeLayoutIds.has(storedHomeLayout as HomeLayoutId)) {
+      setHomeLayoutIdState(storedHomeLayout as HomeLayoutId);
     }
 
     setHasLoadedStorage(true);
@@ -70,6 +110,11 @@ export function OSStateProvider({
     window.localStorage.setItem(D5_STORAGE_KEY, String(isOpen));
   }
 
+  function setHomeLayoutId(layoutId: HomeLayoutId) {
+    setHomeLayoutIdState(layoutId);
+    window.localStorage.setItem(HOME_LAYOUT_STORAGE_KEY, layoutId);
+  }
+
   if (!hasLoadedStorage) {
     return null;
   }
@@ -83,6 +128,8 @@ export function OSStateProvider({
         setActiveView,
         isD5Open,
         setIsD5Open,
+        homeLayoutId,
+        setHomeLayoutId,
       }}
     >
       {children}

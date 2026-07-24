@@ -17,6 +17,11 @@ const motivationalPhrases = [
   "Stay ready",
   "Translate experience into impact",
   "Keep moving forward",
+  "Own your next move",
+  "Make experience count",
+  "Create what comes next",
+  "Move with purpose",
+  "Turn insight into action",
 ];
 
 function getRandomPhraseIndex(currentIndex: number | null) {
@@ -59,7 +64,7 @@ export default function D1GlobalHeaderFrame() {
       setHighlightedPhraseIndex((currentIndex) =>
         getRandomPhraseIndex(currentIndex),
       );
-    }, 60_000);
+    }, 15_000);
 
     return () => {
       window.clearTimeout(initialPhraseCycle);
@@ -68,23 +73,29 @@ export default function D1GlobalHeaderFrame() {
   }, []);
 
   return (
-    <header className="relative z-50 grid h-16 grid-cols-[6rem_minmax(0,1fr)_16rem] items-center overflow-visible bg-transparent text-white">
-      <div className="flex h-full min-w-0 items-center px-5">
-        <div>
-          <div className="text-sm font-semibold text-white">Career Pivot</div>
+    <header className="relative z-50 grid h-16 grid-cols-[12rem_minmax(0,1fr)_16rem] items-center overflow-visible bg-transparent text-white">
+      <div className="flex h-full min-w-0 items-center px-2">
+        <div className="w-full whitespace-nowrap text-[2rem] font-semibold leading-none tracking-[-0.045em] text-white">
+          Career Pivot
         </div>
       </div>
 
       <div
         aria-hidden="true"
-        className="relative hidden h-full min-w-0 flex-wrap items-center gap-x-5 gap-y-1 overflow-hidden px-5 text-[11px] font-medium uppercase leading-4 tracking-[0.16em] text-[#9fc1c8]/45 md:flex"
+        className="relative hidden h-full min-w-0 grid-cols-5 grid-rows-[repeat(3,max-content)] content-center gap-x-[clamp(0.25rem,0.6vw,0.75rem)] gap-y-0 overflow-hidden bg-white px-[clamp(0.5rem,1vw,1.25rem)] py-2 text-[clamp(7px,0.72vw,16px)] font-bold uppercase leading-none tracking-[0.06em] text-[#49646c] md:grid"
       >
         {motivationalPhrases.map((phrase, index) => (
           <span
             className={`whitespace-nowrap transition-colors duration-700 ${
+              index % 5 === 0
+                ? "text-left"
+                : index % 5 === 4
+                  ? "text-right"
+                  : "text-center"
+            } ${
               highlightedPhraseIndex === index
-                ? "text-orange-500/55"
-                : "text-[#9fc1c8]/45"
+                ? "text-orange-600"
+                : "text-[#49646c]/25"
             }`}
             data-highlighted={highlightedPhraseIndex === index}
             key={phrase}

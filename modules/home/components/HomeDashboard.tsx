@@ -270,7 +270,7 @@ function ExperienceTileGroup({
 export default function HomeDashboard() {
   const { user, activeResumeId, updateProfile, updateResumeExperience } = useUser();
   const { reopenOnboarding } = useAuth();
-  const { activeView, setActiveView } = useOSState();
+  const { activeView, homeLayoutId, setActiveView } = useOSState();
   const plan = useMemo(
     () => generateEvidenceBackedPlan(user, activeResumeId),
     [activeResumeId, user]
@@ -341,7 +341,7 @@ export default function HomeDashboard() {
       : [];
 
   return (
-    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
+    <div className="relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
         <header
           data-testid="home-profile-header"
           className="relative z-10 grid shrink-0 gap-x-7 gap-y-4 rounded-2xl bg-white px-6 pb-0 pt-6 text-[#102f39] sm:grid-cols-[auto_minmax(0,1fr)]"
@@ -388,54 +388,68 @@ export default function HomeDashboard() {
 
         <div
           data-testid="home-dashboard-body"
-          className="min-h-0 flex-1 overflow-y-auto"
+          className="relative min-h-0 flex-1 overflow-y-auto"
         >
         {activeView === "layout" ? <HomeLayoutDesigner /> : <>
-        <section className="grid auto-rows-[minmax(9rem,auto)] grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <ExperienceTileGroup
-            companyCount={companyCount}
-            hasResume={hasResume}
-            roles={experienceRoles}
-            roleCount={experienceRoles.length}
-            onSaveRoles={(roles) => updateResumeExperience(activeResumeId, roles)}
-            onSaveStrengths={(strengths) => updateProfile({ skills: strengths })}
-            strengths={profile.effective.skills}
-          />
-          <IndustriesVennTile
-            data={industryExperience}
-            onSaveJobs={(industryHistory) =>
-              updateProfile({ industryHistory, industryHistoryResumeId: activeResumeId })
-            }
-          />
-          <ActiveDirectionTile
-            labels={goalDirectionLabels}
-            selectedDirections={directionSelections}
-            onSave={(directions) => {
-              if (!user.onboarding) return;
-              updateProfile({
-                onboarding: {
-                  ...user.onboarding,
-                  goalDirections: directions,
-                  primaryGoalDirection: directions[0],
-                },
-              });
-            }}
-          />
-          <HighlightTile tone="teal" label="Readiness" value={hasResume && plan ? `${plan.readiness}%` : "—"} detail={hasResume ? "evidence-backed" : "Upload a resume to assess"} />
-          <HighlightTile tone="pale" className="sm:col-span-2" label="Proof points" value={acceptedEvidence} detail="verified evidence connected to your plan" />
-          <HighlightTile
-            tone="slate"
-            label="Impact"
-            value={hasResume && impactCount > 0 ? impactCount : "—"}
-            detail={
-              hasResume
-                ? impactCount > 0
-                  ? "quantified achievements"
-                  : "Add measurable outcomes"
-                : "Upload a resume to assess"
-            }
-          />
-          <HighlightTile tone="aqua" label="Saved paths" value={user.opportunityProgress.savedOpportunityIds.length} detail="opportunities worth pursuing" />
+        <section className="home-layout-grid grid auto-rows-[minmax(9rem,auto)] grid-cols-1 gap-4 sm:grid-cols-2" data-home-layout={homeLayoutId}>
+          <div className="min-w-0 sm:col-span-2" data-home-slot="experience">
+            <ExperienceTileGroup
+              companyCount={companyCount}
+              hasResume={hasResume}
+              roles={experienceRoles}
+              roleCount={experienceRoles.length}
+              onSaveRoles={(roles) => updateResumeExperience(activeResumeId, roles)}
+              onSaveStrengths={(strengths) => updateProfile({ skills: strengths })}
+              strengths={profile.effective.skills}
+            />
+          </div>
+          <div className="min-w-0" data-home-slot="industries">
+            <IndustriesVennTile
+              data={industryExperience}
+              onSaveJobs={(industryHistory) =>
+                updateProfile({ industryHistory, industryHistoryResumeId: activeResumeId })
+              }
+            />
+          </div>
+          <div className="min-w-0" data-home-slot="direction">
+            <ActiveDirectionTile
+              labels={goalDirectionLabels}
+              selectedDirections={directionSelections}
+              onSave={(directions) => {
+                if (!user.onboarding) return;
+                updateProfile({
+                  onboarding: {
+                    ...user.onboarding,
+                    goalDirections: directions,
+                    primaryGoalDirection: directions[0],
+                  },
+                });
+              }}
+            />
+          </div>
+          <div className="min-w-0" data-home-slot="readiness">
+            <HighlightTile tone="teal" label="Readiness" value={hasResume && plan ? `${plan.readiness}%` : "—"} detail={hasResume ? "evidence-backed" : "Upload a resume to assess"} />
+          </div>
+          <div className="min-w-0 sm:col-span-2" data-home-slot="proof">
+            <HighlightTile tone="pale" label="Proof points" value={acceptedEvidence} detail="verified evidence connected to your plan" />
+          </div>
+          <div className="min-w-0" data-home-slot="impact">
+            <HighlightTile
+              tone="slate"
+              label="Impact"
+              value={hasResume && impactCount > 0 ? impactCount : "—"}
+              detail={
+                hasResume
+                  ? impactCount > 0
+                    ? "quantified achievements"
+                    : "Add measurable outcomes"
+                  : "Upload a resume to assess"
+              }
+            />
+          </div>
+          <div className="min-w-0" data-home-slot="saved">
+            <HighlightTile tone="aqua" label="Saved paths" value={user.opportunityProgress.savedOpportunityIds.length} detail="opportunities worth pursuing" />
+          </div>
         </section>
 
         {effectiveHighlights.length > 0 ? (
