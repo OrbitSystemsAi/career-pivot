@@ -21,7 +21,7 @@ export default function D3WorkspaceControlsPanel() {
     return (
       <div className="flex h-16 items-center justify-center border-b border-[#416b75] bg-[#1b414c] px-4 text-sm text-[#c6d7da]">
         {activeModule === "network"
-          ? "Connect LinkedIn or build your OSai network to get started"
+          ? "Connect LinkedIn or build your Career Pivot network to get started"
           : "Please upload to get started"}
       </div>
     );

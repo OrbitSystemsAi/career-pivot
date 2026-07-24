@@ -20,7 +20,7 @@ export default function NetworkModule() {
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-600">
             Network insights will appear only after you connect an approved
-            source or establish relationships inside OSai.
+            source or establish relationships inside Career Pivot.
           </p>
 
           <div className="mt-7 grid w-full max-w-xl gap-3 text-left sm:grid-cols-2">
@@ -46,7 +46,7 @@ export default function NetworkModule() {
             </Link>
 
             <article className="rounded-2xl border border-[#9fc1c8] bg-white/80 p-4">
-              <div className="text-sm font-semibold text-[#173a46]">OSai Network</div>
+              <div className="text-sm font-semibold text-[#173a46]">Career Pivot Network</div>
               <div className="mt-1 text-xs leading-5 text-slate-500">
                 Relationships created within this site will build your private
                 network map over time.

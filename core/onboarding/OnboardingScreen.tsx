@@ -672,14 +672,11 @@ export default function OnboardingScreen() {
   }
 
   return (
-    <main
-      className="h-screen overflow-hidden px-5 py-6 text-[#123541] sm:px-8 sm:py-8"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(9,39,54,.87),rgba(9,43,57,.95)),url('/nav-texture.png')",
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-      }}
+    <div
+      aria-label="Career Pivot onboarding"
+      aria-modal="true"
+      className="fixed inset-0 z-50 h-screen overflow-hidden bg-[#092b39]/70 px-5 py-6 text-[#123541] backdrop-blur-sm sm:px-8 sm:py-8"
+      role="dialog"
     >
       <button
         className="fixed right-6 top-5 z-30 text-sm font-semibold text-[#8fc7d2] transition hover:text-[#ff7a00] focus:outline-none focus-visible:text-[#ff7a00] sm:right-8 sm:top-7"
@@ -1530,6 +1527,6 @@ export default function OnboardingScreen() {
           </section>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
