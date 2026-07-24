@@ -1,6 +1,6 @@
 export const styles = {
   surface: {
-    app: "bg-[#173a46] text-slate-900",
+    app: "bg-white text-slate-900",
     workspace:
       "bg-transparent",
     shellPanel:
@@ -37,8 +37,8 @@ export const styles = {
     railHeader:
       "flex h-9 w-full items-center justify-between px-3 py-2 text-xs transition",
     navSelected:
-      "bg-[#2b6874] text-white shadow-[inset_4px_0_0_#fb923c]",
-    navDefault: "text-[#d3e1e4] hover:bg-[#275a65] hover:text-white",
+      "bg-[#dceff2] text-[#123743] shadow-[inset_4px_0_0_#fb923c]",
+    navDefault: "text-[#405d65] hover:bg-[#eef6f7] hover:text-[#123743]",
     tab: "rounded-xl px-4 py-2 text-xs transition",
     tabSelected: "border-b-2 border-orange-400 text-[#123743]",
     tabDefault: "text-slate-500 hover:bg-[#e8f2f3] hover:text-[#123743]",

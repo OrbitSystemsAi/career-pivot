@@ -73,9 +73,9 @@ export default function D1GlobalHeaderFrame() {
   }, []);
 
   return (
-    <header className="relative z-50 grid h-16 grid-cols-[12rem_minmax(0,1fr)_16rem] items-center overflow-visible bg-transparent text-white">
+    <header className="relative z-50 grid h-16 grid-cols-[12rem_minmax(0,1fr)_16rem] items-center overflow-visible bg-white text-[#123743]">
       <div className="flex h-full min-w-0 items-center px-2">
-        <div className="w-full whitespace-nowrap text-[2rem] font-semibold leading-none tracking-[-0.045em] text-white">
+        <div className="w-full whitespace-nowrap text-[2rem] font-semibold leading-none tracking-[-0.045em] text-[#123743]">
           Career Pivot
         </div>
       </div>
@@ -106,7 +106,7 @@ export default function D1GlobalHeaderFrame() {
       </div>
 
       <div className="flex h-full min-w-0 items-center gap-2 px-3">
-        <div className="relative flex min-w-0 flex-1 items-center overflow-hidden whitespace-nowrap rounded-md border border-[#688b93] bg-[#102f39]/70 px-3 py-2 text-xs text-[#c6d7da] shadow-inner">
+        <div className="relative flex min-w-0 flex-1 items-center overflow-hidden whitespace-nowrap rounded-md border border-[#b7cbd0] bg-[#f6fafb] px-3 py-2 text-xs text-[#526b74] shadow-inner">
           Search {activeModuleConfig.name.toLowerCase()}...
         </div>
 
@@ -120,7 +120,7 @@ export default function D1GlobalHeaderFrame() {
         >
           <summary
             aria-label="Open account menu"
-            className="relative flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-full border border-[#688b93] bg-[#234f5b] text-xs text-white transition marker:hidden hover:border-orange-300 hover:bg-[#2b6874] focus:outline-none focus:ring-2 focus:ring-orange-300 sm:h-10 sm:w-10"
+            className="relative flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-full border border-[#8eabb2] bg-[#2b6874] text-xs text-white transition marker:hidden hover:border-orange-400 hover:bg-[#205763] focus:outline-none focus:ring-2 focus:ring-orange-300 sm:h-10 sm:w-10"
           >
             {initials}
           </summary>

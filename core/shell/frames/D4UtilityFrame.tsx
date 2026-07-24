@@ -15,7 +15,7 @@ export default function D4UtilityFrame() {
 
   return (
     <aside className={styles.layout.d4} data-region="d4">
-      <div className="h-full min-h-0 overflow-auto border-l border-[#416b75] bg-transparent text-[#d3e1e4] shadow-sm">
+      <div className="h-full min-h-0 overflow-auto bg-transparent text-[#d3e1e4] shadow-sm">
         <PanelCardRailProvider>
           <UtilityTop />
 
