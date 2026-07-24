@@ -201,7 +201,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "We couldn’t read that résumé. Please try a text-based PDF or DOCX file.",
+          "The résumé service had a temporary problem. Please try the upload again.",
       },
       { status: 500 }
     );
