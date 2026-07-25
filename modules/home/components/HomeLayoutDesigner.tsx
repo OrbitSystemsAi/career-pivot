@@ -170,9 +170,19 @@ function FramePreview({ option }: { option: LayoutOption }) {
 }
 
 export default function HomeLayoutDesigner() {
-  const { homeLayoutId, setActiveView, setHomeLayoutId } = useOSState();
+  const {
+    publisherLayoutId,
+    readingLayoutId,
+    readingLayoutPreference,
+    setActiveView,
+    setPublisherLayoutId,
+    setReadingLayoutId,
+    setReadingLayoutPreference,
+  } = useOSState();
+  const [layoutPurpose, setLayoutPurpose] = useState<"publisher" | "reading">("publisher");
   const [selectedLayout, setSelectedLayout] = useState<LayoutOption | null>(null);
   const [frameVisuals, setFrameVisuals] = useState<string[]>([]);
+  const currentLayoutId = layoutPurpose === "publisher" ? publisherLayoutId : readingLayoutId;
 
   useEffect(() => {
     if (!selectedLayout) return;
@@ -190,28 +200,78 @@ export default function HomeLayoutDesigner() {
     setFrameVisuals(
       option.defaults,
     );
+    if (layoutPurpose === "reading") setReadingLayoutPreference("personal");
   }
 
   return (
       <section className="relative mx-auto flex h-full min-h-0 w-full max-w-6xl flex-col overflow-hidden" data-testid="layout-selector">
         <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-10 pt-7">
-        <div className="max-w-2xl">
-          <h2 className="text-3xl font-semibold tracking-tight text-[#123743]">Choose your home layout</h2>
-          <p className="mt-2 text-sm leading-6 text-[#667c84]">Choose from 12 magazine-inspired ways to tell your career story, share posts, and show your connections.</p>
+        <div className="max-w-3xl">
+          <h2 className="text-3xl font-semibold tracking-tight text-[#123743]">Choose your magazine layout</h2>
+          <p className="mt-2 text-sm leading-6 text-[#667c84]">Set how you publish your magazine and how you prefer to read magazines from other people.</p>
+        </div>
+
+        <div aria-label="Magazine layout type" className="mt-6 inline-flex rounded-xl border border-[#c8d8dc] bg-[#f3f8f8] p-1" role="tablist">
+          {([
+            { id: "publisher", label: "Publisher Layout" },
+            { id: "reading", label: "My Reading Layout" },
+          ] as const).map((tab) => (
+            <button
+              aria-selected={layoutPurpose === tab.id}
+              className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${layoutPurpose === tab.id ? "bg-[#123743] text-white shadow-sm" : "text-[#557078] hover:bg-white hover:text-[#168391]"}`}
+              key={tab.id}
+              onClick={() => {
+                setLayoutPurpose(tab.id);
+                setSelectedLayout(null);
+              }}
+              role="tab"
+              type="button"
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-4 rounded-xl border border-[#d5e3e6] bg-white px-4 py-3">
+          {layoutPurpose === "publisher" ? (
+            <p className="text-sm text-[#5f767e]"><strong className="text-[#173a46]">Your magazine.</strong> Other people will see this layout unless they choose their own reading layout.</p>
+          ) : (
+            <div>
+              <p className="text-sm text-[#5f767e]"><strong className="text-[#173a46]">Magazines you read.</strong> Choose whether to respect each publisher&apos;s design or use one consistent layout.</p>
+              <div aria-label="Reading layout preference" className="mt-3 flex flex-wrap gap-2" role="group">
+                <button
+                  aria-pressed={readingLayoutPreference === "publisher"}
+                  className={`rounded-lg border px-3 py-2 text-xs font-semibold transition ${readingLayoutPreference === "publisher" ? "border-[#168391] bg-[#e8f2f3] text-[#116b76]" : "border-[#c8d8dc] text-[#60777f] hover:border-[#168391]"}`}
+                  onClick={() => setReadingLayoutPreference("publisher")}
+                  type="button"
+                >
+                  View as publisher intended
+                </button>
+                <button
+                  aria-pressed={readingLayoutPreference === "personal"}
+                  className={`rounded-lg border px-3 py-2 text-xs font-semibold transition ${readingLayoutPreference === "personal" ? "border-[#168391] bg-[#e8f2f3] text-[#116b76]" : "border-[#c8d8dc] text-[#60777f] hover:border-[#168391]"}`}
+                  onClick={() => setReadingLayoutPreference("personal")}
+                  type="button"
+                >
+                  Always use my reading layout
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {layoutOptions.map((option) => (
             <button
-              aria-current={option.id === homeLayoutId ? "true" : undefined}
-              className={`group rounded-2xl border bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-[#168391] hover:shadow-[0_16px_36px_rgba(15,48,64,0.12)] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#d4eef1] ${option.id === homeLayoutId ? "border-2 border-[#168391] shadow-[0_0_0_3px_#d4eef1,0_12px_32px_rgba(15,48,64,0.1)]" : "border-[#c8d8dc] shadow-[0_12px_32px_rgba(15,48,64,0.06)]"}`}
+              aria-current={option.id === currentLayoutId ? "true" : undefined}
+              className={`group rounded-2xl border bg-white p-4 text-left transition hover:-translate-y-0.5 hover:border-[#168391] hover:shadow-[0_16px_36px_rgba(15,48,64,0.12)] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#d4eef1] ${option.id === currentLayoutId ? "border-2 border-[#168391] shadow-[0_0_0_3px_#d4eef1,0_12px_32px_rgba(15,48,64,0.1)]" : "border-[#c8d8dc] shadow-[0_12px_32px_rgba(15,48,64,0.06)]"}`}
               key={option.id}
               onClick={() => selectLayout(option)}
               type="button"
             >
               <FramePreview option={option} />
               <span className="mt-4 block text-sm font-semibold text-[#173a46] group-hover:text-[#0e7886]">{option.name}</span>
-              {option.id === homeLayoutId ? <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[.12em] text-[#168391]">Current layout</span> : null}
+              {option.id === currentLayoutId ? <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[.12em] text-[#168391]">{layoutPurpose === "publisher" ? "Published layout" : "My reading layout"}</span> : null}
               <span className="mt-1 block text-xs leading-5 text-[#70838a]">{option.description}</span>
             </button>
           ))}
@@ -248,13 +308,18 @@ export default function HomeLayoutDesigner() {
           <button
             className="rounded-xl bg-[#ff7a00] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#db6700] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#ffd8b7]"
             onClick={() => {
-              setHomeLayoutId(selectedLayout.id);
+              if (layoutPurpose === "publisher") {
+                setPublisherLayoutId(selectedLayout.id);
+              } else {
+                setReadingLayoutId(selectedLayout.id);
+                setReadingLayoutPreference("personal");
+              }
               setSelectedLayout(null);
               setActiveView("overview");
             }}
             type="button"
           >
-            Save layout
+            Save {layoutPurpose === "publisher" ? "publisher" : "reading"} layout
           </button>
         </div>
       </div>

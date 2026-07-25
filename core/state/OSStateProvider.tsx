@@ -14,7 +14,15 @@ type OSStateContextType = {
 
   homeLayoutId: HomeLayoutId;
   setHomeLayoutId: (layoutId: HomeLayoutId) => void;
+  publisherLayoutId: HomeLayoutId;
+  setPublisherLayoutId: (layoutId: HomeLayoutId) => void;
+  readingLayoutId: HomeLayoutId;
+  setReadingLayoutId: (layoutId: HomeLayoutId) => void;
+  readingLayoutPreference: ReadingLayoutPreference;
+  setReadingLayoutPreference: (preference: ReadingLayoutPreference) => void;
 };
+
+export type ReadingLayoutPreference = "publisher" | "personal";
 
 export type HomeLayoutId =
   | "career-editorial"
@@ -41,6 +49,9 @@ const MODULE_STORAGE_KEY = "osai.activeModule";
 const VIEW_STORAGE_KEY = "osai.activeView";
 const D5_STORAGE_KEY = "osai.isD5Open";
 const HOME_LAYOUT_STORAGE_KEY = "osai.homeLayout";
+const PUBLISHER_LAYOUT_STORAGE_KEY = "osai.publisherLayout";
+const READING_LAYOUT_STORAGE_KEY = "osai.readingLayout";
+const READING_PREFERENCE_STORAGE_KEY = "osai.readingLayoutPreference";
 
 const homeLayoutIds = new Set<HomeLayoutId>([
   "career-editorial",
@@ -66,6 +77,8 @@ export function OSStateProvider({
   const [activeView, setActiveViewState] = useState(DEFAULT_VIEW);
   const [isD5Open, setIsD5OpenState] = useState(DEFAULT_D5_OPEN);
   const [homeLayoutId, setHomeLayoutIdState] = useState<HomeLayoutId>(DEFAULT_HOME_LAYOUT);
+  const [readingLayoutId, setReadingLayoutIdState] = useState<HomeLayoutId>(DEFAULT_HOME_LAYOUT);
+  const [readingLayoutPreference, setReadingLayoutPreferenceState] = useState<ReadingLayoutPreference>("publisher");
   const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
 
   useEffect(() => {
@@ -73,6 +86,9 @@ export function OSStateProvider({
     const storedView = window.localStorage.getItem(VIEW_STORAGE_KEY);
     const storedD5Open = window.localStorage.getItem(D5_STORAGE_KEY);
     const storedHomeLayout = window.localStorage.getItem(HOME_LAYOUT_STORAGE_KEY);
+    const storedPublisherLayout = window.localStorage.getItem(PUBLISHER_LAYOUT_STORAGE_KEY);
+    const storedReadingLayout = window.localStorage.getItem(READING_LAYOUT_STORAGE_KEY);
+    const storedReadingPreference = window.localStorage.getItem(READING_PREFERENCE_STORAGE_KEY);
 
     if (storedModule) {
       // Intentional one-time hydration from the browser persistence boundary.
@@ -88,8 +104,17 @@ export function OSStateProvider({
       setIsD5OpenState(storedD5Open === "true");
     }
 
-    if (storedHomeLayout && homeLayoutIds.has(storedHomeLayout as HomeLayoutId)) {
-      setHomeLayoutIdState(storedHomeLayout as HomeLayoutId);
+    const resolvedPublisherLayout = storedPublisherLayout ?? storedHomeLayout;
+    if (resolvedPublisherLayout && homeLayoutIds.has(resolvedPublisherLayout as HomeLayoutId)) {
+      setHomeLayoutIdState(resolvedPublisherLayout as HomeLayoutId);
+    }
+
+    if (storedReadingLayout && homeLayoutIds.has(storedReadingLayout as HomeLayoutId)) {
+      setReadingLayoutIdState(storedReadingLayout as HomeLayoutId);
+    }
+
+    if (storedReadingPreference === "publisher" || storedReadingPreference === "personal") {
+      setReadingLayoutPreferenceState(storedReadingPreference);
     }
 
     setHasLoadedStorage(true);
@@ -113,6 +138,17 @@ export function OSStateProvider({
   function setHomeLayoutId(layoutId: HomeLayoutId) {
     setHomeLayoutIdState(layoutId);
     window.localStorage.setItem(HOME_LAYOUT_STORAGE_KEY, layoutId);
+    window.localStorage.setItem(PUBLISHER_LAYOUT_STORAGE_KEY, layoutId);
+  }
+
+  function setReadingLayoutId(layoutId: HomeLayoutId) {
+    setReadingLayoutIdState(layoutId);
+    window.localStorage.setItem(READING_LAYOUT_STORAGE_KEY, layoutId);
+  }
+
+  function setReadingLayoutPreference(preference: ReadingLayoutPreference) {
+    setReadingLayoutPreferenceState(preference);
+    window.localStorage.setItem(READING_PREFERENCE_STORAGE_KEY, preference);
   }
 
   if (!hasLoadedStorage) {
@@ -130,6 +166,12 @@ export function OSStateProvider({
         setIsD5Open,
         homeLayoutId,
         setHomeLayoutId,
+        publisherLayoutId: homeLayoutId,
+        setPublisherLayoutId: setHomeLayoutId,
+        readingLayoutId,
+        setReadingLayoutId,
+        readingLayoutPreference,
+        setReadingLayoutPreference,
       }}
     >
       {children}

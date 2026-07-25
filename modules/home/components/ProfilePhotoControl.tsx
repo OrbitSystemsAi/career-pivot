@@ -33,10 +33,10 @@ export default function ProfilePhotoControl({
   }
 
   return (
-    <div className="group relative shrink-0 rounded-full focus-within:ring-4 focus-within:ring-[#f28c28]/60">
+    <div className="group relative shrink-0 rounded-[21px] p-[5px] focus-within:ring-4 focus-within:ring-[#f28c28]/60">
       <ProfileAvatar name={name} image={image} />
       <div
-        className={`absolute inset-0 flex items-center justify-center gap-3 overflow-hidden rounded-full bg-[#0c3241]/72 px-3 text-white transition-opacity ${confirmDelete ? "opacity-100" : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"}`}
+        className={`absolute inset-[5px] flex items-center justify-center gap-3 overflow-hidden rounded-2xl bg-[#0c3241]/72 px-3 text-white transition-opacity ${confirmDelete ? "opacity-100" : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"}`}
       >
         {confirmDelete ? (
           <div className="flex flex-col items-center gap-2 text-center">
