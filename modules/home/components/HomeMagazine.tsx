@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useOSState } from "@/core/state/OSStateProvider";
 
 type HomeMagazineProps = {
   currentTitle?: string;
@@ -12,8 +13,6 @@ type HomeMagazineProps = {
   savedCount: number;
   onChooseLayout: () => void;
 };
-
-const contents = ["Cover", "Your career", "Network", "Interests", "Groups", "Saved for later"];
 
 const signals = [
   { section: "Work & the future", title: "AI fluency is becoming the new literacy" },
@@ -28,6 +27,21 @@ const subscriptions = [
   { category: "Groups", name: "Design Leaders", detail: "Peer conversations" },
 ];
 
+const magazineLayoutClasses = {
+  "career-editorial": "xl:grid-cols-[minmax(0,1fr)_15rem]",
+  "social-journal": "xl:grid-cols-[minmax(0,1fr)_18rem]",
+  "left-rail": "xl:grid-cols-[15rem_minmax(0,1fr)] [&>aside]:xl:order-first",
+  "featured-story": "xl:grid-cols-[minmax(0,1fr)_13rem]",
+  "post-stream": "xl:grid-cols-[minmax(0,1fr)_18rem]",
+  milestone: "xl:grid-cols-[15rem_minmax(0,1fr)] [&>aside]:xl:order-first",
+  portfolio: "xl:grid-cols-[13rem_minmax(0,1fr)] [&>aside]:xl:order-first",
+  community: "xl:grid-cols-[minmax(0,1fr)_17rem]",
+  "career-chronicle": "xl:grid-cols-[14rem_minmax(0,1fr)] [&>aside]:xl:order-first",
+  "goals-growth": "xl:grid-cols-[minmax(0,1fr)_16rem]",
+  "profile-magazine": "xl:grid-cols-[17rem_minmax(0,1fr)] [&>aside]:xl:order-first",
+  "network-desk": "xl:grid-cols-[18rem_minmax(0,1fr)] [&>aside]:xl:order-first",
+} as const;
+
 export default function HomeMagazine({
   currentTitle,
   highlights,
@@ -37,9 +51,14 @@ export default function HomeMagazine({
   savedCount,
   onChooseLayout,
 }: HomeMagazineProps) {
-  const [activeSection, setActiveSection] = useState("Cover");
-  const [readingMode, setReadingMode] = useState<"publisher" | "reader">("publisher");
+  const {
+    publisherLayoutId,
+    readingLayoutId,
+    readingLayoutPreference,
+    setReadingLayoutPreference,
+  } = useOSState();
   const [followed, setFollowed] = useState(() => new Set(["Maya Chen", "Design Leaders"]));
+  const effectiveLayoutId = readingLayoutPreference === "personal" ? readingLayoutId : publisherLayoutId;
 
   function toggleSubscription(nameToToggle: string) {
     setFollowed((current) => {
@@ -52,55 +71,7 @@ export default function HomeMagazine({
 
   return (
     <div className="min-h-full bg-white text-[#173a46]" data-testid="home-magazine">
-      <div className="grid min-h-full lg:grid-cols-[11.5rem_minmax(0,1fr)]">
-        <aside className="border-b border-[#d5dfe1] px-5 py-7 lg:sticky lg:top-0 lg:h-[calc(100vh-8rem)] lg:border-b-0 lg:border-r">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em]">Table of contents</p>
-          <nav aria-label="Magazine sections" className="mt-5 grid grid-cols-2 gap-x-4 lg:grid-cols-1">
-            {contents.map((item) => (
-              <button
-                className={`border-l-2 px-3 py-2.5 text-left text-xs transition ${
-                  activeSection === item
-                    ? "border-[#f28c28] font-semibold text-[#d86400]"
-                    : "border-transparent text-[#516970] hover:text-[#173a46]"
-                }`}
-                key={item}
-                onClick={() => setActiveSection(item)}
-                type="button"
-              >
-                {item}
-              </button>
-            ))}
-          </nav>
-
-          <div className="mt-7 border-t border-[#d5dfe1] pt-5 lg:mt-auto">
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em]">Reading layout</p>
-            <p className="mt-2 text-[11px] leading-4 text-[#6a7c82]">Choose how profiles and editions are arranged.</p>
-            <div className="mt-3 space-y-2">
-              <button
-                aria-pressed={readingMode === "publisher"}
-                className={`w-full border-l-2 px-3 py-2 text-left text-xs ${readingMode === "publisher" ? "border-[#f28c28] bg-[#f7faf9]" : "border-[#d5dfe1]"}`}
-                onClick={() => setReadingMode("publisher")}
-                type="button"
-              >
-                <span className="block font-semibold">Publisher layout</span>
-                <span className="mt-0.5 block text-[10px] text-[#708087]">Curated by {name}</span>
-              </button>
-              <button
-                aria-pressed={readingMode === "reader"}
-                className={`w-full border-l-2 px-3 py-2 text-left text-xs ${readingMode === "reader" ? "border-[#f28c28] bg-[#f7faf9]" : "border-[#d5dfe1]"}`}
-                onClick={() => setReadingMode("reader")}
-                type="button"
-              >
-                <span className="block font-semibold">My reading layout</span>
-                <span className="mt-0.5 block text-[10px] text-[#708087]">Your preferred arrangement</span>
-              </button>
-            </div>
-            <button className="mt-3 text-[11px] font-semibold text-[#168391] hover:text-[#d86400]" onClick={onChooseLayout} type="button">
-              Choose another layout →
-            </button>
-          </div>
-        </aside>
-
+      <div className="min-h-full">
         <main className="min-w-0 px-5 pb-12 pt-6 sm:px-7">
           <header className="grid items-end gap-4 border-b border-[#173a46] pb-4 sm:grid-cols-[1fr_auto_1fr]">
             <p className="text-[10px] font-semibold uppercase tracking-[0.14em]">Edition 01 · Curated today</p>
@@ -108,7 +79,27 @@ export default function HomeMagazine({
             <button className="justify-self-start text-xs font-semibold text-[#168391] sm:justify-self-end" onClick={onChooseLayout} type="button">Edit interests & layout</button>
           </header>
 
-          <div className="mt-5 grid gap-7 xl:grid-cols-[minmax(0,1fr)_15rem]">
+          <div className="flex flex-wrap items-center justify-end gap-1 border-b border-[#d5dfe1] py-2 text-[10px]">
+            <span className="mr-2 text-[#708087]">Reading view</span>
+            <button
+              aria-pressed={readingLayoutPreference === "publisher"}
+              className={`border-b-2 px-2 py-1 font-semibold ${readingLayoutPreference === "publisher" ? "border-[#f28c28] text-[#173a46]" : "border-transparent text-[#708087]"}`}
+              onClick={() => setReadingLayoutPreference("publisher")}
+              type="button"
+            >
+              {name}&apos;s layout
+            </button>
+            <button
+              aria-pressed={readingLayoutPreference === "personal"}
+              className={`border-b-2 px-2 py-1 font-semibold ${readingLayoutPreference === "personal" ? "border-[#f28c28] text-[#173a46]" : "border-transparent text-[#708087]"}`}
+              onClick={() => setReadingLayoutPreference("personal")}
+              type="button"
+            >
+              My layout
+            </button>
+          </div>
+
+          <div className={`mt-5 grid gap-7 ${magazineLayoutClasses[effectiveLayoutId]}`} data-magazine-layout={effectiveLayoutId}>
             <div className="min-w-0">
               <article className="relative min-h-[22rem] overflow-hidden bg-[#173a46] text-white">
                 <Image alt="A career evolving through distinct stages of work" className="object-cover object-center opacity-75" fill priority sizes="(max-width: 1280px) 100vw, 760px" src="/career-pivot-life-stages-v2.png" />

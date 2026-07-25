@@ -33,7 +33,7 @@ export const styles = {
     disabled:
       "cursor-not-allowed rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-300",
     nav:
-      "flex h-9 w-full items-center justify-start px-3 py-2 text-left text-xs transition",
+      "flex h-9 w-full items-center justify-start px-6 py-2 text-left text-xs transition",
     railHeader:
       "flex h-9 w-full items-center justify-between px-3 py-2 text-xs transition",
     navSelected:

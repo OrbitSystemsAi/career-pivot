@@ -19,18 +19,18 @@ export default function ProfileAvatar({
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
     .join("");
-  const dimensions = size === "large" ? "h-32 w-32" : "h-10 w-10";
+  const dimensions = size === "large" ? "h-40 w-40" : "h-10 w-10";
 
   return (
     <div
-      className={`group relative shrink-0 overflow-hidden rounded-full border-4 border-white bg-[#2b6874] shadow-[0_16px_40px_rgba(5,35,43,0.22)] ${dimensions}`}
+      className={`group relative shrink-0 overflow-hidden rounded-2xl border-4 border-white bg-[#2b6874] shadow-[0_16px_40px_rgba(5,35,43,0.22)] ${dimensions}`}
     >
       {image ? (
         <Image
           src={image}
           alt={`${name} profile`}
           fill
-          sizes={size === "large" ? "128px" : "40px"}
+          sizes={size === "large" ? "160px" : "40px"}
           className="object-cover"
           unoptimized
         />
