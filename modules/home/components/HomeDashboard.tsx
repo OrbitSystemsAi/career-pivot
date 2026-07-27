@@ -344,7 +344,7 @@ export default function HomeDashboard() {
     <div className="relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
         <header
           data-testid="home-profile-header"
-          className="relative z-10 grid shrink-0 gap-y-4 rounded-2xl bg-white px-6 pb-0 pt-4 text-[#102f39]"
+          className="relative z-10 grid shrink-0 gap-y-4 rounded-2xl bg-white px-6 pb-0 pt-0 text-[#102f39]"
         >
           <div className="min-w-0 text-left">
             <div className="flex items-start justify-between gap-5">

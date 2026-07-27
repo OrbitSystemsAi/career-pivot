@@ -69,7 +69,7 @@ export default function D2NavigationFrame() {
       aria-label="Primary navigation"
       className="flex h-full w-48 shrink-0 flex-col overflow-y-auto bg-white shadow-[6px_0_24px_rgba(5,35,43,0.08)]"
     >
-      <div className="flex shrink-0 justify-center px-4 py-5">
+      <div className="flex shrink-0 justify-center px-4 pb-5 pt-0">
         <ProfilePhotoControl
           name={user.name}
           image={user.profileImage}
