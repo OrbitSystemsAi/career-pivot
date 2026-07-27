@@ -18,7 +18,7 @@ export default function D3WorkspaceFrame() {
     moduleDefinition.shell?.showBottomWorkspace ?? true;
 
   return (
-    <div data-region="d3" className="flex min-h-0 flex-col p-[3px]">
+    <div data-region="d3" className="flex min-h-0 flex-col px-[3px] pb-[3px] pt-0">
       <section className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white">
         {showWorkspaceHeader ? <D3WorkspaceHeaderPanel /> : null}
         {showWorkspaceControls ? <D3WorkspaceControlsPanel /> : null}
