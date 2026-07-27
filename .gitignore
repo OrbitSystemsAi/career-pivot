@@ -40,5 +40,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# deploy key (do not commit)
-/.deploy-key
+# git credentials (do not commit)
+/.git-credentials
