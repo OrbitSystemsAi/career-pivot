@@ -36,7 +36,7 @@ export default function D2NavigationFrame() {
     goalTypes.includes("business");
   const navigationGroups: NavigationItem[][] = [
     [
-      { label: "Cover", moduleId: "home", viewId: "overview" },
+      { label: "Pulse", moduleId: "home", viewId: "overview" },
       { label: "Resume", moduleId: "resume", viewId: "document" },
       { label: "Career", moduleId: "career", viewId: "goal" },
     ],

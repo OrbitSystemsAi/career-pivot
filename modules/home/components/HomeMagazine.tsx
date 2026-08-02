@@ -74,8 +74,8 @@ export default function HomeMagazine({
       <div className="min-h-full">
         <main className="min-w-0 px-5 pb-12 pt-6 sm:px-7">
           <header className="grid items-end gap-4 border-b border-[#173a46] pb-4 sm:grid-cols-[1fr_auto_1fr]">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em]">Edition 01 · Curated today</p>
-            <h1 className="font-serif text-4xl leading-none tracking-[-0.04em] text-[#101f24] sm:text-5xl">My edition</h1>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em]">OSai News Network - 2026 - Aug 01 Edition</p>
+            <h1 className="font-serif text-4xl leading-none tracking-[-0.04em] text-[#101f24] sm:text-5xl">Today&apos;s Pulse</h1>
             <button className="justify-self-start text-xs font-semibold text-[#168391] sm:justify-self-end" onClick={onChooseLayout} type="button">Edit interests & layout</button>
           </header>
 
