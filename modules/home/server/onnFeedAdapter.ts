@@ -30,7 +30,9 @@ export type CareerPivotFeed = {
 type FeedRequest = { topics: OnnFeedSignal[]; classifications: OnnFeedSignal[] };
 type OnnEnvelope = { data?: { generatedAt?: string; partial?: boolean; items?: CareerPivotFeedItem[] }; error?: { code?: string; message?: string } };
 
-const cacheDirectory = path.join(process.cwd(), ".data", "onn-feed-cache");
+const cacheDirectory = process.env.VERCEL
+  ? path.join("/tmp", "career-pivot", "onn-feed-cache")
+  : path.join(process.cwd(), ".data", "onn-feed-cache");
 
 function configuration() {
   const publishingUrl = process.env.ONN_PUBLISHING_API_URL;
