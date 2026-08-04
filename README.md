@@ -12,6 +12,8 @@ npx tsc --noEmit
 npm run build
 ```
 
+The Career Pivot home magazine consumes its personalized edition through ONN using server-only credentials. See [the ONN consumer pilot](docs/onn-feed-pilot.md) for configuration, privacy, resilience, and verification details.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

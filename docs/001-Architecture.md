@@ -310,3 +310,9 @@ Home highlight tiles use explicit navy, cyan, mist, cobalt, teal, pale-blue,
 slate, and aqua variants. D4 sections rotate related dark tones so adjacent
 intelligence areas remain visually distinct. Orange remains limited to selected
 states and small emphasis rules. Existing border widths are unchanged.
+
+---
+
+## 12. ONN Consumer Boundary
+
+Career Pivot consumes Orbit News Network only through authenticated server Route Handlers under `app/api/onn`. The Home module owns taxonomy mapping, feed presentation, interaction forwarding, and last-known-good behavior. The shell owns placement only. Browser bundles and responses never contain ONN credentials or user email addresses. See `docs/onn-feed-pilot.md` for the operational contract and current pilot limitations.

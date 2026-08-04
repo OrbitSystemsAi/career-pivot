@@ -341,7 +341,7 @@ export default function LoginScreen({
           </form>
 
           <p className="mt-8 text-center text-xs leading-5 text-[#80909e]">
-            Development access: authentication is stored only in this browser.
+            Development access: accounts are stored on this local server.
           </p>
           </div>
         </div>

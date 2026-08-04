@@ -3,9 +3,13 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useOSState } from "@/core/state/OSStateProvider";
+import type { OnnFeedSignal } from "@/modules/home/lib/onnFeedSignals";
+import OnnFeedSection from "./OnnFeedSection";
 
 type HomeMagazineProps = {
   currentTitle?: string;
+  feedClassifications: OnnFeedSignal[];
+  feedTopics: OnnFeedSignal[];
   highlights: string[];
   proofCount: number;
   readiness?: number;
@@ -42,6 +46,8 @@ const magazineLayoutClasses = {
 
 export default function HomeMagazine({
   currentTitle,
+  feedClassifications,
+  feedTopics,
   highlights,
   proofCount,
   readiness,
@@ -105,7 +111,7 @@ export default function HomeMagazine({
                 </div>
                 <article className="mt-6 grid gap-4 border-t border-[#cfdadc] pt-5 md:mt-0 md:grid-cols-[0.9fr_1fr] md:border-l md:border-t-0 md:pl-6 md:pt-0">
                   <div className="relative min-h-48 overflow-hidden bg-[#edf2f2]">
-                    <Image alt="A professional progressing through her career" className="object-cover object-[54%_center]" fill sizes="360px" src="/osai-career-path-hero.png" />
+                    <Image alt="A professional progressing through her career" className="object-cover object-[54%_center]" fill priority sizes="360px" src="/osai-career-path-hero.png" />
                   </div>
                   <div>
                     <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#6b7f85]">Inside your network</p>
@@ -161,6 +167,8 @@ export default function HomeMagazine({
               </div>
             </aside>
           </div>
+
+          <OnnFeedSection classifications={feedClassifications} topics={feedTopics} />
 
           <section className="mt-7 border-y border-[#173a46] py-5">
             <div className="flex flex-wrap items-end justify-between gap-4">

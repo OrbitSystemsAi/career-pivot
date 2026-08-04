@@ -12,6 +12,13 @@ type AuthSession = {
   expiresAt: number;
 };
 
+type LegacyStoredAccount = {
+  email: string;
+  displayName: string;
+  passwordHash: string;
+  passwordSalt: string;
+};
+
 type LoginInput = { email: string; password: string; rememberMe: boolean };
 type CreateAccountInput = LoginInput & { displayName: string; confirmPassword: string };
 type LoginResult = { ok: true } | { ok: false; error: string };
@@ -31,6 +38,67 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const LEGACY_ACCOUNTS_STORAGE_KEY = "osai.auth.accounts.v1";
+const LEGACY_PASSWORD_HASH_ITERATIONS = 150_000;
+
+function base64ToBytes(value: string) {
+  const binary = window.atob(value);
+  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+}
+
+function bytesToBase64(bytes: Uint8Array) {
+  let binary = "";
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return window.btoa(binary);
+}
+
+async function deriveLegacyPasswordHash(password: string, salt: Uint8Array) {
+  const passwordKey = await window.crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"],
+  );
+  const derivedBits = await window.crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      hash: "SHA-256",
+      salt: Uint8Array.from(salt).buffer,
+      iterations: LEGACY_PASSWORD_HASH_ITERATIONS,
+    },
+    passwordKey,
+    256,
+  );
+  return bytesToBase64(new Uint8Array(derivedBits));
+}
+
+function readLegacyAccounts() {
+  try {
+    const accounts = JSON.parse(window.localStorage.getItem(LEGACY_ACCOUNTS_STORAGE_KEY) ?? "[]") as LegacyStoredAccount[];
+    return Array.isArray(accounts) ? accounts : [];
+  } catch {
+    return [];
+  }
+}
+
+async function verifyLegacyAccount(email: string, password: string) {
+  const account = readLegacyAccounts().find((candidate) => candidate.email === email);
+  if (!account) return null;
+  const passwordHash = await deriveLegacyPasswordHash(password, base64ToBytes(account.passwordSalt));
+  return passwordHash === account.passwordHash ? account : null;
+}
+
+function removeLegacyAccount(email: string) {
+  const remainingAccounts = readLegacyAccounts().filter((account) => account.email !== email);
+  if (remainingAccounts.length === 0) {
+    window.localStorage.removeItem(LEGACY_ACCOUNTS_STORAGE_KEY);
+  } else {
+    window.localStorage.setItem(LEGACY_ACCOUNTS_STORAGE_KEY, JSON.stringify(remainingAccounts));
+  }
+}
 
 function removeOSaiStorage(storage: Storage) {
   const keysToRemove: string[] = [];
@@ -85,7 +153,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const normalizedEmail = email.trim().toLowerCase();
     if (!EMAIL_PATTERN.test(normalizedEmail)) return { ok: false, error: "Enter a valid email address." };
     if (password.length < 6) return { ok: false, error: "Your password must contain at least 6 characters." };
-    return authenticate({ mode: "login", email: normalizedEmail, password });
+    const loginResult = await authenticate({ mode: "login", email: normalizedEmail, password });
+    if (loginResult.ok) return loginResult;
+
+    const legacyAccount = await verifyLegacyAccount(normalizedEmail, password);
+    if (!legacyAccount) return loginResult;
+
+    const migrationResult = await authenticate({
+      mode: "register",
+      displayName: legacyAccount.displayName,
+      email: normalizedEmail,
+      password,
+    });
+    if (migrationResult.ok) removeLegacyAccount(normalizedEmail);
+    return migrationResult;
   }, [authenticate]);
 
   const createAccount = useCallback(async ({ displayName, email, password, confirmPassword }: CreateAccountInput): Promise<LoginResult> => {

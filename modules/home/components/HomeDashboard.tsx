@@ -13,6 +13,7 @@ import type {
 } from "@/core/user/userTypes";
 import { getIndustryExperienceData } from "@/modules/home/lib/industryExperience";
 import { getProfileIntelligence } from "@/modules/home/lib/profileIntelligence";
+import { deriveOnnFeedSignals } from "@/modules/home/lib/onnFeedSignals";
 import { getResumeIntelligence } from "@/modules/resume/lib/resumeIntelligence";
 import CoreStrengthsTile from "./CoreStrengthsTile";
 import ActiveDirectionTile from "./ActiveDirectionTile";
@@ -340,6 +341,7 @@ export default function HomeDashboard() {
     : primaryGoalDirection
       ? [primaryGoalDirection]
       : [];
+  const onnFeedSignals = useMemo(() => deriveOnnFeedSignals(user), [user]);
 
   return (
     <div className="relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
@@ -386,6 +388,8 @@ export default function HomeDashboard() {
           <UserPostingEditor onClose={() => setActiveView("overview")} />
         ) : activeView === "layout" ? <HomeLayoutDesigner /> : homeLayoutId === "career-editorial" ? (
           <HomeMagazine
+            feedClassifications={onnFeedSignals.classifications}
+            feedTopics={onnFeedSignals.topics}
             currentTitle={profile.resumeValues.currentTitle}
             highlights={effectiveHighlights}
             proofCount={acceptedEvidence}
