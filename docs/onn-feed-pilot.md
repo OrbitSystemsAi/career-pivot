@@ -12,9 +12,11 @@ Production requires:
 
 - `AUTH_SESSION_SECRET`: signs Career Pivot sessions and derives the opaque, stable ONN user identifier.
 - `ONN_FEED_API_BASE_URL`: ONN origin, without an API path.
-- `ONN_FEED_API_TOKEN`: Career Pivot's server-only key with `feed:read` and `feed:feedback` only.
+- `ONN_FEED_API_TOKEN`: Career Pivot's server-only production key with `feed:read` and `feed:feedback`. The current pilot credential also carries `content:submit` for the separate posting module.
 
 Development may reuse the configured publishing URL origin and publishing token so an existing local pilot can be exercised without duplicating a secret. Production intentionally does not use that fallback; issue separate least-privilege credentials.
+
+ONN lists Career Pivot production as a Vercel Trusted Source. Career Pivot sends its short-lived `VERCEL_OIDC_TOKEN` in the `x-vercel-trusted-oidc-idp-token` header to pass Vercel Deployment Protection. ONN then independently validates the scoped ONN bearer token. Preview and development are not trusted to reach ONN production.
 
 ## Request and personalization
 

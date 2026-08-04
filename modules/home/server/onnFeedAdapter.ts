@@ -40,6 +40,13 @@ function configuration() {
   return { baseUrl, token };
 }
 
+function requestHeaders(token: string) {
+  const headers: Record<string, string> = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+  const vercelOidcToken = process.env.VERCEL_OIDC_TOKEN;
+  if (vercelOidcToken) headers["x-vercel-trusted-oidc-idp-token"] = vercelOidcToken;
+  return headers;
+}
+
 export function opaqueOnnUserId(email: string) {
   const secret = process.env.AUTH_SESSION_SECRET;
   if (!secret && process.env.NODE_ENV === "production") throw new Error("AUTH_SESSION_SECRET is required in production.");
@@ -90,7 +97,7 @@ export async function loadOnnFeed(email: string, request: FeedRequest): Promise<
     const { baseUrl, token } = configuration();
     const response = await fetch(`${baseUrl}/api/v1/feed/relevant`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      headers: requestHeaders(token),
       body: JSON.stringify({ externalUserId, ...request, maximumItems: 8, maximumAgeHours: 168 }),
       cache: "no-store",
       signal: AbortSignal.timeout(12_000),
@@ -113,7 +120,7 @@ export async function sendOnnFeedback(email: string, input: { itemType: "first_p
   const { baseUrl, token } = configuration();
   const response = await fetch(`${baseUrl}/api/v1/feed/feedback`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    headers: requestHeaders(token),
     body: JSON.stringify({ externalUserId: opaqueOnnUserId(email), ...input }),
     cache: "no-store",
     signal: AbortSignal.timeout(8_000),
