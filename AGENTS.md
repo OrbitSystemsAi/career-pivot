@@ -1,5 +1,9 @@
 # OSai Project Agent Rules
 
+## Shared Project Structure
+
+Before creating or reorganizing project documentation, read and follow `/Users/earlpowery/Development/PROJECT_STRUCTURE.md`. Project-specific instructions may extend that standard; document any intentional exception in this file.
+
 ## Non-Negotiable Coding Rules
 
 When providing code changes:

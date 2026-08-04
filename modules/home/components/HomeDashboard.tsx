@@ -21,6 +21,7 @@ import HighlightsTile from "./HighlightsTile";
 import HomeHeaderMenu from "./HomeHeaderMenu";
 import HomeLayoutDesigner from "./HomeLayoutDesigner";
 import HomeMagazine from "./HomeMagazine";
+import UserPostingEditor from "./UserPostingEditor";
 import IndustriesVennTile from "./IndustriesVennTile";
 
 type HighlightTileProps = {
@@ -381,12 +382,12 @@ export default function HomeDashboard() {
           data-testid="home-dashboard-body"
           className="relative min-h-0 flex-1 overflow-y-auto"
         >
-        {activeView === "layout" ? <HomeLayoutDesigner /> : homeLayoutId === "career-editorial" ? (
+        {activeView === "post" ? (
+          <UserPostingEditor onClose={() => setActiveView("overview")} />
+        ) : activeView === "layout" ? <HomeLayoutDesigner /> : homeLayoutId === "career-editorial" ? (
           <HomeMagazine
             currentTitle={profile.resumeValues.currentTitle}
             highlights={effectiveHighlights}
-            name={user.name}
-            onChooseLayout={() => setActiveView("layout")}
             proofCount={acceptedEvidence}
             readiness={hasResume && plan ? plan.readiness : undefined}
             savedCount={user.opportunityProgress.savedOpportunityIds.length}

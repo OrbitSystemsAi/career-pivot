@@ -7,11 +7,9 @@ import { useOSState } from "@/core/state/OSStateProvider";
 type HomeMagazineProps = {
   currentTitle?: string;
   highlights: string[];
-  name: string;
   proofCount: number;
   readiness?: number;
   savedCount: number;
-  onChooseLayout: () => void;
 };
 
 const signals = [
@@ -45,17 +43,15 @@ const magazineLayoutClasses = {
 export default function HomeMagazine({
   currentTitle,
   highlights,
-  name,
   proofCount,
   readiness,
   savedCount,
-  onChooseLayout,
 }: HomeMagazineProps) {
   const {
     publisherLayoutId,
     readingLayoutId,
     readingLayoutPreference,
-    setReadingLayoutPreference,
+    setActiveView,
   } = useOSState();
   const [followed, setFollowed] = useState(() => new Set(["Maya Chen", "Design Leaders"]));
   const effectiveLayoutId = readingLayoutPreference === "personal" ? readingLayoutId : publisherLayoutId;
@@ -74,28 +70,18 @@ export default function HomeMagazine({
       <div className="min-h-full">
         <main className="min-w-0 px-5 pb-12 pt-6 sm:px-7">
           <header className="grid items-end gap-4 border-b border-[#173a46] pb-4 sm:grid-cols-[1fr_auto_1fr]">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em]">OSai News Network - 2026 - Aug 01 Edition</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em]">2026 Edition - Aug 04</p>
             <h1 className="font-serif text-4xl leading-none tracking-[-0.04em] text-[#101f24] sm:text-5xl">Today&apos;s Pulse</h1>
-            <button className="justify-self-start text-xs font-semibold text-[#168391] sm:justify-self-end" onClick={onChooseLayout} type="button">Edit interests & layout</button>
+            <p className="justify-self-start text-xs font-semibold text-[#168391] sm:justify-self-end">OSai News Network</p>
           </header>
 
-          <div className="flex flex-wrap items-center justify-end gap-1 border-b border-[#d5dfe1] py-2 text-[10px]">
-            <span className="mr-2 text-[#708087]">Reading view</span>
+          <div className="flex justify-end border-b border-[#d5dfe1] py-2">
             <button
-              aria-pressed={readingLayoutPreference === "publisher"}
-              className={`border-b-2 px-2 py-1 font-semibold ${readingLayoutPreference === "publisher" ? "border-[#f28c28] text-[#173a46]" : "border-transparent text-[#708087]"}`}
-              onClick={() => setReadingLayoutPreference("publisher")}
+              className="border-b-2 border-[#f28c28] px-2 py-1 text-[10px] font-semibold text-[#173a46]"
+              onClick={() => setActiveView("post")}
               type="button"
             >
-              {name}&apos;s layout
-            </button>
-            <button
-              aria-pressed={readingLayoutPreference === "personal"}
-              className={`border-b-2 px-2 py-1 font-semibold ${readingLayoutPreference === "personal" ? "border-[#f28c28] text-[#173a46]" : "border-transparent text-[#708087]"}`}
-              onClick={() => setReadingLayoutPreference("personal")}
-              type="button"
-            >
-              My layout
+              Create Post
             </button>
           </div>
 
