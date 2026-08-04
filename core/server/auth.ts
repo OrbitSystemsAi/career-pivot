@@ -2,7 +2,7 @@ import "server-only";
 
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
-import { mutateData, queryData, type StoredAccount } from "./dataStore";
+import { findStoredAccount, insertStoredAccount, removeStoredAccount, updateStoredAccount, type StoredAccount } from "./dataStore";
 
 const SESSION_COOKIE = "career_pivot_session";
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 30;
@@ -96,29 +96,17 @@ export function passwordMatches(password: string, account: StoredAccount) {
 }
 
 export async function findAccount(email: string) {
-  return queryData((data) => data.accounts.find((account) => account.email === email));
+  return findStoredAccount(email);
 }
 
 export async function createAccount(account: StoredAccount) {
-  return mutateData((data) => {
-    if (data.accounts.some((candidate) => candidate.email === account.email)) throw new Error("ACCOUNT_EXISTS");
-    data.accounts.push(account);
-    return account;
-  });
+  return insertStoredAccount(account);
 }
 
 export async function updateAccount(email: string, update: Partial<StoredAccount>) {
-  return mutateData((data) => {
-    const account = data.accounts.find((candidate) => candidate.email === email);
-    if (!account) throw new Error("ACCOUNT_NOT_FOUND");
-    Object.assign(account, update);
-    return account;
-  });
+  return updateStoredAccount(email, update);
 }
 
 export async function removeAccount(email: string) {
-  return mutateData((data) => {
-    data.accounts = data.accounts.filter((account) => account.email !== email);
-    data.posts = data.posts.filter((post) => post.authorEmail !== email);
-  });
+  return removeStoredAccount(email);
 }

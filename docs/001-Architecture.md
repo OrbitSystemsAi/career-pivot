@@ -316,3 +316,9 @@ states and small emphasis rules. Existing border widths are unchanged.
 ## 12. ONN Consumer Boundary
 
 Career Pivot consumes Orbit News Network only through authenticated server Route Handlers under `app/api/onn`. The Home module owns taxonomy mapping, feed presentation, interaction forwarding, and last-known-good behavior. The shell owns placement only. Browser bundles and responses never contain ONN credentials or user email addresses. See `docs/onn-feed-pilot.md` for the operational contract and current pilot limitations.
+
+---
+
+## 13. Durable Application Data
+
+Production, preview, and connected development environments store Career Pivot accounts and authored-post records in a dedicated Neon Postgres database provisioned through Vercel Marketplace. Serverless requests use the pooled `DATABASE_URL`; controlled migrations prefer `DATABASE_URL_UNPOOLED`. This database is independent of ONN, and Career Pivot communicates with ONN only through scoped API requests. Local development retains the existing `.data/career-pivot.json` fallback when no database URL is configured.
